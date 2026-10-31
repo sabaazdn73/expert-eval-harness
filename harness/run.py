@@ -244,6 +244,7 @@ def cmd_run(a):
                             text, usage, mtrace = grader_tools.run_equipped(
                                 model, content, None, max_tokens=min(a.max_tokens, 64000),
                                 tools=[grader_tools.CODE_EXEC], system=CODE_SYSTEM, effort=a.effort)
+                            print(f"{'':<28} {model:<22} trial {trial + 1}: ran code {sum(1 for t in mtrace if t.get('tool') != 'harness')} times")
                         else:
                             text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
                     except api.APIError as e:

@@ -66,5 +66,15 @@
   "files": [],
   "refs": [
     "refs/rc-flexure-notes.md"
+  ],
+  "ref_queries": [
+    {
+      "family": "ACI 318",
+      "query": "strength reduction factor tension-controlled net tensile strain"
+    },
+    {
+      "family": "ACI 318",
+      "query": "equivalent rectangular concrete stress distribution beta1"
+    }
   ]
 }

@@ -18,6 +18,7 @@ import re
 import sys
 
 from harness import api
+from harness.refs import RefLibrary
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SYSTEM = ("You are an expert answering a professional task. Work carefully, state assumptions, "
@@ -35,11 +36,13 @@ def load_task(task_dir):
     return t
 
 
-def build_content(task, with_refs, mock):
+def build_content(task, with_refs, mock, lib_block=""):
     content = [api.file_block(os.path.join(task["dir"], p)) for p in task.get("files", [])]
     if with_refs:
         for p in task.get("refs", []):
             content.append(api.file_block(os.path.join(task["dir"], p)))
+        if lib_block:
+            content.append({"type": "text", "text": "<reference_library>\n" + lib_block + "\n</reference_library>"})
     fmt = task.get("answer_format", {})
     tail = ""
     if fmt:
@@ -88,7 +91,7 @@ def check_one(check, answer):
     return False, f"{field}: unknown check type {kind}"
 
 
-def judge(task, response, judge_model):
+def judge(task, response, judge_model, lib_block=""):
     rubric = task.get("rubric", [])
     if not rubric:
         return [], {}
@@ -97,6 +100,9 @@ def judge(task, response, judge_model):
         "GRADER. You are grading a response to an expert task against a rubric written by a domain expert. "
         "Judge each rubric item strictly and independently. Use the expert notes as ground truth.\n\n"
         f"<task>\n{task['prompt_text']}\n</task>\n\n<expert_notes>\n{task.get('expert_notes', '')}\n</expert_notes>\n\n"
+        + (f"<reference_library>\nUse these current-edition excerpts to check any clause, edition or citation the response relies on. "
+           f"A response that applies a superseded edition where the current one differs, or cites a clause that does not exist, fails the relevant item.\n{lib_block}\n</reference_library>\n\n" if lib_block else "") +
+        f""
         f"<response>\n{response}\n</response>\n\n<rubric>\n{items}\n</rubric>\n\n"
         'Reply with only JSON: {"items": [{"id": "...", "verdict": "pass" or "fail", "reason": "one sentence"}]}'
     )
@@ -135,6 +141,10 @@ def summarise(rows):
 def cmd_run(a):
     mock = all(m.startswith("mock") for m in a.models)
     judge_model = a.judge or ("mock-judge" if mock else "claude-sonnet-5-5")
+    lib_dir = a.ref_lib or os.environ.get("CODE_REF_DIR")
+    lib = RefLibrary(lib_dir) if lib_dir else None
+    if lib:
+        print(f"reference library: {lib_dir}")
     task_dirs = sorted(d for pat in a.tasks for d in glob.glob(pat) if os.path.isfile(os.path.join(d, "task.json")))
     if not task_dirs:
         sys.exit("no tasks found")
@@ -149,7 +159,8 @@ def cmd_run(a):
     with open(os.path.join(out, "results.jsonl"), "w") as f:
         for d in task_dirs:
             task = load_task(d)
-            content = build_content(task, a.with_refs, mock)
+            lib_block = lib.block_for(task) if lib else ""
+            content = build_content(task, a.with_refs, mock, lib_block)
             for model in a.models:
                 for trial in range(a.k):
                     try:
@@ -158,7 +169,7 @@ def cmd_run(a):
                         sys.exit(f"stopped: {e}")
                     answer = extract_json(text)
                     checks = [dict(zip(("ok", "detail"), check_one(c, answer))) for c in task.get("checks", [])]
-                    verdicts, jusage = judge(task, text, judge_model)
+                    verdicts, jusage = judge(task, text, judge_model, lib_block)
                     for u in (usage, jusage):
                         for key in tokens:
                             tokens[key] += u.get(key, 0)
@@ -170,6 +181,7 @@ def cmd_run(a):
                     rows.append(row)
                     print(f"{task['id']:<28} {model:<22} trial {trial + 1}: {'PASS' if passed else 'fail'}")
     meta = {"run_id": run_id, "models": a.models, "k": a.k, "with_refs": a.with_refs, "judge": judge_model,
+            "ref_library": bool(lib),
             "tasks": [os.path.basename(d) for d in task_dirs], "tokens": tokens}
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=2)
     write_report(out)
@@ -247,6 +259,7 @@ def main():
     s.add_argument("--tasks", nargs="+", default=[os.path.join(ROOT, "tasks", "*")])
     s.add_argument("--k", type=int, default=3, help="trials per task per model")
     s.add_argument("--with-refs", action="store_true", help="include each task's reference notes")
+    s.add_argument("--ref-lib", help="folder of a local code-ref library (refs.sqlite + sources.json); also CODE_REF_DIR")
     s.add_argument("--judge", help="model that grades rubric items (default claude-sonnet-5-5)")
     s.add_argument("--max-tokens", type=int, default=4000)
     s.add_argument("--max-calls", type=int, default=60, help="safety cap on model calls per run")

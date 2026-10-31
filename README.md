@@ -23,6 +23,21 @@ Each task is a folder with the prompt, any input files, an answer key and a rubr
 
 `--with-refs` gives the model each task's reference notes. Running the same tasks with and without references measures whether up-to-date, citable sources make a smaller model more accurate, and whether they ever make a wrong answer more convincing.
 
+## Grading against current editions (optional, local)
+
+Models often apply a superseded edition of a standard with full confidence. With a local reference library
+(the index built by a private code-ref MCP: `refs.sqlite` plus `sources.json`), the harness pulls short,
+current-edition excerpts for each task's `ref_queries` and gives them to the judge, so a response that relies
+on an outdated clause or an invented citation fails the relevant rubric item.
+
+```bash
+export CODE_REF_DIR=~/path/to/code-ref-mcp      # or pass --ref-lib
+python3 -m harness.run run --models claude-haiku-5-5 --k 3                # judge checks against the library
+python3 -m harness.run run --models claude-haiku-5-5 --k 3 --with-refs    # the model also sees the excerpts
+```
+
+The library is never part of this repository: it can contain copyrighted standards held for private verification.
+
 ## Quick start
 
 ```bash

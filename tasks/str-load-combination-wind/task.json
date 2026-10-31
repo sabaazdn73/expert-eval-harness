@@ -37,5 +37,11 @@
   "id": "str-load-combination-wind",
   "prompt": "prompt.md",
   "files": [],
-  "refs": []
+  "refs": [],
+  "ref_queries": [
+    {
+      "family": "ASCE 7",
+      "query": "basic combinations strength design 0.9D 1.0W"
+    }
+  ]
 }

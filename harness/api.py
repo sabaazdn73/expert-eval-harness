@@ -111,15 +111,61 @@ def upload_file(path):
         raise APIError(f"file upload failed, HTTP {e.code}: {e.read().decode(errors='replace')[:300]}")
 
 
+def _assemble(r):
+    """Rebuild a full Messages response (content blocks, usage, stop reason, container) from an SSE stream."""
+    msg, blocks, partial = {}, {}, {}
+    for raw in r:
+        line = raw.decode("utf-8", errors="replace").strip()
+        if not line.startswith("data:"):
+            continue
+        ev = json.loads(line[5:].strip())
+        t = ev.get("type")
+        if t == "message_start":
+            msg = ev["message"]
+        elif t == "content_block_start":
+            blocks[ev["index"]] = dict(ev["content_block"])
+        elif t == "content_block_delta":
+            b, d = blocks[ev["index"]], ev["delta"]
+            dt = d.get("type")
+            if dt == "text_delta":
+                b["text"] = b.get("text", "") + d["text"]
+            elif dt == "thinking_delta":
+                b["thinking"] = b.get("thinking", "") + d["thinking"]
+            elif dt == "signature_delta":
+                b["signature"] = d["signature"]
+            elif dt == "input_json_delta":
+                partial[ev["index"]] = partial.get(ev["index"], "") + d.get("partial_json", "")
+            elif dt == "citations_delta":
+                b.setdefault("citations", []).append(d.get("citation"))
+        elif t == "content_block_stop":
+            i = ev["index"]
+            if i in partial:
+                blocks[i]["input"] = json.loads(partial.pop(i) or "{}")
+        elif t == "message_delta":
+            d = ev.get("delta", {})
+            if d.get("stop_reason"):
+                msg["stop_reason"] = d["stop_reason"]
+            if d.get("container"):
+                msg["container"] = d["container"]
+            u = msg.setdefault("usage", {})
+            u.update({k: v for k, v in ev.get("usage", {}).items() if v is not None})
+        elif t == "error":
+            raise APIError(f"stream error: {ev.get('error')}")
+    msg["content"] = [blocks[i] for i in sorted(blocks)]
+    return msg
+
+
 def create(body):
-    """One non-streamed Messages API request with a raw body (used for tool loops). Returns the response dict."""
+    """One streamed Messages API request with a raw body (used for tool loops). Returns the assembled response dict.
+
+    Streamed so that long turns (thinking plus tool calls) do not hit HTTP read timeouts."""
     headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}
-    body = dict(body)
+    body = dict(body, stream=True)
     for attempt in range(5):
         req = urllib.request.Request(API_URL, data=json.dumps(body).encode(), headers=headers, method="POST")
         try:
-            with urllib.request.urlopen(req, timeout=1800) as r:
-                return json.loads(r.read())
+            with urllib.request.urlopen(req, timeout=600) as r:  # timeout between chunks
+                return _assemble(r)
         except urllib.error.HTTPError as e:
             raw = e.read().decode(errors="replace")
             if e.code in (429, 500, 502, 503, 529) and attempt < 4:

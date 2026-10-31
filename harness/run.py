@@ -242,7 +242,7 @@ def cmd_run(a):
                         if task.get("code_execution") and not mock:
                             # the task needs computation: the model under test gets a Python sandbox
                             text, usage, mtrace = grader_tools.run_equipped(
-                                model, content, None, max_tokens=min(a.max_tokens, 64000),
+                                model, content, None, max_tokens=a.max_tokens,
                                 tools=[grader_tools.CODE_EXEC], system=CODE_SYSTEM, effort=a.effort)
                             print(f"{'':<28} {model:<22} trial {trial + 1}: ran code {sum(1 for t in mtrace if t.get('tool') != 'harness')} times")
                         else:

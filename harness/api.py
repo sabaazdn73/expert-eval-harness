@@ -36,12 +36,15 @@ def file_block(path):
     return {"type": "text", "text": f'<file name="{name}">\n{text}\n</file>'}
 
 
-def call(model, content, system=None, max_tokens=4000, temperature=1.0):
-    """One Messages API call. Returns (text, usage dict)."""
+def call(model, content, system=None, max_tokens=4000, temperature=None):
+    """One Messages API call. Returns (text, usage dict).
+
+    temperature is sent only when given; newer models reject it, so it is dropped and retried."""
     if model.startswith("mock"):
         return mock_call(model, content)
-    body = {"model": model, "max_tokens": max_tokens, "temperature": temperature,
-            "messages": [{"role": "user", "content": content}]}
+    body = {"model": model, "max_tokens": max_tokens, "messages": [{"role": "user", "content": content}]}
+    if temperature is not None:
+        body["temperature"] = temperature
     if system:
         body["system"] = system
     headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}
@@ -54,6 +57,9 @@ def call(model, content, system=None, max_tokens=4000, temperature=1.0):
             return text, res.get("usage", {})
         except urllib.error.HTTPError as e:
             raw = e.read().decode(errors="replace")
+            if e.code == 400 and "temperature" in raw and "temperature" in body:
+                body.pop("temperature")
+                continue
             if e.code in (429, 500, 502, 503, 529) and attempt < 4:
                 time.sleep(int(e.headers.get("retry-after") or 2 ** (attempt + 2)))
                 continue

@@ -36,25 +36,49 @@ def file_block(path):
     return {"type": "text", "text": f'<file name="{name}">\n{text}\n</file>'}
 
 
-def call(model, content, system=None, max_tokens=4000, temperature=None):
-    """One Messages API call. Returns (text, usage dict).
+def _stream(req):
+    """Read a streamed Messages response (SSE). Returns (text, usage with stop_reason)."""
+    text, usage, stop = [], {}, None
+    with urllib.request.urlopen(req, timeout=600) as r:  # timeout applies between chunks, not to the whole answer
+        for raw in r:
+            line = raw.decode("utf-8", errors="replace").strip()
+            if not line.startswith("data:"):
+                continue
+            ev = json.loads(line[5:].strip())
+            t = ev.get("type")
+            if t == "message_start":
+                usage.update(ev["message"].get("usage", {}))
+            elif t == "content_block_delta" and ev["delta"].get("type") == "text_delta":
+                text.append(ev["delta"]["text"])
+            elif t == "message_delta":
+                stop = ev.get("delta", {}).get("stop_reason") or stop
+                usage.update({k: v for k, v in ev.get("usage", {}).items() if v is not None})
+            elif t == "error":
+                raise APIError(f"stream error: {ev.get('error')}")
+    return "".join(text), dict(usage, stop_reason=stop)
 
-    temperature is sent only when given; newer models reject it, so it is dropped and retried."""
+
+def call(model, content, system=None, max_tokens=4000, temperature=None, effort=None):
+    """One streamed Messages API call. Returns (text, usage dict).
+
+    Thinking tokens count toward max_tokens on current models, so give a large max_tokens for hard tasks.
+    temperature is sent only when given; newer models reject it, so it is dropped and retried.
+    effort sets output_config.effort (low, medium, high, xhigh, max); None keeps the model's default."""
     if model.startswith("mock"):
         return mock_call(model, content)
-    body = {"model": model, "max_tokens": max_tokens, "messages": [{"role": "user", "content": content}]}
+    body = {"model": model, "max_tokens": max_tokens, "stream": True,
+            "messages": [{"role": "user", "content": content}]}
     if temperature is not None:
         body["temperature"] = temperature
+    if effort:
+        body["output_config"] = {"effort": effort}
     if system:
         body["system"] = system
     headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}
     for attempt in range(5):
         req = urllib.request.Request(API_URL, data=json.dumps(body).encode(), headers=headers, method="POST")
         try:
-            with urllib.request.urlopen(req, timeout=1800) as r:
-                res = json.loads(r.read())
-            text = "".join(b.get("text", "") for b in res.get("content", []) if b.get("type") == "text")
-            return text, dict(res.get("usage", {}), stop_reason=res.get("stop_reason"))
+            return _stream(req)
         except urllib.error.HTTPError as e:
             raw = e.read().decode(errors="replace")
             if e.code == 400 and "temperature" in raw and "temperature" in body:

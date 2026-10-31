@@ -106,7 +106,7 @@ def judge(task, response, judge_model, lib_block=""):
         f"<response>\n{response}\n</response>\n\n<rubric>\n{items}\n</rubric>\n\n"
         'Reply with only JSON: {"items": [{"id": "...", "verdict": "pass" or "fail", "reason": "one sentence"}]}'
     )
-    text, usage = api.call(judge_model, [{"type": "text", "text": prompt}], max_tokens=1500, temperature=0)
+    text, usage = api.call(judge_model, [{"type": "text", "text": prompt}], max_tokens=32000)
     m = re.search(r"\{.*\}", text, flags=re.S)
     try:
         verdicts = json.loads(m.group(0))["items"] if m else []
@@ -134,7 +134,7 @@ def judge_key(task, response, judge_model):
         f"<response>\n{response}\n</response>\n\n<items_to_score>\n{listing}\n</items_to_score>\n\n"
         'Reply with only JSON: {"items": [{"id": "...", "points": <awarded>, "reason": "one sentence"}]}'
     )
-    text, usage = api.call(judge_model, [{"type": "text", "text": prompt}], max_tokens=8000, temperature=0)
+    text, usage = api.call(judge_model, [{"type": "text", "text": prompt}], max_tokens=32000)
     m = re.search(r"\{.*\}", text, flags=re.S)
     try:
         got = {str(v.get("id")): v for v in json.loads(m.group(0))["items"]} if m else {}
@@ -206,9 +206,22 @@ def cmd_run(a):
             for model in a.models:
                 for trial in range(a.k):
                     try:
-                        text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens)
+                        text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
                     except api.APIError as e:
                         sys.exit(f"stopped: {e}")
+                    if not text.strip():
+                        why = "cut off at max_tokens before any answer (thinking used the whole budget)" \
+                            if usage.get("stop_reason") == "max_tokens" else f"empty answer (stop_reason {usage.get('stop_reason')})"
+                        print(f"{task['id']:<28} {model:<22} trial {trial + 1}: NO ANSWER - {why}; not graded")
+                        row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
+                               "with_refs": a.with_refs, "passed": False, "no_answer": why, "checks": [], "rubric": [],
+                               "answer": None, "score": None, "max_score": task.get("max_score"),
+                               "stop_reason": usage.get("stop_reason"), "response": ""}
+                        for key in tokens:
+                            tokens[key] += usage.get(key, 0)
+                        f.write(json.dumps(row) + "\n")
+                        rows.append(row)
+                        continue
                     answer = extract_json(text)
                     checks = [dict(zip(("ok", "detail"), check_one(c, answer))) for c in task.get("checks", [])]
                     score = None
@@ -228,7 +241,7 @@ def cmd_run(a):
                     rows.append(row)
                     sc = f"  ({score:g}/{task.get('max_score')})" if score is not None else ""
                     print(f"{task['id']:<28} {model:<22} trial {trial + 1}: {'PASS' if passed else 'fail'}{sc}")
-    meta = {"run_id": run_id, "models": a.models, "k": a.k, "with_refs": a.with_refs, "judge": judge_model,
+    meta = {"run_id": run_id, "models": a.models, "k": a.k, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs, "judge": judge_model,
             "ref_library": bool(lib),
             "tasks": [os.path.basename(d) for d in task_dirs], "tokens": tokens}
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=2)
@@ -256,6 +269,8 @@ def write_report(path):
             s = summ.get((t, m), {"n": 0, "c": 0})
             sc = [r["score"] for r in rows if r["task"] == t and r["model"] == m and r.get("score") is not None]
             extra = f" (scores {', '.join(f'{x:g}' for x in sc)} of {next(r['max_score'] for r in rows if r['task'] == t)})" if sc else ""
+            na = sum(1 for r in rows if r["task"] == t and r["model"] == m and r.get("no_answer"))
+            extra += f" [{na} no answer]" if na else ""
             cells.append(f"{s['c']}/{s['n']}{extra}")
         lines.append(f"| {t} | " + " | ".join(cells) + " |")
     lines += ["", f"| Model | pass rate | pass@{k} | pass^{k} (all {k} trials pass) |", "|---|---|---|---|"]
@@ -268,7 +283,7 @@ def write_report(path):
     lines += ["", "## Failures", ""]
     for r in rows:
         if not r["passed"]:
-            why = ["answer cut off at max_tokens, no JSON block"] if r.get("stop_reason") == "max_tokens" and r.get("answer") is None else []
+            why = [r["no_answer"]] if r.get("no_answer") else ["answer cut off at max_tokens, no JSON block"] if r.get("stop_reason") == "max_tokens" and r.get("answer") is None else []
             why += [c["detail"] for c in r["checks"] if not c["ok"]] + \
                   [(f'item {v["id"]} {v["points"]:g}/{v["max"]:g}' if "max" in v else v["id"]) + f': {v.get("reason", "")}'
                    for v in r["rubric"] if v["verdict"] != "pass"]
@@ -313,7 +328,10 @@ def main():
     s.add_argument("--with-refs", action="store_true", help="include each task's reference notes")
     s.add_argument("--ref-lib", help="folder of a local code-ref library (refs.sqlite + sources.json); also CODE_REF_DIR")
     s.add_argument("--judge", help="model that grades rubric items (default claude-sonnet-5-5)")
-    s.add_argument("--max-tokens", type=int, default=32000, help="output cap per answer; high so answers are not cut off")
+    s.add_argument("--max-tokens", type=int, default=64000,
+                   help="cap on thinking + answer tokens per call (thinking counts); streamed, so long answers are fine")
+    s.add_argument("--effort", choices=["low", "medium", "high", "xhigh", "max"],
+                   help="output_config.effort; default is each model's own default")
     s.add_argument("--max-calls", type=int, default=60, help="safety cap on model calls per run")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_run)

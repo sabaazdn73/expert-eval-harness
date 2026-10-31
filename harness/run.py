@@ -27,6 +27,13 @@ SYSTEM = ("You are an expert answering a professional task. Work carefully, stat
           "or inconsistent, say so instead of forcing an answer.")
 
 
+CODE_SYSTEM = SYSTEM + (
+    " You have a Python sandbox through the code_execution tool. Work like an engineer at a computer: start by loading "
+    "the data files with code, then build the analysis step by step in code and check intermediate results. Do the "
+    "arithmetic in code, not in your head, and keep your private reasoning short between tool calls. When the analysis "
+    "is done, write the final answer as text.")
+
+
 # ---------------- tasks ----------------
 
 def load_task(task_dir):
@@ -236,7 +243,7 @@ def cmd_run(a):
                             # the task needs computation: the model under test gets a Python sandbox
                             text, usage, mtrace = grader_tools.run_equipped(
                                 model, content, None, max_tokens=min(a.max_tokens, 64000),
-                                tools=[grader_tools.CODE_EXEC], system=SYSTEM, effort=a.effort)
+                                tools=[grader_tools.CODE_EXEC], system=CODE_SYSTEM, effort=a.effort)
                         else:
                             text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
                     except api.APIError as e:

@@ -34,6 +34,10 @@ CODE_SYSTEM = SYSTEM + (
     "is done, write the final answer as text.")
 
 
+LIB_NOTE = (" You also have the firm's code library through the code_ref tools (editions, search, page). "
+            "Use it as an engineer would use the standards on their desk.")
+
+
 # ---------------- tasks ----------------
 
 def load_task(task_dir):
@@ -241,7 +245,16 @@ def cmd_run(a):
             for model in a.models:
                 for trial in range(a.k):
                     try:
-                        if task.get("code_execution") and not mock:
+                        if a.model_library and lib and not mock:
+                            # case study: the model under test can look up the code library itself
+                            mtools = ([grader_tools.CODE_EXEC] if task.get("code_execution") else []) + grader_tools.CLIENT_TOOLS
+                            text, usage, mtrace = grader_tools.run_equipped(
+                                model, content, lib, max_tokens=a.max_tokens, tools=mtools,
+                                system=(CODE_SYSTEM if task.get("code_execution") else SYSTEM) + LIB_NOTE, effort=a.effort)
+                            looked = [t for t in mtrace if str(t.get("tool", "")).startswith("code_ref")]
+                            print(f"{'':<28} {model:<22} trial {trial + 1}: {len(mtrace)} tool calls, {len(looked)} library look-ups")
+                            usage["library_lookups"] = [t.get("input") for t in looked]
+                        elif task.get("code_execution") and not mock:
                             # the task needs computation: the model under test gets a Python sandbox
                             text, usage, mtrace = grader_tools.run_equipped(
                                 model, content, None, max_tokens=a.max_tokens,
@@ -278,13 +291,13 @@ def cmd_run(a):
                             tokens[key] += u.get(key, 0)
                     row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
                            "with_refs": a.with_refs, "passed": passed, "checks": checks, "rubric": verdicts,
-                           "answer": answer, "score": score, "key_flags": jusage.get("key_flags", []) if score is not None else [],
+                           "answer": answer, "score": score, "library_lookups": usage.get("library_lookups"), "key_flags": jusage.get("key_flags", []) if score is not None else [],
                            "grader_tool_calls": jusage.get("tool_calls", 0) if score is not None else 0, "max_score": task.get("max_score"), "stop_reason": usage.get("stop_reason"), "response": text}
                     f.write(json.dumps(row) + "\n")
                     rows.append(row)
                     sc = f"  ({score:g}/{task.get('max_score')})" if score is not None else ""
                     print(f"{task['id']:<28} {model:<22} trial {trial + 1}: {'PASS' if passed else 'fail'}{sc}")
-    meta = {"run_id": run_id, "models": a.models, "k": a.k, "judge_tools": a.judge_tools, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs, "judge": judge_model,
+    meta = {"run_id": run_id, "models": a.models, "k": a.k, "judge_tools": a.judge_tools, "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs, "judge": judge_model,
             "ref_library": bool(lib),
             "tasks": [os.path.basename(d) for d in task_dirs], "tokens": tokens}
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=2)
@@ -304,7 +317,8 @@ def write_report(path):
     k = meta["k"]
     tasks = list(dict.fromkeys(r["task"] for r in rows))
     lines = [f"# Eval run {meta['run_id']}", "",
-             f"Models: {', '.join(meta['models'])} · k = {k} · references given: {meta['with_refs']} · judge: {meta['judge']}", "",
+             f"Models: {', '.join(meta['models'])} · k = {k} · references given: {meta['with_refs']} · "
+             f"code library as a tool: {meta.get('model_library', False)} · judge: {meta['judge']}", "",
              "| Task | " + " | ".join(meta["models"]) + " |", "|---|" + "---|" * len(meta["models"])]
     for t in tasks:
         cells = []
@@ -331,6 +345,14 @@ def write_report(path):
                   [(f'item {v["id"]} {v["points"]:g}/{v["max"]:g}' if "max" in v else v["id"]) + f': {v.get("reason", "")}'
                    for v in r["rubric"] if v["verdict"] != "pass"]
             lines.append(f"- **{r['task']}** · {r['model']} · trial {r['trial'] + 1}: " + "; ".join(why))
+    looked = [r for r in rows if r.get("library_lookups") is not None]
+    if looked:
+        lines += ["", "## Code library look-ups by the model", ""]
+        for r in looked:
+            qs = [q.get("query") or (f"page {q.get('source')} p.{q.get('pdf_page')}" if q.get("source") else "editions")
+                  for q in r["library_lookups"] if isinstance(q, dict)]
+            lines.append(f"- **{r['task']}** · {r['model']} · trial {r['trial'] + 1}: {len(qs)} look-ups"
+                         + (": " + "; ".join(qs[:25]) if qs else ""))
     flagged = [(r, f) for r in rows for f in (r.get("key_flags") or [])]
     if flagged:
         lines += ["", "## Grader flags for human review", "",
@@ -377,6 +399,8 @@ def main():
     s.add_argument("--with-refs", action="store_true", help="include each task's reference notes")
     s.add_argument("--ref-lib", help="folder of a local code-ref library (refs.sqlite + sources.json); also CODE_REF_DIR")
     s.add_argument("--judge", help="model that grades rubric items (default claude-sonnet-5-5)")
+    s.add_argument("--model-library", action="store_true",
+                   help="case study: give the model under test the --ref-lib code library as tools (editions, search, page)")
     s.add_argument("--judge-tools", action="store_true",
                    help="equipped grader for key-scored tasks: code execution, the task's files and the --ref-lib code library")
     s.add_argument("--max-tokens", type=int, default=128000,

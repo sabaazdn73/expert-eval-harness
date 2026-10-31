@@ -15,6 +15,10 @@ from harness import api
 
 CODE_EXEC = {"type": "code_execution_20250825", "name": "code_execution"}
 CLIENT_TOOLS = [
+    {"name": "code_ref_editions",
+     "description": "List the standards and editions in the local code library with their status (current, superseded), "
+                    "and the table of which ASCE 7 and ACI 318 editions each IBC edition adopts.",
+     "input_schema": {"type": "object", "properties": {}}},
     {"name": "code_ref_search",
      "description": "Full-text search of the local library of building codes and standards (ACI 318, ASCE 7, IBC and others). "
                     "Returns short excerpts with standard, edition, status and PDF page. Use it to confirm a clause the response cites, "
@@ -45,11 +49,13 @@ GUIDE = (
 def _client_tool(name, args, lib):
     if lib is None:
         return "No local code library is configured for this run."
+    if name == "code_ref_editions":
+        return json.dumps({"editions": lib.editions(), "ibc_adoption": lib.adoption})
     if name == "code_ref_search":
         hits = lib.search(args.get("query", ""), args.get("family"), not args.get("include_superseded"), limit=5)
         return json.dumps(hits) if hits else "no matches"
     if name == "code_ref_page":
-        row = lib.con.execute("SELECT text FROM pages WHERE source = ? AND page = ?",
+        row = lib.con.execute("SELECT body FROM pages WHERE source = ? AND page = ?",
                               (args.get("source"), int(args.get("pdf_page", 0)))).fetchone()
         return (row[0][:6000] if row else "page not found")
     return f"unknown tool {name}"

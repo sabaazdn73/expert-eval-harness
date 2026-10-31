@@ -61,8 +61,15 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=40, tools=None
     Used by the equipped grader (code execution + code library) and, with tools=[CODE_EXEC],
     for tasks where the model under test may run code."""
     tools = tools if tools is not None else [CODE_EXEC] + CLIENT_TOOLS
+    # Every turn resends the whole conversation, files included. Cache the opening message (files + prompt)
+    # so later turns read it from the prompt cache at a fraction of the input price.
+    content = [dict(b) for b in content]
+    for b in reversed(content):
+        if b.get("type") in ("text", "document", "image"):
+            b["cache_control"] = {"type": "ephemeral"}
+            break
     messages = [{"role": "user", "content": content}]
-    usage = {"input_tokens": 0, "output_tokens": 0}
+    usage = {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
     trace, container = [], None
     for _ in range(max_turns):
         body = {"model": model, "max_tokens": max_tokens, "tools": tools, "messages": messages}
@@ -74,7 +81,7 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=40, tools=None
             body["container"] = container
         res = api.create(body)
         for k in usage:
-            usage[k] += res.get("usage", {}).get(k, 0)
+            usage[k] += res.get("usage", {}).get(k, 0) or 0
         container = (res.get("container") or {}).get("id") or container
         blocks = res.get("content", [])
         messages.append({"role": "assistant", "content": blocks})

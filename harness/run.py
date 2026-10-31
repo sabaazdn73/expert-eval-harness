@@ -230,7 +230,7 @@ def cmd_run(a):
     print(f"{len(task_dirs)} tasks x {len(a.models)} models x k={a.k} = {planned} model calls (+ judge calls)")
     if planned > a.max_calls:
         sys.exit(f"refusing: {planned} calls is above --max-calls {a.max_calls}")
-    rows, tokens = [], {"input_tokens": 0, "output_tokens": 0}
+    rows, tokens = [], {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
     with open(os.path.join(out, "results.jsonl"), "w") as f:
         for d in task_dirs:
             task = load_task(d)

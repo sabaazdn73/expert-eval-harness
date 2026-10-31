@@ -178,6 +178,8 @@ def judge_key(task, response, judge_model, equipped=False, lib=None):
             pts = max(0.0, min(float(v.get("points", 0)), float(i["points"])))
         except (TypeError, ValueError):
             pts = 0.0
+        if not task.get("partial_credit") and pts < i["points"]:
+            pts = 0.0  # keys are all-or-nothing per item unless the task says otherwise
         scored.append({"id": str(i["id"]), "points": pts, "max": i["points"], "required": bool(i.get("required")),
                        "verdict": "pass" if pts >= i["points"] else "fail", "reason": v.get("reason", "judge gave no score"),
                        "checked": v.get("checked", "")})

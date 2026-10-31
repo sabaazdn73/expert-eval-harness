@@ -6,6 +6,10 @@ Each task is a folder with the prompt, any input files, an answer key and a rubr
 
 > **Status: early (v0.1).** The pipeline runs end to end offline with mock models; the first runs on live models are next. All tasks are original and written for this repository.
 
+## Method
+
+How the tasks are designed, and where the human expert belongs in the process: [Where the Human Belongs](docs/where-the-human-belongs.md). It sets out a human–AI division of labor for building expert evaluation tasks, with a worked structural engineering example (special RC shear walls under the 2024 IBC as adopted by Utah, ASCE 7-22 and ACI 318-19), templates and sample criteria.
+
 ## Key-scored tasks (point items)
 
 A task can also be graded against a full expert answer key instead of a short rubric. Add to `task.json`:

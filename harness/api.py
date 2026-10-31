@@ -93,6 +93,26 @@ def call(model, content, system=None, max_tokens=4000, temperature=None, effort=
     raise APIError("gave up after repeated retries")
 
 
+def create(body):
+    """One non-streamed Messages API request with a raw body (used for tool loops). Returns the response dict."""
+    headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}
+    body = dict(body)
+    for attempt in range(5):
+        req = urllib.request.Request(API_URL, data=json.dumps(body).encode(), headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=1800) as r:
+                return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            raw = e.read().decode(errors="replace")
+            if e.code in (429, 500, 502, 503, 529) and attempt < 4:
+                time.sleep(int(e.headers.get("retry-after") or 2 ** (attempt + 2)))
+                continue
+            raise APIError(f"HTTP {e.code}: {raw[:400]}")
+        except urllib.error.URLError as e:
+            raise APIError(f"could not reach the API: {e.reason}")
+    raise APIError("gave up after repeated retries")
+
+
 def mock_call(model, content):
     """Offline stand-in. mock-good answers from the task's mock_answer, mock-bad returns nonsense."""
     prompt = " ".join(b.get("text", "") for b in content if b.get("type") == "text")

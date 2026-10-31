@@ -19,6 +19,7 @@ import sys
 
 from harness import api
 from harness.refs import RefLibrary
+from harness import grader_tools
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SYSTEM = ("You are an expert answering a professional task. Work carefully, state assumptions, "
@@ -119,7 +120,7 @@ def judge(task, response, judge_model, lib_block=""):
     return [by_id.get(r["id"], {"id": r["id"], "verdict": "fail", "reason": "judge gave no verdict"}) for r in rubric], usage
 
 
-def judge_key(task, response, judge_model):
+def judge_key(task, response, judge_model, equipped=False, lib=None):
     """Score a response against an expert's full answer key with point items (key mode)."""
     key = open(os.path.join(task["dir"], task["key_file"]), encoding="utf-8").read()
     items = task["items"]
@@ -132,13 +133,23 @@ def judge_key(task, response, judge_model):
         + (f"<harness_note>\n{task['judge_note']}\n</harness_note>\n\n" if task.get("judge_note") else "")
         + f"<task_prompt>\n{task['prompt_text']}\n</task_prompt>\n\n<answer_key>\n{key}\n</answer_key>\n\n"
         f"<response>\n{response}\n</response>\n\n<items_to_score>\n{listing}\n</items_to_score>\n\n"
-        'Reply with only JSON: {"items": [{"id": "...", "points": <awarded>, "reason": "one sentence"}]}'
+        + ('Reply with only JSON: {"items": [{"id": "...", "points": <awarded>, "reason": "one sentence"}]}' if not equipped else
+           'End with only JSON: {"items": [{"id": "...", "points": <awarded>, "reason": "one sentence", "checked": "what you verified with a tool, if anything"}], '
+           '"key_flags": ["possible problem in the key, with the evidence", ...]}')
     )
-    text, usage = api.call(judge_model, [{"type": "text", "text": prompt}], max_tokens=32000)
-    m = re.search(r"\{.*\}", text, flags=re.S)
+    trace, flags = [], []
+    if equipped and not judge_model.startswith("mock"):
+        content = [api.file_block(os.path.join(task["dir"], p)) for p in task.get("files", [])]
+        content.append({"type": "text", "text": grader_tools.GUIDE + "\n" + prompt})
+        text, usage, trace = grader_tools.run_equipped(judge_model, content, lib)
+    else:
+        text, usage = api.call(judge_model, [{"type": "text", "text": prompt}], max_tokens=32000)
+    i = max(text.rfind('{"items"'), text.rfind('{ "items"'), text.rfind('{\n'))
     try:
-        got = {str(v.get("id")): v for v in json.loads(m.group(0))["items"]} if m else {}
-    except (ValueError, KeyError):
+        parsed = json.JSONDecoder().raw_decode(text[i:])[0] if i >= 0 else {}
+        got = {str(v.get("id")): v for v in parsed.get("items", [])}
+        flags = parsed.get("key_flags", []) or []
+    except (ValueError, KeyError, AttributeError):
         got = {}
     if judge_model.startswith("mock"):
         full = "MOCK_GOOD" in response
@@ -151,7 +162,9 @@ def judge_key(task, response, judge_model):
         except (TypeError, ValueError):
             pts = 0.0
         scored.append({"id": str(i["id"]), "points": pts, "max": i["points"], "required": bool(i.get("required")),
-                       "verdict": "pass" if pts >= i["points"] else "fail", "reason": v.get("reason", "judge gave no score")})
+                       "verdict": "pass" if pts >= i["points"] else "fail", "reason": v.get("reason", "judge gave no score"),
+                       "checked": v.get("checked", "")})
+    usage = dict(usage, key_flags=flags, tool_calls=len(trace))
     return scored, usage
 
 
@@ -185,8 +198,11 @@ def cmd_run(a):
     judge_model = a.judge or ("mock-judge" if mock else "claude-sonnet-5-5")
     lib_dir = a.ref_lib or os.environ.get("CODE_REF_DIR")
     lib = RefLibrary(lib_dir) if lib_dir else None
+    judge_lib = lib
     if lib:
-        print(f"reference library: {lib_dir}")
+        print(f"reference library: {lib_dir}" + ("" if a.with_refs else " (grader only)"))
+    if a.judge_tools:
+        print(f"equipped grader: code execution + task files" + (f" + code library {lib_dir}" if judge_lib else ""))
     task_dirs = sorted(d for pat in a.tasks for d in glob.glob(pat) if os.path.isfile(os.path.join(d, "task.json")))
     if not task_dirs:
         sys.exit("no tasks found")
@@ -226,7 +242,7 @@ def cmd_run(a):
                     checks = [dict(zip(("ok", "detail"), check_one(c, answer))) for c in task.get("checks", [])]
                     score = None
                     if task.get("key_file"):
-                        verdicts, jusage = judge_key(task, text, judge_model)
+                        verdicts, jusage = judge_key(task, text, judge_model, a.judge_tools, lib or judge_lib)
                         score, passed = key_pass(task, verdicts)
                     else:
                         verdicts, jusage = judge(task, text, judge_model, lib_block)
@@ -236,12 +252,13 @@ def cmd_run(a):
                             tokens[key] += u.get(key, 0)
                     row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
                            "with_refs": a.with_refs, "passed": passed, "checks": checks, "rubric": verdicts,
-                           "answer": answer, "score": score, "max_score": task.get("max_score"), "stop_reason": usage.get("stop_reason"), "response": text}
+                           "answer": answer, "score": score, "key_flags": jusage.get("key_flags", []) if score is not None else [],
+                           "grader_tool_calls": jusage.get("tool_calls", 0) if score is not None else 0, "max_score": task.get("max_score"), "stop_reason": usage.get("stop_reason"), "response": text}
                     f.write(json.dumps(row) + "\n")
                     rows.append(row)
                     sc = f"  ({score:g}/{task.get('max_score')})" if score is not None else ""
                     print(f"{task['id']:<28} {model:<22} trial {trial + 1}: {'PASS' if passed else 'fail'}{sc}")
-    meta = {"run_id": run_id, "models": a.models, "k": a.k, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs, "judge": judge_model,
+    meta = {"run_id": run_id, "models": a.models, "k": a.k, "judge_tools": a.judge_tools, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs, "judge": judge_model,
             "ref_library": bool(lib),
             "tasks": [os.path.basename(d) for d in task_dirs], "tokens": tokens}
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=2)
@@ -288,6 +305,12 @@ def write_report(path):
                   [(f'item {v["id"]} {v["points"]:g}/{v["max"]:g}' if "max" in v else v["id"]) + f': {v.get("reason", "")}'
                    for v in r["rubric"] if v["verdict"] != "pass"]
             lines.append(f"- **{r['task']}** · {r['model']} · trial {r['trial'] + 1}: " + "; ".join(why))
+    flagged = [(r, f) for r in rows for f in (r.get("key_flags") or [])]
+    if flagged:
+        lines += ["", "## Grader flags for human review", "",
+                  "Possible problems in the answer key that the grader found while checking. Scores still follow the key.", ""]
+        for r, f in flagged:
+            lines.append(f"- **{r['task']}** · {r['model']} · trial {r['trial'] + 1}: {f}")
     open(os.path.join(path, "report.md"), "w").write("\n".join(lines) + "\n")
 
 
@@ -328,6 +351,8 @@ def main():
     s.add_argument("--with-refs", action="store_true", help="include each task's reference notes")
     s.add_argument("--ref-lib", help="folder of a local code-ref library (refs.sqlite + sources.json); also CODE_REF_DIR")
     s.add_argument("--judge", help="model that grades rubric items (default claude-sonnet-5-5)")
+    s.add_argument("--judge-tools", action="store_true",
+                   help="equipped grader for key-scored tasks: code execution, the task's files and the --ref-lib code library")
     s.add_argument("--max-tokens", type=int, default=128000,
                    help="cap on thinking + answer tokens per call; default 128000 is the API maximum for current models")
     s.add_argument("--effort", choices=["low", "medium", "high", "xhigh", "max"],

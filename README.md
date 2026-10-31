@@ -22,6 +22,17 @@ The judge scores every item against the key (no partial credit within an item); 
 the pass rule (score at or above `pass_score` and every required item earned). The report shows each trial's score.
 Tasks can live outside this repository: `--tasks "/path/to/private-tasks/*"`.
 
+### Equipped grader (`--judge-tools`)
+
+For key-scored tasks the grader can check a response instead of only reading it:
+code execution in Anthropic's sandbox to recompute the numbers, the task's input files to check the figures taken from them,
+and the local code library (`--ref-lib`) through client tools that run on your machine, so the library is never uploaded.
+The grader still scores by the key, and lists possible problems in the key itself under "Grader flags for human review".
+
+```
+python3 -m harness.run run --models claude-haiku-5-5 --k 3 --tasks "/path/to/tasks/*" --judge-tools --ref-lib ~/Documents/Codex/code-ref-mcp
+```
+
 ## How it works
 
 1. **Task.** `tasks/<id>/` holds `prompt.md`, optional input files (text, PDF, images), optional reference notes in `refs/`, and `task.json` with the answer key.

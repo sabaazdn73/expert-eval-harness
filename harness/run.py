@@ -176,7 +176,7 @@ def cmd_run(a):
                     passed = all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts)
                     row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
                            "with_refs": a.with_refs, "passed": passed, "checks": checks, "rubric": verdicts,
-                           "answer": answer, "response": text}
+                           "answer": answer, "stop_reason": usage.get("stop_reason"), "response": text}
                     f.write(json.dumps(row) + "\n")
                     rows.append(row)
                     print(f"{task['id']:<28} {model:<22} trial {trial + 1}: {'PASS' if passed else 'fail'}")
@@ -218,7 +218,8 @@ def write_report(path):
     lines += ["", "## Failures", ""]
     for r in rows:
         if not r["passed"]:
-            why = [c["detail"] for c in r["checks"] if not c["ok"]] + \
+            why = ["answer cut off at max_tokens, no JSON block"] if r.get("stop_reason") == "max_tokens" and r.get("answer") is None else []
+            why += [c["detail"] for c in r["checks"] if not c["ok"]] + \
                   [f'{v["id"]}: {v.get("reason", "")}' for v in r["rubric"] if v["verdict"] != "pass"]
             lines.append(f"- **{r['task']}** · {r['model']} · trial {r['trial'] + 1}: " + "; ".join(why))
     open(os.path.join(path, "report.md"), "w").write("\n".join(lines) + "\n")
@@ -261,7 +262,7 @@ def main():
     s.add_argument("--with-refs", action="store_true", help="include each task's reference notes")
     s.add_argument("--ref-lib", help="folder of a local code-ref library (refs.sqlite + sources.json); also CODE_REF_DIR")
     s.add_argument("--judge", help="model that grades rubric items (default claude-sonnet-5-5)")
-    s.add_argument("--max-tokens", type=int, default=4000)
+    s.add_argument("--max-tokens", type=int, default=8000)
     s.add_argument("--max-calls", type=int, default=60, help="safety cap on model calls per run")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_run)

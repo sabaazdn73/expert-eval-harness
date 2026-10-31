@@ -3,7 +3,7 @@
   "title": "Lease accounting under a standard that does not exist",
   "answer_format": {
     "amendment_exists": "true or false",
-    "initial_direct_costs_recognised": "number, USD"
+    "initial_direct_costs_recognised": "number, USD: the initial direct costs measured and recognised in total, whether expensed at commencement or included in the net investment"
   },
   "checks": [
     {

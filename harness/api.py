@@ -54,7 +54,7 @@ def call(model, content, system=None, max_tokens=4000, temperature=None):
             with urllib.request.urlopen(req, timeout=600) as r:
                 res = json.loads(r.read())
             text = "".join(b.get("text", "") for b in res.get("content", []) if b.get("type") == "text")
-            return text, res.get("usage", {})
+            return text, dict(res.get("usage", {}), stop_reason=res.get("stop_reason"))
         except urllib.error.HTTPError as e:
             raw = e.read().decode(errors="replace")
             if e.code == 400 and "temperature" in raw and "temperature" in body:

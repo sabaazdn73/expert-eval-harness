@@ -13,7 +13,7 @@
       "field": "stub_cash_flow",
       "type": "number",
       "expected": 52.0,
-      "tol_rel": 0.01
+      "tol_rel": 0.015
     },
     {
       "field": "stub_discount_period",
@@ -41,7 +41,7 @@
     }
   ],
   "rubric": [],
-  "expert_notes": "Stub = 6.5/12 of FY2026 = 52.0 at t = 0.271. Later midpoints 1.042, 2.042, 3.042, 4.042. Gordon TV = 150 x 1.025 / 0.065 = 2,365.38, valued one period before the first terminal flow, i.e. at t = 4.042 under mid-year flows. EV about 2,155 (2,155.0 on a day count).",
+  "expert_notes": "Stub = 6.5/12 of FY2026 = 52.0 at t = 0.271. Later midpoints 1.042, 2.042, 3.042, 4.042. Gordon TV = 150 x 1.025 / 0.065 = 2,365.38, valued one period before the first terminal flow, i.e. at t = 4.042 under mid-year flows. EV about 2,155 (2,155.0 on a day count). A day count (about 200/365 of FY2026, 52.6) is also accepted for the stub.",
   "mock_answer": {
     "stub_cash_flow": 52.0,
     "stub_discount_period": 0.271,

@@ -6,6 +6,22 @@ Each task is a folder with the prompt, any input files, an answer key and a rubr
 
 > **Status: early (v0.1).** The pipeline runs end to end offline with mock models; the first runs on live models are next. All tasks are original and written for this repository.
 
+## Key-scored tasks (point items)
+
+A task can also be graded against a full expert answer key instead of a short rubric. Add to `task.json`:
+
+```json
+"key_file": "key.md",
+"items": [{"id": "1", "points": 2, "required": true}, {"id": "2", "points": 1}],
+"max_score": 15,
+"pass_score": 11,
+"judge_note": "optional note to the grader"
+```
+
+The judge scores every item against the key (no partial credit within an item); the harness adds the points and applies
+the pass rule (score at or above `pass_score` and every required item earned). The report shows each trial's score.
+Tasks can live outside this repository: `--tasks "/path/to/private-tasks/*"`.
+
 ## How it works
 
 1. **Task.** `tasks/<id>/` holds `prompt.md`, optional input files (text, PDF, images), optional reference notes in `refs/`, and `task.json` with the answer key.

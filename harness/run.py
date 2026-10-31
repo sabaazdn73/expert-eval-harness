@@ -119,6 +119,48 @@ def judge(task, response, judge_model, lib_block=""):
     return [by_id.get(r["id"], {"id": r["id"], "verdict": "fail", "reason": "judge gave no verdict"}) for r in rubric], usage
 
 
+def judge_key(task, response, judge_model):
+    """Score a response against an expert's full answer key with point items (key mode)."""
+    key = open(os.path.join(task["dir"], task["key_file"]), encoding="utf-8").read()
+    items = task["items"]
+    listing = "\n".join(f'- item {i["id"]}: max {i["points"]} points' + (" (required)" if i.get("required") else "")
+                         for i in items)
+    prompt = (
+        "GRADER. Score the response against the expert answer key below. Follow the key exactly: its items, "
+        "tolerances, accepted alternative readings, carry-over rules and common errors. No partial credit within an item. "
+        "Do not reward findings the key marks as not valid.\n\n"
+        + (f"<harness_note>\n{task['judge_note']}\n</harness_note>\n\n" if task.get("judge_note") else "")
+        + f"<task_prompt>\n{task['prompt_text']}\n</task_prompt>\n\n<answer_key>\n{key}\n</answer_key>\n\n"
+        f"<response>\n{response}\n</response>\n\n<items_to_score>\n{listing}\n</items_to_score>\n\n"
+        'Reply with only JSON: {"items": [{"id": "...", "points": <awarded>, "reason": "one sentence"}]}'
+    )
+    text, usage = api.call(judge_model, [{"type": "text", "text": prompt}], max_tokens=8000, temperature=0)
+    m = re.search(r"\{.*\}", text, flags=re.S)
+    try:
+        got = {str(v.get("id")): v for v in json.loads(m.group(0))["items"]} if m else {}
+    except (ValueError, KeyError):
+        got = {}
+    if judge_model.startswith("mock"):
+        full = "MOCK_GOOD" in response
+        got = {str(i["id"]): {"points": i["points"] if full else 0, "reason": "mock judge"} for i in items}
+    scored = []
+    for i in items:
+        v = got.get(str(i["id"]), {})
+        try:
+            pts = max(0.0, min(float(v.get("points", 0)), float(i["points"])))
+        except (TypeError, ValueError):
+            pts = 0.0
+        scored.append({"id": str(i["id"]), "points": pts, "max": i["points"], "required": bool(i.get("required")),
+                       "verdict": "pass" if pts >= i["points"] else "fail", "reason": v.get("reason", "judge gave no score")})
+    return scored, usage
+
+
+def key_pass(task, scored):
+    total = sum(v["points"] for v in scored)
+    req_ok = all(v["points"] >= v["max"] for v in scored if v["required"])
+    return total, total >= task["pass_score"] and req_ok
+
+
 # ---------------- metrics ----------------
 
 def pass_at_k(n, c, k):
@@ -169,17 +211,23 @@ def cmd_run(a):
                         sys.exit(f"stopped: {e}")
                     answer = extract_json(text)
                     checks = [dict(zip(("ok", "detail"), check_one(c, answer))) for c in task.get("checks", [])]
-                    verdicts, jusage = judge(task, text, judge_model, lib_block)
+                    score = None
+                    if task.get("key_file"):
+                        verdicts, jusage = judge_key(task, text, judge_model)
+                        score, passed = key_pass(task, verdicts)
+                    else:
+                        verdicts, jusage = judge(task, text, judge_model, lib_block)
+                        passed = all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts)
                     for u in (usage, jusage):
                         for key in tokens:
                             tokens[key] += u.get(key, 0)
-                    passed = all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts)
                     row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
                            "with_refs": a.with_refs, "passed": passed, "checks": checks, "rubric": verdicts,
-                           "answer": answer, "stop_reason": usage.get("stop_reason"), "response": text}
+                           "answer": answer, "score": score, "max_score": task.get("max_score"), "stop_reason": usage.get("stop_reason"), "response": text}
                     f.write(json.dumps(row) + "\n")
                     rows.append(row)
-                    print(f"{task['id']:<28} {model:<22} trial {trial + 1}: {'PASS' if passed else 'fail'}")
+                    sc = f"  ({score:g}/{task.get('max_score')})" if score is not None else ""
+                    print(f"{task['id']:<28} {model:<22} trial {trial + 1}: {'PASS' if passed else 'fail'}{sc}")
     meta = {"run_id": run_id, "models": a.models, "k": a.k, "with_refs": a.with_refs, "judge": judge_model,
             "ref_library": bool(lib),
             "tasks": [os.path.basename(d) for d in task_dirs], "tokens": tokens}
@@ -206,7 +254,9 @@ def write_report(path):
         cells = []
         for m in meta["models"]:
             s = summ.get((t, m), {"n": 0, "c": 0})
-            cells.append(f"{s['c']}/{s['n']}")
+            sc = [r["score"] for r in rows if r["task"] == t and r["model"] == m and r.get("score") is not None]
+            extra = f" (scores {', '.join(f'{x:g}' for x in sc)} of {next(r['max_score'] for r in rows if r['task'] == t)})" if sc else ""
+            cells.append(f"{s['c']}/{s['n']}{extra}")
         lines.append(f"| {t} | " + " | ".join(cells) + " |")
     lines += ["", f"| Model | pass rate | pass@{k} | pass^{k} (all {k} trials pass) |", "|---|---|---|---|"]
     for m in meta["models"]:
@@ -220,7 +270,8 @@ def write_report(path):
         if not r["passed"]:
             why = ["answer cut off at max_tokens, no JSON block"] if r.get("stop_reason") == "max_tokens" and r.get("answer") is None else []
             why += [c["detail"] for c in r["checks"] if not c["ok"]] + \
-                  [f'{v["id"]}: {v.get("reason", "")}' for v in r["rubric"] if v["verdict"] != "pass"]
+                  [(f'item {v["id"]} {v["points"]:g}/{v["max"]:g}' if "max" in v else v["id"]) + f': {v.get("reason", "")}'
+                   for v in r["rubric"] if v["verdict"] != "pass"]
             lines.append(f"- **{r['task']}** · {r['model']} · trial {r['trial'] + 1}: " + "; ".join(why))
     open(os.path.join(path, "report.md"), "w").write("\n".join(lines) + "\n")
 

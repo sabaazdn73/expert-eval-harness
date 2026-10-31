@@ -262,7 +262,7 @@ def main():
     s.add_argument("--with-refs", action="store_true", help="include each task's reference notes")
     s.add_argument("--ref-lib", help="folder of a local code-ref library (refs.sqlite + sources.json); also CODE_REF_DIR")
     s.add_argument("--judge", help="model that grades rubric items (default claude-sonnet-5-5)")
-    s.add_argument("--max-tokens", type=int, default=8000)
+    s.add_argument("--max-tokens", type=int, default=32000, help="output cap per answer; high so answers are not cut off")
     s.add_argument("--max-calls", type=int, default=60, help="safety cap on model calls per run")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_run)

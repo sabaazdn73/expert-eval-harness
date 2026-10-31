@@ -51,7 +51,7 @@ def call(model, content, system=None, max_tokens=4000, temperature=None):
     for attempt in range(5):
         req = urllib.request.Request(API_URL, data=json.dumps(body).encode(), headers=headers, method="POST")
         try:
-            with urllib.request.urlopen(req, timeout=600) as r:
+            with urllib.request.urlopen(req, timeout=1800) as r:
                 res = json.loads(r.read())
             text = "".join(b.get("text", "") for b in res.get("content", []) if b.get("type") == "text")
             return text, dict(res.get("usage", {}), stop_reason=res.get("stop_reason"))

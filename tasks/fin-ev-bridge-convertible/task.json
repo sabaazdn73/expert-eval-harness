@@ -1,0 +1,53 @@
+{
+  "domain": "finance",
+  "title": "Equity-to-EV bridge with a convertible inside the diluted shares (IFRS)",
+  "answer_format": {
+    "enterprise_value": "number, EUR m",
+    "ev_ebitda": "number",
+    "implied_equity_value": "number, EUR m",
+    "value_per_share": "number, EUR"
+  },
+  "checks": [
+    {
+      "field": "enterprise_value",
+      "type": "number",
+      "expected": 1560,
+      "tol_abs": 1
+    },
+    {
+      "field": "ev_ebitda",
+      "type": "number",
+      "expected": 5.2,
+      "tol_abs": 0.02
+    },
+    {
+      "field": "implied_equity_value",
+      "type": "number",
+      "expected": 1590,
+      "tol_abs": 1
+    },
+    {
+      "field": "value_per_share",
+      "type": "number",
+      "expected": 53.0,
+      "tol_abs": 0.05
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should exclude the convertible bond from debt because its shares are already in the diluted count, and should not add lease liabilities twice."
+    }
+  ],
+  "expert_notes": "EV = 1,200 + 380 bank + 180 leases + 55 NCI - 210 cash - 45 associates = 1,560 (convertible excluded; 'total borrowings' already contains the leases). 6.5x 300 = 1,950; equity 1,590; 53.00 per share.",
+  "mock_answer": {
+    "enterprise_value": 1560,
+    "ev_ebitda": 5.2,
+    "implied_equity_value": 1590,
+    "value_per_share": 53.0
+  },
+  "id": "fin-ev-bridge-convertible",
+  "prompt": "prompt.md",
+  "files": [],
+  "refs": []
+}

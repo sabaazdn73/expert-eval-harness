@@ -1,0 +1,70 @@
+{
+  "domain": "structural",
+  "title": "Flexural check of a simply supported RC beam (ACI 318-19)",
+  "answer_format": {
+    "a_mm": "number",
+    "net_tensile_strain": "number",
+    "phi": "number",
+    "phi_Mn_kNm": "number",
+    "Mu_kNm": "number",
+    "adequate": "true or false"
+  },
+  "checks": [
+    {
+      "field": "a_mm",
+      "type": "number",
+      "expected": 90.0,
+      "tol_abs": 0.5
+    },
+    {
+      "field": "net_tensile_strain",
+      "type": "number",
+      "expected": 0.0123,
+      "tol_abs": 0.0005
+    },
+    {
+      "field": "phi",
+      "type": "number",
+      "expected": 0.9,
+      "tol_abs": 0.001
+    },
+    {
+      "field": "phi_Mn_kNm",
+      "type": "number",
+      "expected": 286.3,
+      "tol_abs": 1.0
+    },
+    {
+      "field": "Mu_kNm",
+      "type": "number",
+      "expected": 294.0,
+      "tol_abs": 0.5
+    },
+    {
+      "field": "adequate",
+      "type": "bool",
+      "expected": false
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should conclude the beam is not adequate because the design strength (about 286 kNm) is below the factored moment of 294 kNm, rather than rounding the shortfall away."
+    }
+  ],
+  "expert_notes": "a = 1530x420/(0.85x28x300) = 90.0 mm; beta1 = 0.85; c = 105.9 mm; eps_t = 0.003(540-105.9)/105.9 = 0.0123 > 0.005 so phi = 0.90. Mn = 642.6 kN x 0.495 m = 318.1 kNm; phiMn = 286.3 kNm. wu = 1.2x20 + 1.6x15 = 48 kN/m (governs over 1.4D = 28); Mu = 48x7^2/8 = 294 kNm. Not adequate by about 2.6%. As,min = 540 mm2, satisfied.",
+  "mock_answer": {
+    "a_mm": 90.0,
+    "net_tensile_strain": 0.0123,
+    "phi": 0.9,
+    "phi_Mn_kNm": 286.3,
+    "Mu_kNm": 294.0,
+    "adequate": false
+  },
+  "id": "str-beam-flexure-aci318",
+  "prompt": "prompt.md",
+  "files": [],
+  "refs": [
+    "refs/rc-flexure-notes.md"
+  ]
+}

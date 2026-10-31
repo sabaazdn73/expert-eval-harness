@@ -1,0 +1,64 @@
+{
+  "domain": "finance",
+  "title": "Three statements with interest on a self-built plant (US GAAP)",
+  "answer_format": {
+    "balances_with_given_figures": "true or false",
+    "net_income": "number",
+    "capitalised_interest": "number",
+    "total_assets": "number",
+    "balance_sheet_difference": "number (assets minus liabilities and equity, using the given retained earnings)"
+  },
+  "checks": [
+    {
+      "field": "balances_with_given_figures",
+      "type": "bool",
+      "expected": false
+    },
+    {
+      "field": "net_income",
+      "type": "number",
+      "expected": 162,
+      "tol_abs": 0.5
+    },
+    {
+      "field": "capitalised_interest",
+      "type": "number",
+      "expected": 12,
+      "tol_abs": 0.5
+    },
+    {
+      "field": "total_assets",
+      "type": "number",
+      "expected": 1222,
+      "tol_abs": 0.5
+    },
+    {
+      "field": "balance_sheet_difference",
+      "type": "number",
+      "expected": 12,
+      "tol_abs": 0.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should apply ASC 835-20 and capitalise interest on the self-constructed plant rather than expensing all 30."
+    },
+    {
+      "id": "r2",
+      "text": "The response should not claim the balance sheet balances with the stated retained earnings of 435, and should not silently change a given figure."
+    }
+  ],
+  "expert_notes": "Avoidable interest = average accumulated expenditure 150 x 8% = 12 (below actual 30). Interest expense 18, net income 162, retained earnings should be 447. Assets: cash 370 + PP&E 540 + CIP 312 = 1,222. With RE 435, L+E = 1,210, so the gap is 12. Capitalised interest paid is investing cash flow.",
+  "mock_answer": {
+    "balances_with_given_figures": false,
+    "net_income": 162,
+    "capitalised_interest": 12,
+    "total_assets": 1222,
+    "balance_sheet_difference": 12
+  },
+  "id": "fin-capitalised-interest",
+  "prompt": "prompt.md",
+  "files": [],
+  "refs": []
+}

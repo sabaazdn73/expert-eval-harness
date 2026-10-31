@@ -1,0 +1,41 @@
+{
+  "domain": "structural",
+  "title": "Governing factored axial load on a column with wind uplift (ASCE 7)",
+  "answer_format": {
+    "max_compression_kN": "number",
+    "max_compression_combo": "text",
+    "max_tension_kN": "number (positive value for tension)",
+    "max_tension_combo": "text"
+  },
+  "checks": [
+    {
+      "field": "max_compression_kN",
+      "type": "number",
+      "expected": 136.0,
+      "tol_abs": 0.5
+    },
+    {
+      "field": "max_tension_kN",
+      "type": "number",
+      "expected": 56.0,
+      "tol_abs": 0.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should identify 1.2D + 1.6Lr + 0.5W style combinations as not governing compression once wind is uplift, and should identify 0.9D + 1.0W as governing the uplift case."
+    }
+  ],
+  "expert_notes": "Combinations: 1.4D = 84; 1.2D + 1.6Lr + 0.5W = 72 + 64 - 55 = 81; 1.2D + 1.6Lr (with 0.5W omitted when it relieves) = 136, which governs compression (taking W = 0 where it reduces the effect); 1.2D + 1.0W + 0.5Lr = 72 - 110 + 20 = -18; 0.9D + 1.0W = 54 - 110 = -56, which governs uplift. Max compression 136 kN, max tension 56 kN.",
+  "mock_answer": {
+    "max_compression_kN": 136.0,
+    "max_compression_combo": "1.2D + 1.6Lr",
+    "max_tension_kN": 56.0,
+    "max_tension_combo": "0.9D + 1.0W"
+  },
+  "id": "str-load-combination-wind",
+  "prompt": "prompt.md",
+  "files": [],
+  "refs": []
+}

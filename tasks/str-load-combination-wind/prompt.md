@@ -1,0 +1,2 @@
+An interior steel column of a light roof structure carries the following service axial loads (compression positive): dead load D = +60 kN, roof live load Lr = +40 kN, wind load W = -110 kN (uplift). There are no other loads.
+Using the ASCE 7 strength (LRFD) basic load combinations, find the maximum factored compression and the maximum factored tension (uplift) the column and its base must be designed for, and say which combination governs each.

@@ -1,0 +1,56 @@
+{
+  "domain": "finance",
+  "title": "Mid-year DCF with a stub period and a Gordon terminal value",
+  "answer_format": {
+    "stub_cash_flow": "number",
+    "stub_discount_period": "number, years",
+    "terminal_value": "number",
+    "terminal_discount_period": "number, years",
+    "enterprise_value": "number"
+  },
+  "checks": [
+    {
+      "field": "stub_cash_flow",
+      "type": "number",
+      "expected": 52.0,
+      "tol_rel": 0.01
+    },
+    {
+      "field": "stub_discount_period",
+      "type": "number",
+      "expected": 0.271,
+      "tol_abs": 0.01
+    },
+    {
+      "field": "terminal_value",
+      "type": "number",
+      "expected": 2365.38,
+      "tol_rel": 0.002
+    },
+    {
+      "field": "terminal_discount_period",
+      "type": "number",
+      "expected": 4.042,
+      "tol_abs": 0.02
+    },
+    {
+      "field": "enterprise_value",
+      "type": "number",
+      "expected": 2155.3,
+      "tol_rel": 0.003
+    }
+  ],
+  "rubric": [],
+  "expert_notes": "Stub = 6.5/12 of FY2026 = 52.0 at t = 0.271. Later midpoints 1.042, 2.042, 3.042, 4.042. Gordon TV = 150 x 1.025 / 0.065 = 2,365.38, valued one period before the first terminal flow, i.e. at t = 4.042 under mid-year flows. EV about 2,155 (2,155.0 on a day count).",
+  "mock_answer": {
+    "stub_cash_flow": 52.0,
+    "stub_discount_period": 0.271,
+    "terminal_value": 2365.38,
+    "terminal_discount_period": 4.042,
+    "enterprise_value": 2155.3
+  },
+  "id": "fin-dcf-stub-gordon",
+  "prompt": "prompt.md",
+  "files": [],
+  "refs": []
+}

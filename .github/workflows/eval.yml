@@ -1,0 +1,48 @@
+name: eval
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      models:
+        description: "Models to evaluate (space separated)"
+        default: "claude-haiku-5-5"
+      k:
+        description: "Trials per task"
+        default: "3"
+      min_pass:
+        description: "Quality gate: minimum pass rate for the first model"
+        default: "0.8"
+
+jobs:
+  selftest:
+    # Offline check of the harness itself: no API key, no cost.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python -m harness.run run --models mock-good mock-bad --k 2 --name selftest
+      - run: python -m harness.run gate runs/selftest --mode quality --model mock-good --min-pass 1.0
+
+  live-eval:
+    # Real models, run by hand from the Actions tab. Needs the ANTHROPIC_API_KEY repository secret.
+    if: github.event_name == 'workflow_dispatch'
+    needs: selftest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Run eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python -m harness.run run --models ${{ inputs.models }} --k ${{ inputs.k }} --name live
+      - name: Quality gate
+        run: |
+          first=$(echo "${{ inputs.models }}" | awk '{print $1}')
+          python -m harness.run gate runs/live --mode quality --model "$first" --min-pass ${{ inputs.min_pass }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: eval-report, path: runs/live }

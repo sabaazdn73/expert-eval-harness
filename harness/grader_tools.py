@@ -55,14 +55,21 @@ def _client_tool(name, args, lib):
     return f"unknown tool {name}"
 
 
-def run_equipped(model, content, lib, max_tokens=64000, max_turns=40):
-    """Run a grading conversation with tools until the model ends its turn. Returns (final_text, usage, trace)."""
-    tools = [CODE_EXEC] + CLIENT_TOOLS
+def run_equipped(model, content, lib, max_tokens=64000, max_turns=40, tools=None, system=None, effort=None):
+    """Run a conversation with tools until the model ends its turn. Returns (final_text, usage, trace).
+
+    Used by the equipped grader (code execution + code library) and, with tools=[CODE_EXEC],
+    for tasks where the model under test may run code."""
+    tools = tools if tools is not None else [CODE_EXEC] + CLIENT_TOOLS
     messages = [{"role": "user", "content": content}]
     usage = {"input_tokens": 0, "output_tokens": 0}
     trace, container = [], None
     for _ in range(max_turns):
         body = {"model": model, "max_tokens": max_tokens, "tools": tools, "messages": messages}
+        if system:
+            body["system"] = system
+        if effort:
+            body["output_config"] = {"effort": effort}
         if container:
             body["container"] = container
         res = api.create(body)
@@ -86,5 +93,6 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=40):
         if stop == "pause_turn":
             continue
         text = "".join(b.get("text", "") for b in blocks if b.get("type") == "text")
+        usage["stop_reason"] = stop
         return text, usage, trace
     return "", usage, trace + [{"tool": "harness", "input": "stopped after max_turns"}]

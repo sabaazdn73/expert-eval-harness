@@ -93,6 +93,24 @@ def call(model, content, system=None, max_tokens=4000, temperature=None, effort=
     raise APIError("gave up after repeated retries")
 
 
+def upload_file(path):
+    """Upload a file with the Files API and return its file_id (used for container_upload blocks)."""
+    import uuid
+    boundary = uuid.uuid4().hex
+    name = os.path.basename(path)
+    mime = mimetypes.guess_type(path)[0] or "application/octet-stream"
+    data = (f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{name}"\r\n'
+            f"Content-Type: {mime}\r\n\r\n").encode() + open(path, "rb").read() + f"\r\n--{boundary}--\r\n".encode()
+    headers = {"x-api-key": _key(), "anthropic-version": API_VERSION,
+               "content-type": f"multipart/form-data; boundary={boundary}"}
+    req = urllib.request.Request(API_URL.replace("/messages", "/files"), data=data, headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=300) as r:
+            return json.loads(r.read())["id"]
+    except urllib.error.HTTPError as e:
+        raise APIError(f"file upload failed, HTTP {e.code}: {e.read().decode(errors='replace')[:300]}")
+
+
 def create(body):
     """One non-streamed Messages API request with a raw body (used for tool loops). Returns the response dict."""
     headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}

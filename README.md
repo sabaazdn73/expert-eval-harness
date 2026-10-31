@@ -22,6 +22,13 @@ The judge scores every item against the key (no partial credit within an item); 
 the pass rule (score at or above `pass_score` and every required item earned). The report shows each trial's score.
 Tasks can live outside this repository: `--tasks "/path/to/private-tasks/*"`.
 
+### Tasks that need computation (`"code_execution": true`)
+
+A task can give the model under test a Python sandbox (Anthropic's code execution tool). Its CSV and other data files are
+uploaded into the sandbox as well as shown in the prompt, so the model can load them with code. Use this for tasks whose
+honest solution is a calculation a professional would run in software: without it, models can spend their whole output
+budget computing in their head and return no answer.
+
 ### Equipped grader (`--judge-tools`)
 
 For key-scored tasks the grader can check a response instead of only reading it:

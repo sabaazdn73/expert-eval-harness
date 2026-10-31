@@ -37,8 +37,18 @@ def load_task(task_dir):
     return t
 
 
+DATA_EXT = (".csv", ".xlsx", ".xls", ".json", ".txt")
+
+
 def build_content(task, with_refs, mock, lib_block=""):
-    content = [api.file_block(os.path.join(task["dir"], p)) for p in task.get("files", [])]
+    content = []
+    for p in task.get("files", []):
+        path = os.path.join(task["dir"], p)
+        if task.get("code_execution") and not mock and p.lower().endswith(DATA_EXT):
+            # data files go into the sandbox, so the model can load them with code instead of retyping them
+            content.append({"type": "text", "text": f"(File {os.path.basename(p)} is in the sandbox; also shown below.)"})
+            content.append({"type": "container_upload", "file_id": api.upload_file(path)})
+        content.append(api.file_block(path))
     if with_refs:
         for p in task.get("refs", []):
             content.append(api.file_block(os.path.join(task["dir"], p)))
@@ -222,7 +232,13 @@ def cmd_run(a):
             for model in a.models:
                 for trial in range(a.k):
                     try:
-                        text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
+                        if task.get("code_execution") and not mock:
+                            # the task needs computation: the model under test gets a Python sandbox
+                            text, usage, mtrace = grader_tools.run_equipped(
+                                model, content, None, max_tokens=min(a.max_tokens, 64000),
+                                tools=[grader_tools.CODE_EXEC], system=SYSTEM, effort=a.effort)
+                        else:
+                            text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
                     except api.APIError as e:
                         sys.exit(f"stopped: {e}")
                     if not text.strip():

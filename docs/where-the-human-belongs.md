@@ -2,7 +2,7 @@
 
 **A human–AI division of labor for building expert evaluation tasks, shown on a structural engineering example**
 
-Saba Azadegan, structural engineer (MSc) · October 2026
+Saba Azadegan, structural engineer (MSc) · October 2026, corrected November 1, 2026 (see [Correction](#correction-utah-amendments))
 
 ## The core idea
 
@@ -103,6 +103,7 @@ Lesson: strong models catch well-known mechanisms. Short text-only prototypes sa
 - **Location:** Salt Lake City, Utah.
 - **Basis:** 2024 IBC as adopted by Utah, ASCE 7-22, ACI 318-19.
 - **Human check:** Utah moved to the 2024 IBC on July 1, 2026 (Utah Code 15A-2-103). The basis must be checked at the permit date, not from memory.
+- **Local amendments:** Utah amends both standards (Utah Code 15A-3-107 and 15A-3-108, in effect since March 17, 2026). Two amendments touch this task: Method 1 is required for the seismic response coefficient Cs where a multi-period spectrum is available (IBC 1613.1.2), and ACI 318 18.10.3, the design shear of special walls, is replaced (IBC 1905.8).
 - **Site data** (from the geotechnical letter): Site Class C, SDS = 1.02, SD1 = 0.48.
 - **Edition trap:** the draft calculation writes the special-boundary-element trigger in its ACI 318-14 form, without the 1.5 factor. Anyone who does not check the edition gets the wrong answer.
 - **Check clause text against the standard itself.** In one case an AI reviewer claimed a table in the code was misquoted. Looking at the code page settled it, and the finding was rejected.
@@ -111,14 +112,14 @@ Lesson: strong models catch well-known mechanisms. Short text-only prototypes sa
 
 The trap has three parts:
 
-- **Lure (everyone finds it):** special boundary elements are required, because c = 61.0 in. against a limit of 31.9 in.
+- **Lure (everyone finds it):** special boundary elements are required, because c = 61.0 in. against a limit of 31.5 in.
 - **Discriminator (hidden):** ACI 318-19 18.10.2.4 sets a minimum longitudinal ratio at the wall ends. The draft's uniform #6 @ 8 in. gives 0.00705, below the 0.00775 minimum.
 - **Chain:**
   - boundary length of 24 in. against 31.1 in. required;
   - tie spacing of 8 in. against 4.5 in.;
   - ties not extended into the mat;
   - missing web crossties;
-  - Ωv fixed at 1.5 while Mpr/Mu = 2.07, so the design shear Ve is 883 kips, not 750 kips;
+  - Cs computed by Method 2, where the Utah amendment requires Method 1 (the forces rise by 1.1%);
   - a later addendum that drops the L1 and P1 slabs to 4,000 psi, while 18.10.6.4(h) needs 4,200 psi.
 
 Judgment pressure came from three sources:
@@ -134,9 +135,9 @@ Judgment pressure came from three sources:
 Blind runs used only the prompt and the files, with no code text.
 
 - **Stronger tier:** caught every item.
-- **Target tier:** 3 of 3 runs had 3 to 4 serious errors each:
+- **Target tier:** 3 of 3 runs had serious errors (3 to 4 each as first scored, 2 to 3 after the correction below):
   - none caught 18.10.2.4;
-  - all missed Ωv (Ve ≈ 751 kips);
+  - all accepted the draft's design shear of about 751 kips without checking it. I first scored this as an error; under the Utah amendment 751 kips is conservative, so it was not one (see [Correction](#correction-utah-amendments));
   - all kept the 4,000 psi slabs.
 - **Lure:** every run found it, as designed.
 
@@ -169,19 +170,18 @@ The human decided which flags to fix and which traps to keep on purpose.
 
 **Model.** Python, with ten Timoshenko walls on a rigid diaphragm, 0.35Ig, fixed at L1, ELF forces and ±5% accidental torsion.
 
-**Check against ETABS.** The model reproduces the ETABS results:
+**Check against ETABS.** The model reproduces the ETABS periods and mass ratios (T1 = 1.256 s), and its wall forces differ from ETABS only by the ratio of the two Cs values. Cs is taken by Method 1, as Utah requires: Sa(1.053 s) = 0.461 g by linear interpolation of the multi-period spectrum, so Cs = 0.0922, against 0.0912 by Method 2 in the draft. Results:
 
-- T1 = 1.256 s;
-- V = 1,565 kips;
-- at W-1, Vu = 294.4 kips and Mu = 26,091 kip-ft;
-- roof displacement of 3.29 in. at the wall line, against 2.98 in. at the center of mass;
-- design drift of 0.0149 at the wall line (0.0153 at the building edge), below the 0.020 limit.
+- V = 1,583 kips (1,565 kips in ETABS, Method 2);
+- at W-1, Vu = 297.7 kips and Mu = 26,382 kip-ft;
+- roof displacement of 3.32 in. at the wall line, against 3.01 in. at the center of mass;
+- design drift of 0.0150 at the wall line (0.0155 at the building edge), below the 0.020 limit.
 
 **Revised design.** Uniform #7 @ 8 in. each face from P2 to L5:
 
 - end ratio 0.0112;
-- φMn = 42,769 kip-ft (DCR 0.61);
-- Ωv = 2.45, so Ve is capped at 3Vu = 883 kips;
+- φMn = 42,769 kip-ft (DCR 0.62);
+- Ve = Ωv ωv Vu = 1.5 × 1.251 × 297.7 = 559 kips, with Ωv = 1.5 and ωv = 0.8 + 0.09hn^(1/3) from the Utah Table 18.10.3.3.3;
 - φVn = 1,160 kips.
 
 **Details:**
@@ -203,6 +203,17 @@ AI drafts the criteria from the golden solution and the runs, with a negative cr
 
 The criteria must pass the golden solution and fail the runs that made serious errors. The human signs off, as an engineer of record would sign a drawing.
 
+### Correction: Utah amendments
+
+The first version of this example (October 28 to 30, 2026) applied ACI 318-19 18.10.3 and ASCE 7-22 12.8.1.1 as published. The basis sheet had a line for local amendments, and I marked it as checked after confirming the adopted edition, without reading the amendments clause by clause. Utah amends both clauses:
+
+- **Design shear (IBC 1905.8).** Utah replaces 18.10.3. For walls with hwcs/lw ≥ 2, Ωv = 1.5 and ωv = 0.8 + 0.09hn^(1/3); Ωv = Mpr/Mu is a permitted alternative, not a requirement, and there is no 3Vu cap. The design shear at W-1 is 559 kips, not 883 kips. The draft's 750 kips is conservative, so what I had listed as a hidden error was not an error.
+- **Seismic response coefficient (IBC 1613.1.2).** Utah requires Method 1 where a multi-period spectrum is available. The draft used Method 2. This is a real, if small, error (1.1% on all forces), and it is now part of the task.
+
+Every other finding stands: the 18.10.2.4 end ratio, the boundary-element trigger and details, and the slab concrete under 18.10.6.4(h). The golden solution, the memo and the answer key were rerun and revised on November 1, 2026, and the original files are kept for the record.
+
+The lesson is the one this document argues for, applied to its author: a human gate only works if the human reads the source. Confirming the edition is not enough; read the amendments for every clause the task depends on.
+
 ## Templates
 
 ### Basis-of-design sheet (filled and signed by the human)
@@ -213,7 +224,7 @@ The criteria must pass the golden solution and fail the runs that made serious e
 | Reference date (permit submittal) | October 2026 |
 | Adopted building code and legal source | 2024 IBC, effective July 1, 2026 (Utah Code 15A-2-103) |
 | Referenced standards and editions | ASCE 7-22, ACI 318-19 |
-| Relevant local amendments | Checked against the official state text |
+| Relevant local amendments | Utah Code 15A-3-107 and 15A-3-108 (2026), read clause by clause for every provision in the task: IBC 1613.1.2 (Cs by Method 1) and IBC 1905.8 (ACI 318 18.10.3 replaced) apply |
 | Site data and source | Site Class C, SDS = 1.02, SD1 = 0.48 (geotechnical letter) |
 | Actual site status | Walls P2 to L1 are poured in three weeks |
 | Does the model know this edition? | Tested with one short question, such as the 1.5 factor in the boundary-element trigger |
@@ -225,12 +236,14 @@ The criteria must pass the golden solution and fail the runs that made serious e
 | --- | --- | --- | --- | --- |
 | 2026-10-29 | 3 | Walls 14 in. → 16 in. | A drift-capacity item flipped under 0.5Ig | |
 | 2026-10-29 | 1 | Backstay dropped as the main trap | Both blind solvers found it at once | |
+| 2026-11-01 | 2, 7 | Golden revised for the Utah amendments | IBC 1905.8 and 1613.1.2 had not been applied; Ve 883 → 559 kips, Cs by Method 1 | |
 
 ### Sample criteria
 
-- The lateral model reproduces the ETABS base shear of 1,565 kips within 2% (1,534 to 1,596 kips).
+- The response computes Cs by Method 1, as Utah IBC 1613.1.2 requires: Cs of 0.0918 to 0.0927. The draft's Method 2 value, 0.0912, fails.
 - The response reports an end-zone longitudinal ratio of 0.0068 to 0.0072 for the draft uniform #6 @ 8 in. layout, below the 0.00775 minimum of ACI 318-19 18.10.2.4(a).
-- The response reports a design shear Ve at W-1 of 850 to 885 kips, set by the 3Vu limit of ACI 318-19 18.10.3.1.
+- The response reports a design shear Ve at W-1 of 545 to 575 kips under the Utah replacement of ACI 318 18.10.3 (IBC 1905.8), or states a permitted alternative.
+- Negative: the response requires Ve = 3Vu ≈ 883 kips from the unamended ACI 318-19 18.10.3.1.
 - Negative: the revised design keeps 4,000 psi slab concrete at the L1 and P1 joints of W-1 to W-6.
 
 Each criterion tests one thing, gives a value and a range, and judges the result, not the method.
@@ -242,17 +255,19 @@ Each criterion tests one thing, gives a value and a range, and judges the result
 3. If the decision is all-or-nothing (a plan that fails badly or passes easily), there is no room for a trap.
 4. Knife-edge items flip under other defensible assumptions. Keep at least a 1.3× margin on every key item.
 5. Check the code basis at the reference date. Utah changed editions in the middle of 2026.
-6. Build judgment traps in from the start:
+6. Read the local amendments clause by clause for every provision the task uses. Confirming the edition is not the same as confirming the rule (see [Correction](#correction-utah-amendments)).
+7. Build judgment traps in from the start:
     - real site status, such as an element already cast;
     - conflicts of authority between documents, such as an addendum against the code;
     - field constraints that rule out the textbook fix.
-7. Prototype two or three ideas as text, side by side, before building any file.
-8. Every file change means testing again, so spend the thinking before the build.
-9. Be transparent. Do not put fake metadata or fake traces in files, and stay within the AI-use rules of any platform you work for.
+8. Prototype two or three ideas as text, side by side, before building any file.
+9. Every file change means testing again, so spend the thinking before the build.
+10. Be transparent. Do not put fake metadata or fake traces in files, and stay within the AI-use rules of any platform you work for.
 
 ## Sources
 
 - Utah Code 15A-2-103, version effective July 1, 2026, adopting the 2024 International Building Code: [le.utah.gov](https://le.utah.gov/xcode/Title15A/Chapter2/C15A-2-S103_2026050620260701.html)
-- ACI 318-19, Building Code Requirements for Structural Concrete: sections 18.10.2.4(a), 18.10.3.1, 18.10.6.2(a), 18.10.6.4(h) to (j), and commentary R18.10.6.2 on the 1.5 multiplier added after the 2014 edition. Checked against the published standard; not reproduced here.
-- ASCE/SEI 7-22, section 12.8.6.2, Period for Computing Displacement and Drift.
+- Utah Code 15A-3-107, Amendments to Chapter 16 of IBC, and 15A-3-108, Amendments to Chapters 17 through 19 of IBC, both effective March 17, 2026: [15A-3-107](https://le.utah.gov/xcode/Title15A/Chapter3/15A-3-S107.html), [15A-3-108](https://le.utah.gov/xcode/Title15A/Chapter3/15A-3-S108.html)
+- ACI 318-19, Building Code Requirements for Structural Concrete: sections 18.10.2.4(a), 18.10.3 (replaced in Utah), 18.10.6.2(a), 18.10.6.4(h) to (j), and commentary R18.10.6.2 on the 1.5 multiplier added after the 2014 edition. Checked against the published standard; not reproduced here.
+- ASCE/SEI 7-22, sections 11.4.5.1 (multi-period design spectrum), 12.8.1.1 (Method 1 required in Utah) and 12.8.6.2 (Period for Computing Displacement and Drift).
 - All structural numbers in the worked example come from the author's own Python model and checks.

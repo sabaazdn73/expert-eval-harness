@@ -12,7 +12,7 @@ This harness is the measuring side of [Tnega](https://github.com/sabaazdn73/tneg
 
 ## Method
 
-How the tasks are designed, and where the human expert belongs in the process: [Where the Human Belongs](docs/where-the-human-belongs.md). It sets out a human–AI division of labor for building expert evaluation tasks, with a worked structural engineering example (special RC shear walls under the 2024 IBC as adopted by Utah, ASCE 7-22 and ACI 318-19), templates and sample criteria.
+How the tasks are designed, and where the human expert belongs in the process: [Where the Human Belongs](docs/where-the-human-belongs.md). It sets out a human–AI division of labor for building expert evaluation tasks, with a worked structural engineering example (special RC shear walls under the 2024 IBC as adopted by Utah, ASCE 7-22 and ACI 318-19, with the Utah statewide amendments), templates and sample criteria.
 
 ## Key-scored tasks (point items)
 

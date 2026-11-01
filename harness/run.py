@@ -393,6 +393,59 @@ def cmd_report(a):
     print(open(os.path.join(a.run, "report.md")).read())
 
 
+def cmd_regrade(a):
+    """Grade the stored answers of an earlier run again with the current task files (a corrected key, say).
+    The models are not called again; only the grader runs."""
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+    meta, rows = load_run(a.run)
+    dirs = {}
+    for pat in a.tasks:
+        for d in glob.glob(pat):
+            if os.path.isfile(os.path.join(d, "task.json")):
+                t = load_task(d)
+                dirs[t["id"]] = t
+    judge_model = a.judge or meta.get("judge", "claude-sonnet-5-5")
+    lib_dir = a.ref_lib or os.environ.get("CODE_REF_DIR")
+    lib = RefLibrary(lib_dir) if lib_dir else None
+    out = os.path.join(ROOT, "runs", a.name or os.path.basename(os.path.normpath(a.run)) + "-regraded")
+    os.makedirs(out, exist_ok=True)
+    tokens = {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
+    lock = threading.Lock()
+
+    def one(r):
+        task = dirs.get(r["task"])
+        if task is None or r.get("no_answer") or not r.get("response"):
+            return r
+        if task.get("key_file"):
+            verdicts, ju = judge_key(task, r["response"], judge_model, a.judge_tools, lib)
+            score, passed = key_pass(task, verdicts)
+            r = dict(r, rubric=verdicts, score=score, passed=passed, max_score=task.get("max_score"),
+                     key_flags=ju.get("key_flags", []))
+        else:
+            verdicts, ju = judge(task, r["response"], judge_model, lib.block_for(task) if lib else "")
+            checks = [dict(zip(("ok", "detail"), check_one(c, r.get("answer")))) for c in task.get("checks", [])]
+            r = dict(r, rubric=verdicts, checks=checks,
+                     passed=all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts))
+        with lock:
+            for k in tokens:
+                tokens[k] += ju.get(k, 0) or 0
+            sc = f"  ({r['score']:g}/{r['max_score']})" if r.get("score") is not None else ""
+            print(f"{r['task']:<28} {r['model']:<22} trial {r['trial'] + 1}: {'PASS' if r['passed'] else 'fail'}{sc}", flush=True)
+        return r
+
+    with ThreadPoolExecutor(max_workers=max(1, a.parallel)) as pool:
+        new = list(pool.map(one, rows))
+    with open(os.path.join(out, "results.jsonl"), "w") as f:
+        for r in new:
+            f.write(json.dumps(r) + "\n")
+    meta = dict(meta, run_id=os.path.basename(out), judge=judge_model, regraded_from=os.path.basename(os.path.normpath(a.run)),
+                judge_tools=a.judge_tools, grader_tokens=tokens)
+    json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=2)
+    write_report(out)
+    print(f"\nreport: {os.path.join(out, 'report.md')}   grader tokens: {tokens}")
+
+
 def cmd_compare(a):
     """Side-by-side comparison of two or more runs: pass counts, scores, and how often each key item was earned."""
     runs = []
@@ -488,6 +541,15 @@ def main():
     s = sub.add_parser("report")
     s.add_argument("run")
     s.set_defaults(fn=cmd_report)
+    s = sub.add_parser("regrade", help="grade a run's stored answers again with the current task files")
+    s.add_argument("run")
+    s.add_argument("--tasks", nargs="+", default=[os.path.join(ROOT, "tasks", "*")])
+    s.add_argument("--judge")
+    s.add_argument("--judge-tools", action="store_true")
+    s.add_argument("--ref-lib")
+    s.add_argument("--parallel", type=int, default=6)
+    s.add_argument("--name")
+    s.set_defaults(fn=cmd_regrade)
     s = sub.add_parser("compare", help="compare two or more runs side by side")
     s.add_argument("runs", nargs="+")
     s.add_argument("--out", help="also write the comparison to this file")

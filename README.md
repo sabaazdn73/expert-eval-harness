@@ -45,6 +45,12 @@ python3 -m harness.run compare runs/<run_a> runs/<run_b> --out compare.md
 
 Shows each run side by side: passes, scores, answers that never arrived, and for key-scored tasks how often each item was earned.
 
+To grade the stored answers of an earlier run again, for example after correcting a key, without calling the models again:
+
+```
+python3 -m harness.run regrade runs/<run> --tasks "/path/to/tasks/*" --name <run>-regraded
+```
+
 ### Equipped grader (`--judge-tools`)
 
 For key-scored tasks the grader can check a response instead of only reading it:

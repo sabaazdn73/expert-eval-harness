@@ -17,7 +17,7 @@ CODE_EXEC = {"type": "code_execution_20250825", "name": "code_execution"}
 CLIENT_TOOLS = [
     {"name": "code_ref_editions",
      "description": "List the standards and editions in the local code library with their status (current, superseded), "
-                    "and the table of which ASCE 7 and ACI 318 editions each IBC edition adopts.",
+                    "the table of which ASCE 7 and ACI 318 editions each IBC edition adopts, and known state amendments.",
      "input_schema": {"type": "object", "properties": {}}},
     {"name": "code_ref_search",
      "description": "Full-text search of the local library of building codes and standards (ACI 318, ASCE 7, IBC and others). "
@@ -28,6 +28,11 @@ CLIENT_TOOLS = [
          "family": {"type": "string", "description": "optional: limit to a standard family, e.g. 'ACI 318' or 'ASCE 7'"},
          "include_superseded": {"type": "boolean", "description": "also search superseded editions (default false)"}},
          "required": ["query"]}},
+    {"name": "code_ref_page_image",
+     "description": "See one PDF page of a source in the code library as an image, exactly as printed. Use it when an "
+                    "equation, table or figure in the extracted text looks incomplete.",
+     "input_schema": {"type": "object", "properties": {"source": {"type": "string"}, "pdf_page": {"type": "integer"}},
+                      "required": ["source", "pdf_page"]}},
     {"name": "code_ref_page",
      "description": "Read the text of one PDF page of a source in the local code library (source id and pdf_page from code_ref_search).",
      "input_schema": {"type": "object", "properties": {"source": {"type": "string"}, "pdf_page": {"type": "integer"}},
@@ -50,7 +55,13 @@ def _client_tool(name, args, lib):
     if lib is None:
         return "No local code library is configured for this run."
     if name == "code_ref_editions":
-        return json.dumps({"editions": lib.editions(), "ibc_adoption": lib.adoption})
+        return json.dumps({"editions": lib.editions(), "ibc_adoption": lib.adoption, "local_amendments": lib.local,
+                           "reminder": "The adopted edition is not the whole rule: check the state or city amendments for every clause you use."})
+    if name == "code_ref_page_image":
+        data, err = lib.page_image(args.get("source"), int(args.get("pdf_page", 0)))
+        if err:
+            return err
+        return [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": data}}]
     if name == "code_ref_search":
         hits = lib.search(args.get("query", ""), args.get("family"), not args.get("include_superseded"), limit=5)
         return json.dumps(hits) if hits else "no matches"

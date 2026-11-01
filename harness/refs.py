@@ -21,6 +21,33 @@ class RefLibrary:
         meta = json.load(open(os.path.join(directory, "sources.json")))
         self.reg = {s["id"]: s for s in meta["sources"]}
         self.adoption = meta.get("ibc_adoption", {})
+        self.local = meta.get("local_amendments", {})
+        self.base = os.path.dirname(os.path.abspath(directory))  # source paths are relative to this folder
+
+    def page_image(self, source, page, dpi=110):
+        """PNG of one PDF page (base64), so equations and tables can be read as printed."""
+        import base64
+        s = self.reg.get(source)
+        if not s:
+            return None, f"unknown source {source}"
+        path = os.path.join(self.base, s["path"])
+        if not path.lower().endswith(".pdf") or not os.path.exists(path):
+            return None, "no PDF for this source"
+        try:
+            import pymupdf
+            doc = pymupdf.open(path)
+            png = doc[int(page) - 1].get_pixmap(dpi=dpi).tobytes("png")
+        except ImportError:
+            import subprocess, tempfile
+            with tempfile.TemporaryDirectory() as td:
+                r = subprocess.run(["pdftoppm", "-f", str(page), "-l", str(page), "-r", str(dpi), "-png", "-singlefile",
+                                    path, os.path.join(td, "p")], capture_output=True)
+                if r.returncode != 0:
+                    return None, "cannot render pages: pip install pymupdf (or install poppler)"
+                png = open(os.path.join(td, "p.png"), "rb").read()
+        except Exception as e:
+            return None, f"cannot render page: {e}"
+        return base64.b64encode(png).decode(), None
 
     @staticmethod
     def _fts(q):

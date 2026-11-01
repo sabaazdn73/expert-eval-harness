@@ -3,6 +3,9 @@ import base64
 import json
 import mimetypes
 import os
+import random
+import socket
+import ssl
 import time
 import urllib.error
 import urllib.request
@@ -13,6 +16,19 @@ API_VERSION = "2023-06-01"
 
 class APIError(RuntimeError):
     pass
+
+
+RETRY_CODES = (429, 500, 502, 503, 504, 529)
+TRIES = 8
+
+
+def _wait(attempt, headers=None):
+    ra = headers.get("retry-after") if headers else None
+    try:
+        delay = float(ra) if ra else 0
+    except ValueError:
+        delay = 0
+    time.sleep(max(delay, min(120, 5 * 2 ** attempt)) + random.uniform(0, 3))
 
 
 def _key():
@@ -75,7 +91,7 @@ def call(model, content, system=None, max_tokens=4000, temperature=None, effort=
     if system:
         body["system"] = system
     headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}
-    for attempt in range(5):
+    for attempt in range(TRIES):
         req = urllib.request.Request(API_URL, data=json.dumps(body).encode(), headers=headers, method="POST")
         try:
             return _stream(req)
@@ -84,12 +100,15 @@ def call(model, content, system=None, max_tokens=4000, temperature=None, effort=
             if e.code == 400 and "temperature" in raw and "temperature" in body:
                 body.pop("temperature")
                 continue
-            if e.code in (429, 500, 502, 503, 529) and attempt < 4:
-                time.sleep(int(e.headers.get("retry-after") or 2 ** (attempt + 2)))
+            if e.code in RETRY_CODES and attempt < TRIES - 1:
+                _wait(attempt, e.headers)
                 continue
             raise APIError(f"HTTP {e.code}: {raw[:400]}")
-        except urllib.error.URLError as e:
-            raise APIError(f"could not reach the API: {e.reason}")
+        except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
+            if attempt < TRIES - 1:
+                _wait(attempt)
+                continue
+            raise APIError(f"could not reach the API: {getattr(e, 'reason', e)}")
     raise APIError("gave up after repeated retries")
 
 
@@ -161,19 +180,22 @@ def create(body):
     Streamed so that long turns (thinking plus tool calls) do not hit HTTP read timeouts."""
     headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}
     body = dict(body, stream=True)
-    for attempt in range(5):
+    for attempt in range(TRIES):
         req = urllib.request.Request(API_URL, data=json.dumps(body).encode(), headers=headers, method="POST")
         try:
             with urllib.request.urlopen(req, timeout=600) as r:  # timeout between chunks
                 return _assemble(r)
         except urllib.error.HTTPError as e:
             raw = e.read().decode(errors="replace")
-            if e.code in (429, 500, 502, 503, 529) and attempt < 4:
-                time.sleep(int(e.headers.get("retry-after") or 2 ** (attempt + 2)))
+            if e.code in RETRY_CODES and attempt < TRIES - 1:
+                _wait(attempt, e.headers)
                 continue
             raise APIError(f"HTTP {e.code}: {raw[:400]}")
-        except urllib.error.URLError as e:
-            raise APIError(f"could not reach the API: {e.reason}")
+        except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
+            if attempt < TRIES - 1:
+                _wait(attempt)
+                continue
+            raise APIError(f"could not reach the API: {getattr(e, 'reason', e)}")
     raise APIError("gave up after repeated retries")
 
 

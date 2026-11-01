@@ -240,7 +240,14 @@ def cmd_run(a):
     import threading
     from concurrent.futures import ThreadPoolExecutor
     lock = threading.Lock()
-    f = open(os.path.join(out, "results.jsonl"), "w")
+    done = set()
+    if a.resume and os.path.exists(os.path.join(out, "results.jsonl")):
+        for l in open(os.path.join(out, "results.jsonl")):
+            r = json.loads(l)
+            rows.append(r)
+            done.add((r["task"], r["model"], r["trial"]))
+        print(f"resuming: {len(done)} trials already saved", flush=True)
+    f = open(os.path.join(out, "results.jsonl"), "a" if a.resume else "w")
 
     def record(row, usages, line):
         with lock:
@@ -272,8 +279,8 @@ def cmd_run(a):
             else:
                 text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
                 note = ""
-        except api.APIError as e:
-            print(f"{task['id']:<28} {model:<22} trial {trial + 1}: ERROR {e}", flush=True)
+        except Exception as e:  # one failed trial must not stop the run
+            print(f"{task['id']:<28} {model:<22} trial {trial + 1}: ERROR {str(e)[:300]} (not saved; rerun with --resume)", flush=True)
             return
         head = f"{task['id']:<28} {model:<22} trial {trial + 1}: "
         if not text.strip():
@@ -296,8 +303,8 @@ def cmd_run(a):
             else:
                 verdicts, jusage = judge(task, text, judge_model, lib_block)
                 passed = all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts)
-        except api.APIError as e:
-            print(head + f"GRADER ERROR {e}", flush=True)
+        except Exception as e:
+            print(head + f"GRADER ERROR {str(e)[:300]} (not saved; rerun with --resume)", flush=True)
             return
         row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
                "with_refs": a.with_refs, "passed": passed, "checks": checks, "rubric": verdicts,
@@ -313,12 +320,18 @@ def cmd_run(a):
         task = load_task(d)
         lib_block = lib.block_for(task) if lib else ""
         content = build_content(task, a.with_refs, mock, lib_block)
-        jobs += [(task, content, lib_block, m, t) for m in a.models for t in range(a.k)]
+        jobs += [(task, content, lib_block, m, t) for m in a.models for t in range(a.k) if (task["id"], m, t) not in done]
     print(f"running {len(jobs)} trials, {a.parallel} at a time", flush=True)
     with ThreadPoolExecutor(max_workers=max(1, a.parallel)) as pool:
         for fut in [pool.submit(one, *j) for j in jobs]:
-            fut.result()
+            try:
+                fut.result()
+            except Exception as e:
+                print(f"ERROR in a trial: {e}", flush=True)
     f.close()
+    missing = len(task_dirs) * len(a.models) * a.k - len(rows)
+    if missing:
+        print(f"{missing} trials not saved; run the same command again with --resume to fill them in", flush=True)
     rows.sort(key=lambda r: (r["task"], a.models.index(r["model"]), r["trial"]))
     with open(os.path.join(out, "results.jsonl"), "w") as f2:
         for r in rows:
@@ -535,7 +548,8 @@ def main():
     s.add_argument("--effort", choices=["low", "medium", "high", "xhigh", "max"],
                    help="output_config.effort; default is each model's own default")
     s.add_argument("--max-calls", type=int, default=60, help="safety cap on model calls per run")
-    s.add_argument("--parallel", type=int, default=6, help="trials run at the same time (lower it if you hit rate limits)")
+    s.add_argument("--parallel", type=int, default=3, help="trials run at the same time (lower it if you hit rate limits)")
+    s.add_argument("--resume", action="store_true", help="keep the trials already saved in runs/<name> and run only the missing ones")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_run)
     s = sub.add_parser("report")

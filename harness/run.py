@@ -237,66 +237,92 @@ def cmd_run(a):
     if planned > a.max_calls:
         sys.exit(f"refusing: {planned} calls is above --max-calls {a.max_calls}")
     rows, tokens = [], {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
-    with open(os.path.join(out, "results.jsonl"), "w") as f:
-        for d in task_dirs:
-            task = load_task(d)
-            lib_block = lib.block_for(task) if lib else ""
-            content = build_content(task, a.with_refs, mock, lib_block)
-            for model in a.models:
-                for trial in range(a.k):
-                    try:
-                        if a.model_library and lib and not mock:
-                            # case study: the model under test can look up the code library itself
-                            mtools = ([grader_tools.CODE_EXEC] if task.get("code_execution") else []) + grader_tools.CLIENT_TOOLS
-                            text, usage, mtrace = grader_tools.run_equipped(
-                                model, content, lib, max_tokens=a.max_tokens, tools=mtools,
-                                system=(CODE_SYSTEM if task.get("code_execution") else SYSTEM) + LIB_NOTE, effort=a.effort)
-                            looked = [t for t in mtrace if str(t.get("tool", "")).startswith("code_ref")]
-                            print(f"{'':<28} {model:<22} trial {trial + 1}: {len(mtrace)} tool calls, {len(looked)} library look-ups")
-                            usage["library_lookups"] = [t.get("input") for t in looked]
-                        elif task.get("code_execution") and not mock:
-                            # the task needs computation: the model under test gets a Python sandbox
-                            text, usage, mtrace = grader_tools.run_equipped(
-                                model, content, None, max_tokens=a.max_tokens,
-                                tools=[grader_tools.CODE_EXEC], system=CODE_SYSTEM, effort=a.effort)
-                            print(f"{'':<28} {model:<22} trial {trial + 1}: ran code {sum(1 for t in mtrace if t.get('tool') != 'harness')} times")
-                        else:
-                            text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
-                    except api.APIError as e:
-                        sys.exit(f"stopped: {e}")
-                    if not text.strip():
-                        why = "cut off at max_tokens before any answer (thinking used the whole budget)" \
-                            if usage.get("stop_reason") == "max_tokens" else f"empty answer (stop_reason {usage.get('stop_reason')})"
-                        print(f"{task['id']:<28} {model:<22} trial {trial + 1}: NO ANSWER - {why}; not graded")
-                        row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
-                               "with_refs": a.with_refs, "passed": False, "no_answer": why, "checks": [], "rubric": [],
-                               "answer": None, "score": None, "max_score": task.get("max_score"),
-                               "stop_reason": usage.get("stop_reason"), "response": ""}
-                        for key in tokens:
-                            tokens[key] += usage.get(key, 0)
-                        f.write(json.dumps(row) + "\n")
-                        rows.append(row)
-                        continue
-                    answer = extract_json(text)
-                    checks = [dict(zip(("ok", "detail"), check_one(c, answer))) for c in task.get("checks", [])]
-                    score = None
-                    if task.get("key_file"):
-                        verdicts, jusage = judge_key(task, text, judge_model, a.judge_tools, lib or judge_lib)
-                        score, passed = key_pass(task, verdicts)
-                    else:
-                        verdicts, jusage = judge(task, text, judge_model, lib_block)
-                        passed = all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts)
-                    for u in (usage, jusage):
-                        for key in tokens:
-                            tokens[key] += u.get(key, 0)
-                    row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
-                           "with_refs": a.with_refs, "passed": passed, "checks": checks, "rubric": verdicts,
-                           "answer": answer, "score": score, "library_lookups": usage.get("library_lookups"), "key_flags": jusage.get("key_flags", []) if score is not None else [],
-                           "grader_tool_calls": jusage.get("tool_calls", 0) if score is not None else 0, "max_score": task.get("max_score"), "stop_reason": usage.get("stop_reason"), "response": text}
-                    f.write(json.dumps(row) + "\n")
-                    rows.append(row)
-                    sc = f"  ({score:g}/{task.get('max_score')})" if score is not None else ""
-                    print(f"{task['id']:<28} {model:<22} trial {trial + 1}: {'PASS' if passed else 'fail'}{sc}")
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+    lock = threading.Lock()
+    f = open(os.path.join(out, "results.jsonl"), "w")
+
+    def record(row, usages, line):
+        with lock:
+            for u in usages:
+                for key in tokens:
+                    tokens[key] += u.get(key, 0) or 0
+            f.write(json.dumps(row) + "\n")
+            f.flush()
+            rows.append(row)
+            print(line, flush=True)
+
+    def one(task, content, lib_block, model, trial):
+        try:
+            if a.model_library and lib and not mock:
+                # case study: the model under test can look up the code library itself
+                mtools = ([grader_tools.CODE_EXEC] if task.get("code_execution") else []) + grader_tools.CLIENT_TOOLS
+                text, usage, mtrace = grader_tools.run_equipped(
+                    model, content, lib, max_tokens=a.max_tokens, tools=mtools,
+                    system=(CODE_SYSTEM if task.get("code_execution") else SYSTEM) + LIB_NOTE, effort=a.effort)
+                looked = [t for t in mtrace if str(t.get("tool", "")).startswith("code_ref")]
+                note = f"{len(mtrace)} tool calls, {len(looked)} library look-ups"
+                usage["library_lookups"] = [t.get("input") for t in looked]
+            elif task.get("code_execution") and not mock:
+                # the task needs computation: the model under test gets a Python sandbox
+                text, usage, mtrace = grader_tools.run_equipped(
+                    model, content, None, max_tokens=a.max_tokens,
+                    tools=[grader_tools.CODE_EXEC], system=CODE_SYSTEM, effort=a.effort)
+                note = f"ran code {sum(1 for t in mtrace if t.get('tool') != 'harness')} times"
+            else:
+                text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
+                note = ""
+        except api.APIError as e:
+            print(f"{task['id']:<28} {model:<22} trial {trial + 1}: ERROR {e}", flush=True)
+            return
+        head = f"{task['id']:<28} {model:<22} trial {trial + 1}: "
+        if not text.strip():
+            why = "cut off at max_tokens before any answer (thinking used the whole budget)" \
+                if usage.get("stop_reason") == "max_tokens" else f"empty answer (stop_reason {usage.get('stop_reason')})"
+            row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
+                   "with_refs": a.with_refs, "passed": False, "no_answer": why, "checks": [], "rubric": [],
+                   "answer": None, "score": None, "max_score": task.get("max_score"),
+                   "library_lookups": usage.get("library_lookups"),
+                   "stop_reason": usage.get("stop_reason"), "response": ""}
+            record(row, [usage], head + f"NO ANSWER - {why}; not graded" + (f"  [{note}]" if note else ""))
+            return
+        answer = extract_json(text)
+        checks = [dict(zip(("ok", "detail"), check_one(c, answer))) for c in task.get("checks", [])]
+        score = None
+        try:
+            if task.get("key_file"):
+                verdicts, jusage = judge_key(task, text, judge_model, a.judge_tools, lib or judge_lib)
+                score, passed = key_pass(task, verdicts)
+            else:
+                verdicts, jusage = judge(task, text, judge_model, lib_block)
+                passed = all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts)
+        except api.APIError as e:
+            print(head + f"GRADER ERROR {e}", flush=True)
+            return
+        row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
+               "with_refs": a.with_refs, "passed": passed, "checks": checks, "rubric": verdicts,
+               "answer": answer, "score": score, "library_lookups": usage.get("library_lookups"),
+               "key_flags": jusage.get("key_flags", []) if score is not None else [],
+               "grader_tool_calls": jusage.get("tool_calls", 0) if score is not None else 0,
+               "max_score": task.get("max_score"), "stop_reason": usage.get("stop_reason"), "response": text}
+        sc = f"  ({score:g}/{task.get('max_score')})" if score is not None else ""
+        record(row, [usage, jusage], head + ("PASS" if passed else "fail") + sc + (f"  [{note}]" if note else ""))
+
+    jobs = []
+    for d in task_dirs:
+        task = load_task(d)
+        lib_block = lib.block_for(task) if lib else ""
+        content = build_content(task, a.with_refs, mock, lib_block)
+        jobs += [(task, content, lib_block, m, t) for m in a.models for t in range(a.k)]
+    print(f"running {len(jobs)} trials, {a.parallel} at a time", flush=True)
+    with ThreadPoolExecutor(max_workers=max(1, a.parallel)) as pool:
+        for fut in [pool.submit(one, *j) for j in jobs]:
+            fut.result()
+    f.close()
+    rows.sort(key=lambda r: (r["task"], a.models.index(r["model"]), r["trial"]))
+    with open(os.path.join(out, "results.jsonl"), "w") as f2:
+        for r in rows:
+            f2.write(json.dumps(r) + "\n")
     meta = {"run_id": run_id, "models": a.models, "k": a.k, "judge_tools": a.judge_tools, "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs, "judge": judge_model,
             "ref_library": bool(lib),
             "tasks": [os.path.basename(d) for d in task_dirs], "tokens": tokens}
@@ -408,6 +434,7 @@ def main():
     s.add_argument("--effort", choices=["low", "medium", "high", "xhigh", "max"],
                    help="output_config.effort; default is each model's own default")
     s.add_argument("--max-calls", type=int, default=60, help="safety cap on model calls per run")
+    s.add_argument("--parallel", type=int, default=6, help="trials run at the same time (lower it if you hit rate limits)")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_run)
     s = sub.add_parser("report")

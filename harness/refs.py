@@ -17,7 +17,7 @@ class RefLibrary:
         db = os.path.join(directory, "refs.sqlite")
         if not os.path.exists(db):
             raise FileNotFoundError(f"{db} not found: build it with build_index.py in the code-ref folder")
-        self.con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+        self.con = sqlite3.connect(f"file:{db}?mode=ro", uri=True, check_same_thread=False)  # read-only, shared by worker threads
         meta = json.load(open(os.path.join(directory, "sources.json")))
         self.reg = {s["id"]: s for s in meta["sources"]}
         self.adoption = meta.get("ibc_adoption", {})

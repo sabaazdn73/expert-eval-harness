@@ -20,13 +20,15 @@ CLIENT_TOOLS = [
                     "the table of which ASCE 7 and ACI 318 editions each IBC edition adopts, and known state amendments.",
      "input_schema": {"type": "object", "properties": {}}},
     {"name": "code_ref_search",
-     "description": "Full-text search of the local library of building codes and standards (ACI 318, ASCE 7, IBC and others). "
-                    "Returns short excerpts with standard, edition, status and PDF page. Use it to confirm a clause the response cites, "
-                    "or the edition that governs.",
+     "description": "Full-text search of the local library of building codes and standards (ACI 318, ASCE 7, IBC, state "
+                    "amendments and guides). Returns short excerpts with standard, edition, status (current or superseded), the IBC "
+                    "editions that adopt it, and the PDF page. The newest edition is not always the one that governs: use the "
+                    "edition the project's adopted code requires, plus any state amendments. Equations and subscripts are often "
+                    "flattened in the text (0.2SDSD); search words, and read the page image for equations.",
      "input_schema": {"type": "object", "properties": {
          "query": {"type": "string", "description": "words or a clause number, e.g. '18.14.5.1 vuv' or 'Type 1a torsional irregularity'"},
          "family": {"type": "string", "description": "optional: limit to a standard family, e.g. 'ACI 318' or 'ASCE 7'"},
-         "include_superseded": {"type": "boolean", "description": "also search superseded editions (default false)"}},
+         "include_superseded": {"type": "boolean", "description": "also search superseded editions (default true)"}},
          "required": ["query"]}},
     {"name": "code_ref_page_image",
      "description": "See one PDF page of a source in the code library as an image, exactly as printed. Use it when an "
@@ -52,24 +54,28 @@ GUIDE = (
 
 
 def _client_tool(name, args, lib):
+    """Run one client tool. Never raises: errors go back to the model as text, so a bad query does not end
+    the trial (and waste the turns already paid for)."""
     if lib is None:
         return "No local code library is configured for this run."
-    if name == "code_ref_editions":
-        return json.dumps({"editions": lib.editions(), "ibc_adoption": lib.adoption, "local_amendments": lib.local,
-                           "reminder": "The adopted edition is not the whole rule: check the state or city amendments for every clause you use."})
-    if name == "code_ref_page_image":
-        data, err = lib.page_image(args.get("source"), int(args.get("pdf_page", 0)))
-        if err:
-            return err
-        return [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": data}}]
-    if name == "code_ref_search":
-        hits = lib.search(args.get("query", ""), args.get("family"), not args.get("include_superseded"), limit=5)
-        return json.dumps(hits) if hits else "no matches"
-    if name == "code_ref_page":
-        row = lib.con.execute("SELECT body FROM pages WHERE source = ? AND page = ?",
-                              (args.get("source"), int(args.get("pdf_page", 0)))).fetchone()
-        return (row[0][:6000] if row else "page not found")
-    return f"unknown tool {name}"
+    try:
+        if name == "code_ref_editions":
+            return json.dumps({"editions": lib.editions(), "ibc_adoption": lib.adoption, "local_amendments": lib.local,
+                               "reminder": "The adopted edition is not the whole rule: check the state or city amendments for every clause you use."})
+        if name == "code_ref_page_image":
+            data, err = lib.page_image(str(args.get("source")), int(str(args.get("pdf_page", 0)).strip() or 0))
+            if err:
+                return "error: " + err
+            return [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": data}}]
+        if name == "code_ref_search":
+            hits = lib.search(str(args.get("query", "")), args.get("family"),
+                              not args.get("include_superseded", True), limit=5)
+            return json.dumps(hits) if hits else "no matches (try other words, or include_superseded)"
+        if name == "code_ref_page":
+            return lib.page_text(str(args.get("source")), int(str(args.get("pdf_page", 0)).strip() or 0))
+        return f"error: unknown tool {name}"
+    except Exception as e:
+        return f"error: {type(e).__name__}: {e}"
 
 
 def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None, system=None, effort=None):
@@ -81,10 +87,11 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None
     # Every turn resends the whole conversation, files included. Cache the opening message (files + prompt)
     # so later turns read it from the prompt cache at a fraction of the input price.
     content = [dict(b) for b in content]
-    for b in reversed(content):
-        if b.get("type") in ("text", "document", "image"):
-            b["cache_control"] = dict(api.CACHE_1H)
-            break
+    if not any("cache_control" in b for b in content):  # the grader marks its own static prefix
+        for b in reversed(content):
+            if b.get("type") in ("text", "document", "image"):
+                b["cache_control"] = dict(api.CACHE_1H)
+                break
     messages = [{"role": "user", "content": content}]
     usage = {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
     trace, container = [], None
@@ -96,11 +103,15 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None
                 for b in m["content"]:
                     if isinstance(b, dict):
                         b.pop("cache_control", None)
-        last = messages[-1]
-        if len(messages) > 1 and isinstance(last["content"], list) and last["content"]:
-            tail = last["content"][-1]
-            if isinstance(tail, dict) and tail.get("type") in ("text", "tool_result", "image", "document"):
-                tail["cache_control"] = {"type": "ephemeral"}
+        placed = False
+        for m in reversed(messages[1:]):  # after a pause_turn the newest message is the assistant's
+            if placed or not isinstance(m["content"], list):
+                continue
+            for b in reversed(m["content"]):
+                if isinstance(b, dict) and b.get("type") in ("text", "tool_result") and (b.get("text") or b.get("content")):
+                    b["cache_control"] = {"type": "ephemeral"}
+                    placed = True
+                    break
         body = {"model": model, "max_tokens": max_tokens, "tools": tools, "messages": messages}
         if system:
             body["system"] = system
@@ -109,7 +120,7 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None
         if container:
             body["container"] = container
         res = api.create(body)
-        for k in usage:
+        for k in ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens"):
             usage[k] += res.get("usage", {}).get(k, 0) or 0
         container = (res.get("container") or {}).get("id") or container
         blocks = res.get("content", [])
@@ -123,12 +134,21 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None
             for b in blocks:
                 if b.get("type") == "tool_use":
                     out = _client_tool(b["name"], b.get("input", {}), lib)
-                    results.append({"type": "tool_result", "tool_use_id": b["id"], "content": out})
+                    r = {"type": "tool_result", "tool_use_id": b["id"], "content": out}
+                    if isinstance(out, str) and out.startswith("error:"):
+                        r["is_error"] = True
+                    results.append(r)
             messages.append({"role": "user", "content": results})
             continue
         if stop == "pause_turn":
             continue
-        text = "".join(b.get("text", "") for b in blocks if b.get("type") == "text")
+        # the final answer is the text written since the last tool result (a pause_turn can split it)
+        text = []
+        for m in reversed(messages):
+            if m["role"] == "user":
+                break
+            text.insert(0, "".join(b.get("text", "") for b in m["content"] if isinstance(b, dict) and b.get("type") == "text"))
         usage["stop_reason"] = stop
-        return text, usage, trace
-    return "", usage, trace + [{"tool": "harness", "input": "stopped after max_turns"}]
+        return "".join(text), usage, trace
+    usage["stop_reason"] = "max_turns"
+    return "", usage, trace + [{"tool": "harness", "input": f"stopped after {max_turns} turns"}]

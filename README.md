@@ -4,7 +4,7 @@
 
 Each task is a folder with the prompt, any input files, an answer key and a rubric written by a domain expert. The harness runs every task on several models, several times each, grades the answers, and reports how often each model gets it right.
 
-> **Status: early (v0.1).** The pipeline runs end to end offline with mock models; the first runs on live models are next. All tasks are original and written for this repository.
+> **Status: v0.2.** Runs on live Claude models (Haiku, Sonnet, Opus) with key-scored tasks, an equipped grader and a cost budget. All tasks in this repository are original; private tasks are kept outside it.
 
 ## Related project
 
@@ -61,6 +61,23 @@ To grade the stored answers of an earlier run again, for example after correctin
 
 ```
 python3 -m harness.run regrade runs/<run> --tasks "/path/to/tasks/*" --name <run>-regraded
+```
+
+Add `--only-errors` to grade again, in place, only the rows whose grading failed.
+
+## Cost control and failed grading
+
+- **Budget.** `--budget 20` (USD, the default) stops starting new trials once the estimated spend reaches the figure; trials already running finish. The estimate is printed at the end and kept in `meta.json` (`est_cost_usd`, per model). It is an estimate from list prices: the Console shows the billed amount.
+- **Caching.** Task files and the prompt are cached for an hour, so repeated trials of a task read them at a fraction of the price; the grader caches the key and task once and sends only each answer new. `--warmup` (seconds) lets the first trial of each task fill the cache before the others start. In tool loops a rolling cache point means each turn pays only for what is new.
+- **A grading failure is not a model failure.** If the grader's reply cannot be read or misses an item, the answer is saved with `grade_error` and is left out of the scores. `--resume` grades those rows again without calling the model under test, and fills in any trials that are missing.
+- **Cut streams are retried**, as are rate limits and overloads, so a half-received answer is never graded.
+- `--max-turns` (default 25) caps the tool turns of one trial. A run directory is never overwritten without `--resume` or `--overwrite`.
+
+A full run, two trials each of Haiku and Sonnet with Opus as the equipped grader:
+
+```
+python3 -m harness.run run --models claude-haiku-5-5:2 claude-sonnet-5-5:2 --judge claude-opus-5-5 --judge-tools \
+  --ref-lib ~/Documents/Codex/code-ref-mcp --budget 15 --tasks "/path/to/tasks/*" --name main-1
 ```
 
 ### Equipped grader (`--judge-tools`)
@@ -125,7 +142,7 @@ python3 -m harness.run gate runs/<run_id> --mode quality --model claude-haiku-5-
 
 `--max-calls` (default 60) stops a run before it starts if it would make more model calls than you meant to pay for. Token use is printed after every run.
 
-## Tasks in v0.1
+## Tasks in this repository
 
 | Task | Domain | What it tests |
 |---|---|---|
@@ -142,7 +159,7 @@ Copy a task folder, write the prompt, list the final answers in `answer_format`,
 
 ## CI
 
-`.github/workflows/eval.yml` runs the offline self-test on every push. From the Actions tab, **Run workflow** runs live models with the `ANTHROPIC_API_KEY` repository secret and fails the job if the quality gate is not met.
+`.github/workflows/eval.yml` runs the unit tests and the offline self-test on every push. From the Actions tab, **Run workflow** runs live models with the `ANTHROPIC_API_KEY` repository secret and fails the job if the quality gate is not met.
 
 ## License
 

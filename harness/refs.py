@@ -7,6 +7,7 @@ import json
 import os
 import re
 import sqlite3
+import threading
 
 SNIPPET = 420
 
@@ -17,12 +18,35 @@ class RefLibrary:
         db = os.path.join(directory, "refs.sqlite")
         if not os.path.exists(db):
             raise FileNotFoundError(f"{db} not found: build it with build_index.py in the code-ref folder")
-        self.con = sqlite3.connect(f"file:{db}?mode=ro", uri=True, check_same_thread=False)  # read-only, shared by worker threads
+        self.db = db
+        self._local = threading.local()  # one read-only connection per worker thread
         meta = json.load(open(os.path.join(directory, "sources.json")))
         self.reg = {s["id"]: s for s in meta["sources"]}
         self.adoption = meta.get("ibc_adoption", {})
         self.local = meta.get("local_amendments", {})
         self.base = os.path.dirname(os.path.abspath(directory))  # source paths are relative to this folder
+
+    @property
+    def con(self):
+        c = getattr(self._local, "con", None)
+        if c is None:
+            c = self._local.con = sqlite3.connect(f"file:{self.db}?mode=ro", uri=True)
+        return c
+
+    def adopted_by(self, sid):
+        """IBC editions in the adoption table that reference this source's edition."""
+        s = self.reg.get(sid, {})
+        ed = s.get("edition", "").split()[0] if s.get("edition") else ""
+        return [ibc for ibc, row in self.adoption.items() if not ibc.startswith("_")
+                and row.get(s.get("family")) == ed]
+
+    def page_text(self, source, page, limit=6000):
+        if source not in self.reg:
+            return f"error: unknown source {source!r}; use code_ref_search or code_ref_editions for valid ids"
+        row = self.con.execute("SELECT body FROM pages WHERE source = ? AND page = ?", (source, int(page))).fetchone()
+        if not row:
+            return f"error: {source} has no text for PDF page {page} (out of range, blank or scanned); try code_ref_page_image"
+        return row[0][:limit]
 
     def page_image(self, source, page, dpi=110):
         """PNG of one PDF page (base64), so equations and tables can be read as printed."""
@@ -51,10 +75,9 @@ class RefLibrary:
 
     @staticmethod
     def _fts(q):
-        if q.count('"') >= 2:
-            return q
+        """Always quote each word, so user text can never be FTS5 syntax (no syntax errors from stray quotes)."""
         words = re.findall(r"[A-Za-z0-9.\-]+", q)
-        return " ".join(f'"{w}"' for w in words) if words else '""'
+        return " ".join('"' + w.replace('"', '') + '"' for w in words) if words else '""'
 
     def search(self, query, family=None, current_only=True, limit=3):
         ids = [sid for sid, s in self.reg.items()
@@ -68,8 +91,12 @@ class RefLibrary:
         out = []
         for sid, page, snip in self.con.execute(sql, [self._fts(query)] + ids + [limit]):
             s = self.reg[sid]
-            out.append({"source": sid, "standard": f"{s['family']} {s['edition']}", "status": s["status"],
-                        "pdf_page": page, "excerpt": snip[:SNIPPET]})
+            hit = {"source": sid, "standard": f"{s['family']} {s['edition']}", "status": s["status"],
+                   "pdf_page": page, "excerpt": snip[:SNIPPET]}
+            ad = self.adopted_by(sid)
+            if ad:
+                hit["adopted_by"] = ad
+            out.append(hit)
         return out
 
     def editions(self):

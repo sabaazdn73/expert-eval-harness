@@ -113,32 +113,69 @@ def check_one(check, answer):
     return False, f"{field}: unknown check type {kind}"
 
 
+class GradeError(RuntimeError):
+    """The grader did not produce a usable grade. The model's answer is kept, so it can be graded again
+    (regrade --only-errors, or run --resume) without paying for the answer twice."""
+
+
+def parse_judge_json(text):
+    """The judge's JSON object that holds "items": the last such object in the reply, whether compact or indented.
+    Returns {} if there is none."""
+    dec = json.JSONDecoder()
+    found = {}
+    for m in re.finditer(r"\{", text):
+        try:
+            obj, _ = dec.raw_decode(text[m.start():])
+        except ValueError:
+            continue
+        if isinstance(obj, dict) and isinstance(obj.get("items"), list):
+            found = obj  # keep the last complete one (a reply may quote an example first)
+    return found
+
+
+def _judge_call(judge_model, content, equipped, lib):
+    """Run the grader; raise GradeError if it stopped early or gave no parsable items. One retry."""
+    last = ""
+    for attempt in range(2):
+        trace = []
+        if equipped:
+            text, usage, trace = grader_tools.run_equipped(judge_model, content, lib)
+        else:
+            text, usage = api.call(judge_model, content, max_tokens=32000, cache=False)
+        stop = usage.get("stop_reason")
+        parsed = parse_judge_json(text) if text else {}
+        if judge_model.startswith("mock") or (parsed.get("items") and stop in ("end_turn", "stop_sequence", None)):
+            return text, parsed, usage, trace
+        last = f"grader stop_reason={stop}, items parsed={len(parsed.get('items', []))}"
+    raise GradeError(last)
+
+
 def judge(task, response, judge_model, lib_block=""):
     rubric = task.get("rubric", [])
     if not rubric:
         return [], {}
     items = "\n".join(f'- {r["id"]}: {r["text"]}' for r in rubric)
-    prompt = (
+    static = (
         "GRADER. You are grading a response to an expert task against a rubric written by a domain expert. "
         "Judge each rubric item strictly and independently. Use the expert notes as ground truth.\n\n"
         f"<task>\n{task['prompt_text']}\n</task>\n\n<expert_notes>\n{task.get('expert_notes', '')}\n</expert_notes>\n\n"
-        + (f"<reference_library>\nUse these current-edition excerpts to check any clause, edition or citation the response relies on. "
-           f"A response that applies a superseded edition where the current one differs, or cites a clause that does not exist, fails the relevant item.\n{lib_block}\n</reference_library>\n\n" if lib_block else "") +
-        f""
-        f"<response>\n{response}\n</response>\n\n<rubric>\n{items}\n</rubric>\n\n"
-        'Reply with only JSON: {"items": [{"id": "...", "verdict": "pass" or "fail", "reason": "one sentence"}]}'
-    )
-    text, usage = api.call(judge_model, [{"type": "text", "text": prompt}], max_tokens=32000)
-    m = re.search(r"\{.*\}", text, flags=re.S)
-    try:
-        verdicts = json.loads(m.group(0))["items"] if m else []
-    except (ValueError, KeyError):
-        verdicts = []
-    if judge_model.startswith("mock"):  # the mock judge returns one verdict for everything
-        v = verdicts[0]["verdict"] if verdicts else "fail"
-        verdicts = [{"id": r["id"], "verdict": v, "reason": "mock judge"} for r in rubric]
-    by_id = {v.get("id"): v for v in verdicts}
-    return [by_id.get(r["id"], {"id": r["id"], "verdict": "fail", "reason": "judge gave no verdict"}) for r in rubric], usage
+        + (f"<reference_library>\nUse these excerpts to check any clause, edition or citation the response relies on. "
+           f"A response that applies an edition other than the one the task's code basis requires, where the two differ, or "
+           f"cites a clause that does not exist, fails the relevant item.\n{lib_block}\n</reference_library>\n\n" if lib_block else "")
+        + f"<rubric>\n{items}\n</rubric>\n\n")
+    dynamic = (f"<response>\n{response}\n</response>\n\n"
+               'Reply with only JSON: {"items": [{"id": "...", "verdict": "pass" or "fail", "reason": "one sentence"}]}')
+    if judge_model.startswith("mock"):
+        usage = {}
+        v = "pass" if "MOCK_GOOD" in response else "fail"
+        return [{"id": r["id"], "verdict": v, "reason": "mock judge"} for r in rubric], usage
+    content = [{"type": "text", "text": static, "cache_control": dict(api.CACHE_1H)}, {"type": "text", "text": dynamic}]
+    _, parsed, usage, _ = _judge_call(judge_model, content, False, None)
+    by_id = {str(v.get("id")): v for v in parsed["items"]}
+    missing = [r["id"] for r in rubric if str(r["id"]) not in by_id]
+    if missing:
+        raise GradeError(f"grader gave no verdict for {missing}")
+    return [dict(by_id[str(r["id"])], id=r["id"]) for r in rubric], usage
 
 
 def judge_key(task, response, judge_model, equipped=False, lib=None):
@@ -147,51 +184,49 @@ def judge_key(task, response, judge_model, equipped=False, lib=None):
     items = task["items"]
     listing = "\n".join(f'- item {i["id"]}: max {i["points"]} points' + (" (required)" if i.get("required") else "")
                          for i in items)
-    prompt = (
+    static = (
         "GRADER. Score the response against the expert answer key below. Follow the key exactly: its items, "
         "tolerances, accepted alternative readings, carry-over rules and common errors. No partial credit within an item. "
         "Do not reward findings the key marks as not valid.\n\n"
         + (f"<harness_note>\n{task['judge_note']}\n</harness_note>\n\n" if task.get("judge_note") else "")
         + f"<task_prompt>\n{task['prompt_text']}\n</task_prompt>\n\n<answer_key>\n{key}\n</answer_key>\n\n"
-        f"<response>\n{response}\n</response>\n\n<items_to_score>\n{listing}\n</items_to_score>\n\n"
-        + ('Reply with only JSON: {"items": [{"id": "...", "points": <awarded>, "reason": "one sentence"}]}' if not equipped else
-           'End with only JSON: {"items": [{"id": "...", "points": <awarded>, "reason": "one sentence", "checked": "what you verified with a tool, if anything"}], '
-           '"key_flags": ["possible problem in the key, with the evidence", ...]}')
-    )
+        f"<items_to_score>\n{listing}\n</items_to_score>\n\n")
+    dynamic = (f"<response>\n{response}\n</response>\n\n"
+               + ('Score every item listed above. Reply with only JSON: {"items": [{"id": "...", "points": <awarded>, "reason": "one sentence"}]}'
+                  if not equipped else
+                  'Score every item listed above. End with only JSON: {"items": [{"id": "...", "points": <awarded>, "reason": "one sentence", '
+                  '"checked": "what you verified with a tool, if anything"}], "key_flags": ["possible problem in the key, with the evidence", ...]}'))
     trace, flags = [], []
-    # The key and the task are the same for every trial: put them first, behind a cache point,
-    # and the response after it, so each further grading reads the key from the cache.
-    cut = prompt.index("<response>")
-    static, dynamic = prompt[:cut], prompt[cut:]
-    if equipped and not judge_model.startswith("mock"):
-        content = [api.file_block(os.path.join(task["dir"], p)) for p in task.get("files", [])]
-        content.append({"type": "text", "text": grader_tools.GUIDE + "\n" + static, "cache_control": dict(api.CACHE_1H)})
-        content.append({"type": "text", "text": dynamic})
-        text, usage, trace = grader_tools.run_equipped(judge_model, content, lib)
-    else:
-        content = [{"type": "text", "text": static, "cache_control": dict(api.CACHE_1H)}, {"type": "text", "text": dynamic}]
-        text, usage = api.call(judge_model, content, max_tokens=32000, cache=False)
-    i = max(text.rfind('{"items"'), text.rfind('{ "items"'), text.rfind('{\n'))
-    try:
-        parsed = json.JSONDecoder().raw_decode(text[i:])[0] if i >= 0 else {}
-        got = {str(v.get("id")): v for v in parsed.get("items", [])}
-        flags = parsed.get("key_flags", []) or []
-    except (ValueError, KeyError, AttributeError):
-        got = {}
     if judge_model.startswith("mock"):
+        usage = {}
         full = "MOCK_GOOD" in response
         got = {str(i["id"]): {"points": i["points"] if full else 0, "reason": "mock judge"} for i in items}
+    else:
+        # the key and task are the same for every trial: cached once, then only the response is new
+        if equipped:
+            content = [api.file_block(os.path.join(task["dir"], p)) for p in task.get("files", [])]
+            content.append({"type": "text", "text": grader_tools.GUIDE + "\n" + static, "cache_control": dict(api.CACHE_1H)})
+        else:
+            content = [{"type": "text", "text": static, "cache_control": dict(api.CACHE_1H)}]
+        content.append({"type": "text", "text": dynamic})
+        _, parsed, usage, trace = _judge_call(judge_model, content, equipped, lib)
+        got = {str(v.get("id")): v for v in parsed["items"]}
+        flags = parsed.get("key_flags", []) or []
+        missing = [str(i["id"]) for i in items if str(i["id"]) not in got]
+        if missing:
+            raise GradeError(f"grader gave no score for items {missing}")
     scored = []
     for i in items:
         v = got.get(str(i["id"]), {})
         try:
-            pts = max(0.0, min(float(v.get("points", 0)), float(i["points"])))
+            pts = float(v.get("points", 0))
+            pts = 0.0 if pts != pts else max(0.0, min(pts, float(i["points"])))
         except (TypeError, ValueError):
             pts = 0.0
         if not task.get("partial_credit") and pts < i["points"]:
             pts = 0.0  # keys are all-or-nothing per item unless the task says otherwise
         scored.append({"id": str(i["id"]), "points": pts, "max": i["points"], "required": bool(i.get("required")),
-                       "verdict": "pass" if pts >= i["points"] else "fail", "reason": v.get("reason", "judge gave no score"),
+                       "verdict": "pass" if pts >= i["points"] else "fail", "reason": v.get("reason", ""),
                        "checked": v.get("checked", "")})
     usage = dict(usage, key_flags=flags, tool_calls=len(trace))
     return scored, usage
@@ -211,9 +246,25 @@ def pass_at_k(n, c, k):
     return 1.0 - math.comb(n - c, k) / math.comb(n, k)
 
 
+def grade(task, text, judge_model, judge_tools, lib, lib_block):
+    """Grade one answer. Returns (passed, score, verdicts, checks, answer, grader usage); raises GradeError."""
+    answer = extract_json(text)
+    checks = [dict(zip(("ok", "detail"), check_one(c, answer))) for c in task.get("checks", [])]
+    if task.get("key_file"):
+        verdicts, jusage = judge_key(task, text, judge_model, judge_tools, lib)
+        score, passed = key_pass(task, verdicts)
+    else:
+        verdicts, jusage = judge(task, text, judge_model, lib_block)
+        score, passed = None, all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts)
+    return passed, score, verdicts, checks, answer, jusage
+
+
 def summarise(rows):
+    """Pass counts per (task, model). Rows whose grading failed (grade_error) are left out until regraded."""
     summ = {}
     for r in rows:
+        if r.get("grade_error"):
+            continue
         s = summ.setdefault((r["task"], r["model"]), {"n": 0, "c": 0})
         s["n"] += 1
         s["c"] += int(r["passed"])
@@ -249,36 +300,72 @@ def cmd_run(a):
           + f" = {planned} model calls (+ judge calls)")
     if planned > a.max_calls:
         sys.exit(f"refusing: {planned} calls is above --max-calls {a.max_calls}")
-    rows, tokens = [], {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
+    rows = []
+    tokens = {"model": {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0},
+              "grader": {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}}
+    if a.budget is not None:
+        api.set_budget(a.budget)
     import threading
     from concurrent.futures import ThreadPoolExecutor
     lock = threading.Lock()
-    done = set()
-    if a.resume and os.path.exists(os.path.join(out, "results.jsonl")):
-        for l in open(os.path.join(out, "results.jsonl")):
+    done, old_meta = set(), {}
+    res_path = os.path.join(out, "results.jsonl")
+    if a.resume and os.path.exists(res_path):
+        for l in open(res_path):
             r = json.loads(l)
             rows.append(r)
             done.add((r["task"], r["model"], r["trial"]))
+        try:
+            old_meta = json.load(open(os.path.join(out, "meta.json")))
+        except (OSError, ValueError):
+            pass
         print(f"resuming: {len(done)} trials already saved", flush=True)
-    f = open(os.path.join(out, "results.jsonl"), "a" if a.resume else "w")
+    elif os.path.exists(res_path) and os.path.getsize(res_path) and not a.overwrite:
+        sys.exit(f"runs/{run_id} already has results: add --resume to continue it, or --overwrite to start again")
+    f = open(res_path, "a" if a.resume else "w")
 
-    def record(row, usages, line):
+    def add_tokens(kind, u):
+        for key in tokens[kind]:
+            tokens[kind][key] += u.get(key, 0) or 0
+
+    def record(row, model_usage, grader_usage, line):
         with lock:
-            for u in usages:
-                for key in tokens:
-                    tokens[key] += u.get(key, 0) or 0
+            add_tokens("model", model_usage or {})
+            add_tokens("grader", grader_usage or {})
             f.write(json.dumps(row) + "\n")
             f.flush()
             rows.append(row)
             print(line, flush=True)
 
+    tasks_by_id = {}
+
+    def grade_into(row, task, text, lib_block):
+        """Grade an answer into its row. On grader failure the answer is kept with grade_error."""
+        try:
+            passed, score, verdicts, checks, answer, jusage = grade(task, text, judge_model, a.judge_tools, lib, lib_block)
+        except Exception as e:
+            row.update(passed=False, score=None, grade_error=f"{type(e).__name__}: {str(e)[:300]}")
+            return row, {}, "GRADER ERROR (answer kept; regrade with --resume or regrade --only-errors)"
+        row.pop("grade_error", None)
+        row.update(passed=passed, score=score, rubric=verdicts, checks=checks, answer=answer,
+                   key_flags=jusage.get("key_flags", []) if score is not None else [],
+                   grader_tool_calls=jusage.get("tool_calls", 0) if score is not None else 0)
+        sc = f"  ({score:g}/{task.get('max_score')})" if score is not None else ""
+        return row, jusage, ("PASS" if passed else "fail") + sc
+
     def one(task, content, lib_block, model, trial):
+        head = f"{task['id']:<28} {model:<22} trial {trial + 1}: "
+        try:
+            api.check_budget()
+        except api.BudgetExceeded as e:
+            print(head + f"skipped: {e} (not saved; raise --budget and use --resume)", flush=True)
+            return
         try:
             if a.model_library and lib and not mock:
                 # case study: the model under test can look up the code library itself
                 mtools = ([grader_tools.CODE_EXEC] if task.get("code_execution") else []) + grader_tools.CLIENT_TOOLS
                 text, usage, mtrace = grader_tools.run_equipped(
-                    model, content, lib, max_tokens=a.max_tokens, tools=mtools,
+                    model, content, lib, max_tokens=a.max_tokens, tools=mtools, max_turns=a.max_turns,
                     system=(CODE_SYSTEM if task.get("code_execution") else SYSTEM) + LIB_NOTE, effort=a.effort)
                 looked = [t for t in mtrace if str(t.get("tool", "")).startswith("code_ref")]
                 note = f"{len(mtrace)} tool calls, {len(looked)} library look-ups"
@@ -286,55 +373,48 @@ def cmd_run(a):
             elif task.get("code_execution") and not mock:
                 # the task needs computation: the model under test gets a Python sandbox
                 text, usage, mtrace = grader_tools.run_equipped(
-                    model, content, None, max_tokens=a.max_tokens,
+                    model, content, None, max_tokens=a.max_tokens, max_turns=a.max_turns,
                     tools=[grader_tools.CODE_EXEC], system=CODE_SYSTEM, effort=a.effort)
                 note = f"ran code {sum(1 for t in mtrace if t.get('tool') != 'harness')} times"
             else:
                 text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
                 note = ""
         except Exception as e:  # one failed trial must not stop the run
-            print(f"{task['id']:<28} {model:<22} trial {trial + 1}: ERROR {str(e)[:300]} (not saved; rerun with --resume)", flush=True)
-            return
-        head = f"{task['id']:<28} {model:<22} trial {trial + 1}: "
-        if not text.strip():
-            why = "cut off at max_tokens before any answer (thinking used the whole budget)" \
-                if usage.get("stop_reason") == "max_tokens" else f"empty answer (stop_reason {usage.get('stop_reason')})"
-            row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
-                   "with_refs": a.with_refs, "passed": False, "no_answer": why, "checks": [], "rubric": [],
-                   "answer": None, "score": None, "max_score": task.get("max_score"),
-                   "library_lookups": usage.get("library_lookups"),
-                   "stop_reason": usage.get("stop_reason"), "response": ""}
-            record(row, [usage], head + f"NO ANSWER - {why}; not graded" + (f"  [{note}]" if note else ""))
-            return
-        answer = extract_json(text)
-        checks = [dict(zip(("ok", "detail"), check_one(c, answer))) for c in task.get("checks", [])]
-        score = None
-        try:
-            if task.get("key_file"):
-                verdicts, jusage = judge_key(task, text, judge_model, a.judge_tools, lib or judge_lib)
-                score, passed = key_pass(task, verdicts)
-            else:
-                verdicts, jusage = judge(task, text, judge_model, lib_block)
-                passed = all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts)
-        except Exception as e:
-            print(head + f"GRADER ERROR {str(e)[:300]} (not saved; rerun with --resume)", flush=True)
+            print(head + f"ERROR {str(e)[:300]} (not saved; rerun with --resume)", flush=True)
             return
         row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
-               "with_refs": a.with_refs, "passed": passed, "checks": checks, "rubric": verdicts,
-               "answer": answer, "score": score, "library_lookups": usage.get("library_lookups"),
-               "key_flags": jusage.get("key_flags", []) if score is not None else [],
-               "grader_tool_calls": jusage.get("tool_calls", 0) if score is not None else 0,
-               "max_score": task.get("max_score"), "stop_reason": usage.get("stop_reason"), "response": text}
-        sc = f"  ({score:g}/{task.get('max_score')})" if score is not None else ""
-        record(row, [usage, jusage], head + ("PASS" if passed else "fail") + sc + (f"  [{note}]" if note else ""))
+               "with_refs": a.with_refs, "passed": False, "checks": [], "rubric": [], "answer": None, "score": None,
+               "max_score": task.get("max_score"), "library_lookups": usage.get("library_lookups"),
+               "stop_reason": usage.get("stop_reason"), "response": text}
+        if not text.strip():
+            stop = usage.get("stop_reason")
+            why = ("cut off at max_tokens before any answer (thinking used the whole budget)" if stop == "max_tokens"
+                   else f"stopped after {a.max_turns} tool turns without a final answer" if stop == "max_turns"
+                   else f"empty answer (stop_reason {stop})")
+            row["no_answer"] = why
+            record(row, usage, {}, head + f"NO ANSWER - {why}; not graded" + (f"  [{note}]" if note else ""))
+            return
+        row, jusage, verdict = grade_into(row, task, text, lib_block)
+        record(row, usage, jusage, head + verdict + (f"  [{note}]" if note else ""))
 
-    jobs = []
+    def regrade_one(i, task, lib_block):
+        r = rows[i]
+        r2, jusage, verdict = grade_into(dict(r), task, r["response"], lib_block)
+        with lock:
+            rows[i] = r2
+            add_tokens("grader", jusage)
+            print(f"{r['task']:<28} {r['model']:<22} trial {r['trial'] + 1}: regraded: {verdict}", flush=True)
+
+    jobs, regrades = [], []
     for d in task_dirs:
         task = load_task(d)
+        tasks_by_id[task["id"]] = task
         lib_block = lib.block_for(task) if lib else ""
         content = build_content(task, a.with_refs, mock, lib_block)
         jobs += [(task, content, lib_block, m, t) for m in a.models for t in range(ks[m]) if (task["id"], m, t) not in done]
-    print(f"running {len(jobs)} trials, {a.parallel} at a time", flush=True)
+        regrades += [(i, task, lib_block) for i, r in enumerate(rows) if r["task"] == task["id"] and r.get("grade_error")]
+    print(f"running {len(jobs)} trials, {a.parallel} at a time" + (f"; regrading {len(regrades)} saved answers" if regrades else "")
+          + (f"; budget ${a.budget:.2f}" if a.budget is not None else ""), flush=True)
     # Warm the prompt cache: the first trial of each (task, model) starts alone; the other trials of that
     # pair start a little later, once the first request has written the task files to the cache.
     import time as _time
@@ -344,7 +424,8 @@ def cmd_run(a):
         (rest if key in seen else first).append(j)
         seen.add(key)
     with ThreadPoolExecutor(max_workers=max(1, a.parallel)) as pool:
-        futs = [pool.submit(one, *j) for j in first]
+        futs = [pool.submit(regrade_one, *g) for g in regrades]
+        futs += [pool.submit(one, *j) for j in first]
         if rest and not mock:
             _time.sleep(a.warmup)
         futs += [pool.submit(one, *j) for j in rest]
@@ -354,19 +435,34 @@ def cmd_run(a):
             except Exception as e:
                 print(f"ERROR in a trial: {e}", flush=True)
     f.close()
-    missing = len(task_dirs) * sum(ks.values()) - len(rows)
+    planned_keys = {(t, m, k) for t in tasks_by_id for m in a.models for k in range(ks[m])}
+    saved_keys = {(r["task"], r["model"], r["trial"]) for r in rows}
+    missing = len(planned_keys - saved_keys)
+    errs = sum(1 for r in rows if r.get("grade_error"))
     if missing:
         print(f"{missing} trials not saved; run the same command again with --resume to fill them in", flush=True)
-    rows.sort(key=lambda r: (r["task"], a.models.index(r["model"]), r["trial"]))
-    with open(os.path.join(out, "results.jsonl"), "w") as f2:
+    if errs:
+        print(f"{errs} answers could not be graded; run the same command with --resume to grade them again (no model calls)", flush=True)
+    order = a.models + sorted({r["model"] for r in rows} - set(a.models))
+    rows.sort(key=lambda r: (r["task"], order.index(r["model"]), r["trial"]))
+    with open(res_path, "w") as f2:
         for r in rows:
             f2.write(json.dumps(r) + "\n")
-    meta = {"run_id": run_id, "models": a.models, "k": max(ks.values()), "k_per_model": ks, "judge_tools": a.judge_tools, "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs, "judge": judge_model,
-            "ref_library": bool(lib),
-            "tasks": [os.path.basename(d) for d in task_dirs], "tokens": tokens}
+    if old_meta.get("tokens", {}).get("model"):  # resumed: add what earlier sessions of this run used
+        for kind in tokens:
+            for key in tokens[kind]:
+                tokens[kind][key] += old_meta["tokens"].get(kind, {}).get(key, 0)
+    usd, by_model = api.spent()
+    usd += old_meta.get("est_cost_usd", 0) or 0
+    meta = {"run_id": run_id, "models": order, "k": max(ks.values()), "k_per_model": ks, "judge_tools": a.judge_tools,
+            "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs,
+            "judge": judge_model, "ref_library": bool(lib), "tasks": [os.path.basename(d) for d in task_dirs],
+            "tokens": tokens, "est_cost_usd": round(usd, 2),
+            "est_cost_by_model": {m: round(v, 2) for m, v in by_model.items()}}
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=2)
     write_report(out)
-    print(f"\nreport: {os.path.join(out, 'report.md')}   tokens used: {tokens}")
+    print(f"\nreport: {os.path.join(out, 'report.md')}")
+    print(f"estimated cost of this run: ${usd:.2f} " + json.dumps(meta["est_cost_by_model"]) + "  (check the Console for the billed amount)")
 
 
 def load_run(path):
@@ -382,7 +478,9 @@ def write_report(path):
     tasks = list(dict.fromkeys(r["task"] for r in rows))
     lines = [f"# Eval run {meta['run_id']}", "",
              "Models: " + ", ".join(f"{m} (k={(meta.get('k_per_model') or {}).get(m, k)})" for m in meta["models"]) + f" · references given: {meta['with_refs']} · "
-             f"code library as a tool: {meta.get('model_library', False)} · judge: {meta['judge']}", "",
+             f"code library as a tool: {meta.get('model_library', False)} · judge: {meta['judge']}"
+             + (f" · estimated cost ${meta['est_cost_usd']:.2f}" if meta.get("est_cost_usd") is not None else "")
+             + (f" · regraded from {meta['regraded_from']}" if meta.get("regraded_from") else ""), "",
              "| Task | " + " | ".join(meta["models"]) + " |", "|---|" + "---|" * len(meta["models"])]
     for t in tasks:
         cells = []
@@ -392,6 +490,8 @@ def write_report(path):
             extra = f" (scores {', '.join(f'{x:g}' for x in sc)} of {next(r['max_score'] for r in rows if r['task'] == t)})" if sc else ""
             na = sum(1 for r in rows if r["task"] == t and r["model"] == m and r.get("no_answer"))
             extra += f" [{na} no answer]" if na else ""
+            ge = sum(1 for r in rows if r["task"] == t and r["model"] == m and r.get("grade_error"))
+            extra += f" [{ge} not graded yet]" if ge else ""
             cells.append(f"{s['c']}/{s['n']}{extra}")
         lines.append(f"| {t} | " + " | ".join(cells) + " |")
     kpm = meta.get("k_per_model") or {m: k for m in meta["models"]}
@@ -408,6 +508,10 @@ def write_report(path):
     lines += ["", "## Failures", ""]
     for r in rows:
         if not r["passed"]:
+            if r.get("grade_error"):
+                lines.append(f"- **{r['task']}** · {r['model']} · trial {r['trial'] + 1}: NOT GRADED ({r['grade_error']}); "
+                             "the answer is saved: run with --resume or regrade --only-errors")
+                continue
             why = [r["no_answer"]] if r.get("no_answer") else ["answer cut off at max_tokens, no JSON block"] if r.get("stop_reason") == "max_tokens" and r.get("answer") is None else []
             why += [c["detail"] for c in r["checks"] if not c["ok"]] + \
                   [(f'item {v["id"]} {v["points"]:g}/{v["max"]:g}' if "max" in v else v["id"]) + f': {v.get("reason", "")}'
@@ -437,7 +541,8 @@ def cmd_report(a):
 
 def cmd_regrade(a):
     """Grade the stored answers of an earlier run again with the current task files (a corrected key, say).
-    The models are not called again; only the grader runs."""
+    The models are not called again; only the grader runs. Each graded row is saved as it finishes, and a row
+    whose grading fails keeps its answer with grade_error, so nothing already paid for is lost."""
     import threading
     from concurrent.futures import ThreadPoolExecutor
     meta, rows = load_run(a.run)
@@ -450,42 +555,57 @@ def cmd_regrade(a):
     judge_model = a.judge or meta.get("judge", "claude-sonnet-5-5")
     lib_dir = a.ref_lib or os.environ.get("CODE_REF_DIR")
     lib = RefLibrary(lib_dir) if lib_dir else None
-    out = os.path.join(ROOT, "runs", a.name or os.path.basename(os.path.normpath(a.run)) + "-regraded")
+    in_place = a.only_errors and not a.name
+    out = a.run if in_place else os.path.join(ROOT, "runs", a.name or os.path.basename(os.path.normpath(a.run)) + "-regraded")
     os.makedirs(out, exist_ok=True)
-    tokens = {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
+    gtok = {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
     lock = threading.Lock()
+    new = [dict(r) for r in rows]
+    todo = [i for i, r in enumerate(new) if dirs.get(r["task"]) and not r.get("no_answer") and r.get("response")
+            and (not a.only_errors or r.get("grade_error"))]
+    print(f"regrading {len(todo)} of {len(new)} saved answers with {judge_model}", flush=True)
 
-    def one(r):
-        task = dirs.get(r["task"])
-        if task is None or r.get("no_answer") or not r.get("response"):
-            return r
-        if task.get("key_file"):
-            verdicts, ju = judge_key(task, r["response"], judge_model, a.judge_tools, lib)
-            score, passed = key_pass(task, verdicts)
-            r = dict(r, rubric=verdicts, score=score, passed=passed, max_score=task.get("max_score"),
-                     key_flags=ju.get("key_flags", []))
-        else:
-            verdicts, ju = judge(task, r["response"], judge_model, lib.block_for(task) if lib else "")
-            checks = [dict(zip(("ok", "detail"), check_one(c, r.get("answer")))) for c in task.get("checks", [])]
-            r = dict(r, rubric=verdicts, checks=checks,
-                     passed=all(c["ok"] for c in checks) and all(v["verdict"] == "pass" for v in verdicts))
+    def save():
+        with open(os.path.join(out, "results.jsonl"), "w") as f:
+            for r in new:
+                f.write(json.dumps(r) + "\n")
+
+    def one(i):
+        r, task = new[i], dirs[new[i]["task"]]
+        lib_block = lib.block_for(task) if lib else ""
+        try:
+            passed, score, verdicts, checks, answer, ju = grade(task, r["response"], judge_model, a.judge_tools, lib, lib_block)
+            r2 = dict(r, passed=passed, score=score, rubric=verdicts, checks=checks, max_score=task.get("max_score"),
+                      key_flags=ju.get("key_flags", []) if score is not None else [])
+            r2.pop("grade_error", None)
+            line = ("PASS" if passed else "fail") + (f"  ({score:g}/{task.get('max_score')})" if score is not None else "")
+        except Exception as e:
+            r2, ju = dict(r, passed=False, score=None, grade_error=f"{type(e).__name__}: {str(e)[:300]}"), {}
+            line = "GRADER ERROR (answer kept)"
         with lock:
-            for k in tokens:
-                tokens[k] += ju.get(k, 0) or 0
-            sc = f"  ({r['score']:g}/{r['max_score']})" if r.get("score") is not None else ""
-            print(f"{r['task']:<28} {r['model']:<22} trial {r['trial'] + 1}: {'PASS' if r['passed'] else 'fail'}{sc}", flush=True)
-        return r
+            new[i] = r2
+            for k in gtok:
+                gtok[k] += ju.get(k, 0) or 0
+            save()
+            print(f"{r['task']:<28} {r['model']:<22} trial {r['trial'] + 1}: {line}", flush=True)
 
     with ThreadPoolExecutor(max_workers=max(1, a.parallel)) as pool:
-        new = list(pool.map(one, rows))
-    with open(os.path.join(out, "results.jsonl"), "w") as f:
-        for r in new:
-            f.write(json.dumps(r) + "\n")
-    meta = dict(meta, run_id=os.path.basename(out), judge=judge_model, regraded_from=os.path.basename(os.path.normpath(a.run)),
-                judge_tools=a.judge_tools, grader_tokens=tokens)
+        for fut in [pool.submit(one, i) for i in todo]:
+            fut.result()
+    save()
+    usd, _ = api.spent()
+    if in_place:
+        meta = dict(meta, judge=judge_model)
+        meta["regrade_cost_usd"] = round((meta.get("regrade_cost_usd") or 0) + usd, 2)
+    else:
+        # the answers' own cost belongs to the source run: this run only records what the grading cost
+        meta = dict(meta, run_id=os.path.basename(out), judge=judge_model, regraded_from=os.path.basename(os.path.normpath(a.run)),
+                    judge_tools=a.judge_tools, tokens={"grader": gtok}, est_cost_usd=round(usd, 2), est_cost_by_model={})
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=2)
     write_report(out)
-    print(f"\nreport: {os.path.join(out, 'report.md')}   grader tokens: {tokens}")
+    left = sum(1 for r in new if r.get("grade_error"))
+    print(f"\nreport: {os.path.join(out, 'report.md')}   grading cost (estimate): ${usd:.2f}"
+          + (f"   {left} still not graded" if left else ""))
 
 
 def cmd_compare(a):
@@ -501,13 +621,16 @@ def cmd_compare(a):
     for t, m in pairs:
         cells = []
         for _, rows in runs:
-            rr = [r for r in rows if r["task"] == t and r["model"] == m]
-            if not rr:
+            allr = [r for r in rows if r["task"] == t and r["model"] == m]
+            rr = [r for r in allr if not r.get("grade_error")]
+            if not allr:
                 cells.append("–")
                 continue
             c = f"{sum(r['passed'] for r in rr)}/{len(rr)} pass"
+            ge = len(allr) - len(rr)
+            c += f", {ge} not graded" if ge else ""
             sc = [r["score"] for r in rr if r.get("score") is not None]
-            if sc:
+            if sc and rr:
                 c += f", mean {sum(sc) / len(rr):.1f}/{rr[0]['max_score']} ({', '.join(f'{x:g}' for x in sc)})"
             na = sum(1 for r in rr if r.get("no_answer"))
             c += f", {na} no answer" if na else ""
@@ -518,7 +641,7 @@ def cmd_compare(a):
         items = {}
         for i, (_, rows) in enumerate(runs):
             for r in rows:
-                if r["task"] == t and r["model"] == m:
+                if r["task"] == t and r["model"] == m and not r.get("grade_error"):
                     for v in r.get("rubric", []):
                         if "max" in v:
                             items.setdefault(v["id"], [[0, 0] for _ in runs])
@@ -579,6 +702,10 @@ def main():
     s.add_argument("--max-calls", type=int, default=60, help="safety cap on model calls per run")
     s.add_argument("--parallel", type=int, default=3, help="trials run at the same time (lower it if you hit rate limits)")
     s.add_argument("--warmup", type=int, default=45, help="seconds to wait after the first trial of each task before the others start, so they read the files from the prompt cache")
+    s.add_argument("--budget", type=float, default=20.0,
+                   help="estimated USD after which no new trial starts (default 20; trials under way finish and are graded)")
+    s.add_argument("--max-turns", type=int, default=25, help="tool-loop turns per trial before it is stopped")
+    s.add_argument("--overwrite", action="store_true", help="start the named run again, discarding its saved results")
     s.add_argument("--resume", action="store_true", help="keep the trials already saved in runs/<name> and run only the missing ones")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_run)
@@ -591,7 +718,8 @@ def main():
     s.add_argument("--judge")
     s.add_argument("--judge-tools", action="store_true")
     s.add_argument("--ref-lib")
-    s.add_argument("--parallel", type=int, default=6)
+    s.add_argument("--parallel", type=int, default=3)
+    s.add_argument("--only-errors", action="store_true", help="grade only the answers whose grading failed (in place)")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_regrade)
     s = sub.add_parser("compare", help="compare two or more runs side by side")

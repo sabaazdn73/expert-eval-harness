@@ -52,28 +52,6 @@ def file_block(path):
     return {"type": "text", "text": f'<file name="{name}">\n{text}\n</file>'}
 
 
-def _stream(req):
-    """Read a streamed Messages response (SSE). Returns (text, usage with stop_reason)."""
-    text, usage, stop = [], {}, None
-    with urllib.request.urlopen(req, timeout=600) as r:  # timeout applies between chunks, not to the whole answer
-        for raw in r:
-            line = raw.decode("utf-8", errors="replace").strip()
-            if not line.startswith("data:"):
-                continue
-            ev = json.loads(line[5:].strip())
-            t = ev.get("type")
-            if t == "message_start":
-                usage.update(ev["message"].get("usage", {}))
-            elif t == "content_block_delta" and ev["delta"].get("type") == "text_delta":
-                text.append(ev["delta"]["text"])
-            elif t == "message_delta":
-                stop = ev.get("delta", {}).get("stop_reason") or stop
-                usage.update({k: v for k, v in ev.get("usage", {}).items() if v is not None})
-            elif t == "error":
-                raise APIError(f"stream error: {ev.get('error')}")
-    return "".join(text), dict(usage, stop_reason=stop)
-
-
 CACHE_1H = {"type": "ephemeral", "ttl": "1h"}
 
 
@@ -89,14 +67,14 @@ def with_cache_point(content, ttl=CACHE_1H):
 
 
 def call(model, content, system=None, max_tokens=4000, temperature=None, effort=None, cache=True):
-    """One streamed Messages API call. Returns (text, usage dict).
+    """One streamed Messages API call with a single user message. Returns (text, usage dict with stop_reason).
 
     Thinking tokens count toward max_tokens on current models, so give a large max_tokens for hard tasks.
     temperature is sent only when given; newer models reject it, so it is dropped and retried.
     effort sets output_config.effort (low, medium, high, xhigh, max); None keeps the model's default."""
     if model.startswith("mock"):
         return mock_call(model, content)
-    body = {"model": model, "max_tokens": max_tokens, "stream": True,
+    body = {"model": model, "max_tokens": max_tokens,
             "messages": [{"role": "user", "content": with_cache_point(content) if cache else content}]}
     if temperature is not None:
         body["temperature"] = temperature
@@ -104,26 +82,9 @@ def call(model, content, system=None, max_tokens=4000, temperature=None, effort=
         body["output_config"] = {"effort": effort}
     if system:
         body["system"] = system
-    headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}
-    for attempt in range(TRIES):
-        req = urllib.request.Request(API_URL, data=json.dumps(body).encode(), headers=headers, method="POST")
-        try:
-            return _stream(req)
-        except urllib.error.HTTPError as e:
-            raw = e.read().decode(errors="replace")
-            if e.code == 400 and "temperature" in raw and "temperature" in body:
-                body.pop("temperature")
-                continue
-            if e.code in RETRY_CODES and attempt < TRIES - 1:
-                _wait(attempt, e.headers)
-                continue
-            raise APIError(f"HTTP {e.code}: {raw[:400]}")
-        except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
-            if attempt < TRIES - 1:
-                _wait(attempt)
-                continue
-            raise APIError(f"could not reach the API: {getattr(e, 'reason', e)}")
-    raise APIError("gave up after repeated retries")
+    res = create(body)
+    text = "".join(b.get("text", "") for b in res.get("content", []) if b.get("type") == "text")
+    return text, dict(res.get("usage", {}), stop_reason=res.get("stop_reason"))
 
 
 _UPLOADS = None
@@ -167,9 +128,66 @@ def _upload(path):
         raise APIError(f"file upload failed, HTTP {e.code}: {e.read().decode(errors='replace')[:300]}")
 
 
+class StreamCut(ConnectionError):
+    """The stream ended before message_stop, or the API sent an overloaded/api_error event: retry the request."""
+
+
+class BudgetExceeded(APIError):
+    pass
+
+
+# ---- cost meter (estimates, USD per million tokens; see the pricing page for the current figures) ----
+PRICES = {  # model prefix: (input, output, cache-read multiplier)
+    "claude-haiku-5-5": (0.10, 0.50, 0.10),
+    "claude-sonnet-5-5": (2.0, 10.0, 0.05),
+    "claude-opus-5-5": (4.0, 20.0, 0.05),
+    "claude-fable-5-1": (10.0, 50.0, 0.025),
+}
+import threading as _threading
+_METER = {"usd": 0.0, "budget": None, "by_model": {}}
+_METER_LOCK = _threading.Lock()
+
+
+def cost_of(model, u):
+    p = next((v for k, v in PRICES.items() if model.startswith(k)), None)
+    if not p:
+        return 0.0
+    inp, out, rd = p
+    cc = u.get("cache_creation") or {}
+    w1h = cc.get("ephemeral_1h_input_tokens")
+    w5m = cc.get("ephemeral_5m_input_tokens")
+    if w1h is None and w5m is None:  # no breakdown: price every write at the 1-hour rate (the higher one)
+        w1h, w5m = u.get("cache_creation_input_tokens", 0) or 0, 0
+    tok = ((u.get("input_tokens", 0) or 0) * inp + (u.get("output_tokens", 0) or 0) * out
+           + (u.get("cache_read_input_tokens", 0) or 0) * inp * rd + (w1h or 0) * inp * 2 + (w5m or 0) * inp * 1.25)
+    return tok / 1e6
+
+
+def set_budget(usd):
+    _METER["budget"] = usd
+
+
+def spent():
+    return _METER["usd"], dict(_METER["by_model"])
+
+
+def _charge(model, usage):
+    c = cost_of(model, usage)
+    with _METER_LOCK:
+        _METER["usd"] += c
+        _METER["by_model"][model] = _METER["by_model"].get(model, 0.0) + c
+
+
+def check_budget():
+    b = _METER["budget"]
+    if b is not None and _METER["usd"] >= b:
+        raise BudgetExceeded(f"budget of ${b:.2f} reached (estimated spend ${_METER['usd']:.2f}); stopping new requests")
+
+
 def _assemble(r):
-    """Rebuild a full Messages response (content blocks, usage, stop reason, container) from an SSE stream."""
-    msg, blocks, partial = {}, {}, {}
+    """Rebuild a full Messages response (content blocks, usage, stop reason, container) from an SSE stream.
+    Raises StreamCut if the stream ends before message_stop or carries a retryable error event."""
+    msg, blocks, partial, stopped = {}, {}, {}, False
     for raw in r:
         line = raw.decode("utf-8", errors="replace").strip()
         if not line.startswith("data:"):
@@ -205,25 +223,39 @@ def _assemble(r):
                 msg["container"] = d["container"]
             u = msg.setdefault("usage", {})
             u.update({k: v for k, v in ev.get("usage", {}).items() if v is not None})
+        elif t == "message_stop":
+            stopped = True
         elif t == "error":
-            raise APIError(f"stream error: {ev.get('error')}")
+            err = ev.get("error") or {}
+            if err.get("type") in ("overloaded_error", "api_error", "rate_limit_error"):
+                raise StreamCut(f"stream error: {err}")
+            raise APIError(f"stream error: {err}")
+    if not stopped:
+        raise StreamCut("stream ended before message_stop")
     msg["content"] = [blocks[i] for i in sorted(blocks)]
     return msg
 
 
 def create(body):
-    """One streamed Messages API request with a raw body (used for tool loops). Returns the assembled response dict.
+    """One streamed Messages API request with a raw body. Returns the assembled response dict.
 
-    Streamed so that long turns (thinking plus tool calls) do not hit HTTP read timeouts."""
+    Streamed so that long turns (thinking plus tool calls) do not hit HTTP read timeouts. Retries rate limits,
+    overloads, dropped connections and cut streams. Every completed response is charged to the cost meter, and
+    no new trial starts once the --budget is reached (checked by the runner, so a trial already under way finishes)."""
     headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}
     body = dict(body, stream=True)
     for attempt in range(TRIES):
         req = urllib.request.Request(API_URL, data=json.dumps(body).encode(), headers=headers, method="POST")
         try:
             with urllib.request.urlopen(req, timeout=600) as r:  # timeout between chunks
-                return _assemble(r)
+                msg = _assemble(r)
+            _charge(body["model"], msg.get("usage", {}))
+            return msg
         except urllib.error.HTTPError as e:
             raw = e.read().decode(errors="replace")
+            if e.code == 400 and "temperature" in raw and "temperature" in body:
+                body.pop("temperature")
+                continue
             if e.code in RETRY_CODES and attempt < TRIES - 1:
                 _wait(attempt, e.headers)
                 continue

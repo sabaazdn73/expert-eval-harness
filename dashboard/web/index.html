@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eval Task Pipeline</title>
+<meta name="description" content="How each expert evaluation task moves through nine stages, where the human signs, what the grader is given, and how the models score.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <div>
+      <p class="eyebrow">Expert eval harness · task pipeline</p>
+      <h1>Where the human belongs, task by task</h1>
+    </div>
+    <div class="top-meta">
+      <span id="mode" class="badge"></span>
+      <button id="theme" class="btn ghost" type="button" aria-label="Switch light or dark">Theme</button>
+    </div>
+  </div>
+  <nav class="wrap tabs" role="tablist">
+    <button role="tab" data-tab="projects" aria-selected="true">Tasks</button>
+    <button role="tab" data-tab="pipeline" aria-selected="false">Pipeline</button>
+    <button role="tab" data-tab="grader" aria-selected="false">What the grader needs</button>
+  </nav>
+</header>
+<main class="wrap" id="view" aria-live="polite"></main>
+<footer class="wrap foot">
+  <p id="foot"></p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

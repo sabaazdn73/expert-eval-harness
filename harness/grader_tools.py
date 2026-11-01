@@ -72,7 +72,7 @@ def _client_tool(name, args, lib):
     return f"unknown tool {name}"
 
 
-def run_equipped(model, content, lib, max_tokens=64000, max_turns=40, tools=None, system=None, effort=None):
+def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None, system=None, effort=None):
     """Run a conversation with tools until the model ends its turn. Returns (final_text, usage, trace).
 
     Used by the equipped grader (code execution + code library) and, with tools=[CODE_EXEC],
@@ -89,6 +89,18 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=40, tools=None
     usage = {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
     trace, container = [], None
     for _ in range(max_turns):
+        # Rolling cache point on the newest message: each turn then reads the whole earlier conversation from the
+        # prompt cache instead of paying full price for it again (the opening files keep their own cache point).
+        for m in messages[1:]:
+            if isinstance(m["content"], list):
+                for b in m["content"]:
+                    if isinstance(b, dict):
+                        b.pop("cache_control", None)
+        last = messages[-1]
+        if len(messages) > 1 and isinstance(last["content"], list) and last["content"]:
+            tail = last["content"][-1]
+            if isinstance(tail, dict) and tail.get("type") in ("text", "tool_result", "image", "document"):
+                tail["cache_control"] = {"type": "ephemeral"}
         body = {"model": model, "max_tokens": max_tokens, "tools": tools, "messages": messages}
         if system:
             body["system"] = system

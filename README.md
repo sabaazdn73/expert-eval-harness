@@ -37,6 +37,14 @@ uploaded into the sandbox as well as shown in the prompt, so the model can load 
 honest solution is a calculation a professional would run in software: without it, models can spend their whole output
 budget computing in their head and return no answer.
 
+### Compare runs
+
+```
+python3 -m harness.run compare runs/<run_a> runs/<run_b> --out compare.md
+```
+
+Shows each run side by side: passes, scores, answers that never arrived, and for key-scored tasks how often each item was earned.
+
 ### Equipped grader (`--judge-tools`)
 
 For key-scored tasks the grader can check a response instead of only reading it:

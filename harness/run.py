@@ -393,6 +393,54 @@ def cmd_report(a):
     print(open(os.path.join(a.run, "report.md")).read())
 
 
+def cmd_compare(a):
+    """Side-by-side comparison of two or more runs: pass counts, scores, and how often each key item was earned."""
+    runs = []
+    for path in a.runs:
+        meta, rows = load_run(path)
+        runs.append((os.path.basename(os.path.normpath(path)), rows))
+    names = [n for n, _ in runs]
+    pairs = list(dict.fromkeys((r["task"], r["model"]) for _, rows in runs for r in rows))
+    out = [f"# Comparison: {' vs '.join(names)}", "",
+           "| Task | Model | " + " | ".join(names) + " |", "|---|---|" + "---|" * len(names)]
+    for t, m in pairs:
+        cells = []
+        for _, rows in runs:
+            rr = [r for r in rows if r["task"] == t and r["model"] == m]
+            if not rr:
+                cells.append("–")
+                continue
+            c = f"{sum(r['passed'] for r in rr)}/{len(rr)} pass"
+            sc = [r["score"] for r in rr if r.get("score") is not None]
+            if sc:
+                c += f", mean {sum(sc) / len(rr):.1f}/{rr[0]['max_score']} ({', '.join(f'{x:g}' for x in sc)})"
+            na = sum(1 for r in rr if r.get("no_answer"))
+            c += f", {na} no answer" if na else ""
+            cells.append(c)
+        out.append(f"| {t} | {m} | " + " | ".join(cells) + " |")
+    # item by item, for key-scored tasks
+    for t, m in pairs:
+        items = {}
+        for i, (_, rows) in enumerate(runs):
+            for r in rows:
+                if r["task"] == t and r["model"] == m:
+                    for v in r.get("rubric", []):
+                        if "max" in v:
+                            items.setdefault(v["id"], [[0, 0] for _ in runs])
+                            items[v["id"]][i][0] += v["points"] >= v["max"]
+                            items[v["id"]][i][1] += 1
+        if not items:
+            continue
+        out += ["", f"## {t} · {m}: how often each item was earned", "",
+                "| Item | " + " | ".join(names) + " |", "|---|" + "---|" * len(names)]
+        for iid in sorted(items, key=lambda x: (len(x), x)):
+            out.append(f"| {iid} | " + " | ".join(f"{e}/{n}" if n else "–" for e, n in items[iid]) + " |")
+    text = "\n".join(out) + "\n"
+    if a.out:
+        open(a.out, "w").write(text)
+    print(text)
+
+
 def cmd_gate(a):
     meta, rows = load_run(a.run)
     summ = summarise(rows)
@@ -440,6 +488,10 @@ def main():
     s = sub.add_parser("report")
     s.add_argument("run")
     s.set_defaults(fn=cmd_report)
+    s = sub.add_parser("compare", help="compare two or more runs side by side")
+    s.add_argument("runs", nargs="+")
+    s.add_argument("--out", help="also write the comparison to this file")
+    s.set_defaults(fn=cmd_compare)
     s = sub.add_parser("gate")
     s.add_argument("run")
     s.add_argument("--mode", choices=["difficulty", "quality"], default="difficulty")

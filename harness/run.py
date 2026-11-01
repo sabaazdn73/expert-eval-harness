@@ -217,6 +217,12 @@ def summarise(rows):
 # ---------------- commands ----------------
 
 def cmd_run(a):
+    # "model:k" sets the number of trials for one model, e.g. claude-haiku-5-5:3 claude-sonnet-5-5:2 claude-opus-5-5:1
+    ks = {}
+    for m in list(a.models):
+        name, _, n = m.partition(":")
+        ks[name] = int(n) if n.isdigit() else a.k
+    a.models = list(ks)
     mock = all(m.startswith("mock") for m in a.models)
     judge_model = a.judge or ("mock-judge" if mock else "claude-sonnet-5-5")
     lib_dir = a.ref_lib or os.environ.get("CODE_REF_DIR")
@@ -232,8 +238,9 @@ def cmd_run(a):
     run_id = a.name or dt.datetime.now().strftime("%Y%m%d-%H%M%S") + ("-refs" if a.with_refs else "")
     out = os.path.join(ROOT, "runs", run_id)
     os.makedirs(out, exist_ok=True)
-    planned = len(task_dirs) * len(a.models) * a.k
-    print(f"{len(task_dirs)} tasks x {len(a.models)} models x k={a.k} = {planned} model calls (+ judge calls)")
+    planned = len(task_dirs) * sum(ks.values())
+    print(f"{len(task_dirs)} tasks; trials per task: " + ", ".join(f"{m} x{ks[m]}" for m in a.models)
+          + f" = {planned} model calls (+ judge calls)")
     if planned > a.max_calls:
         sys.exit(f"refusing: {planned} calls is above --max-calls {a.max_calls}")
     rows, tokens = [], {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}
@@ -320,7 +327,7 @@ def cmd_run(a):
         task = load_task(d)
         lib_block = lib.block_for(task) if lib else ""
         content = build_content(task, a.with_refs, mock, lib_block)
-        jobs += [(task, content, lib_block, m, t) for m in a.models for t in range(a.k) if (task["id"], m, t) not in done]
+        jobs += [(task, content, lib_block, m, t) for m in a.models for t in range(ks[m]) if (task["id"], m, t) not in done]
     print(f"running {len(jobs)} trials, {a.parallel} at a time", flush=True)
     with ThreadPoolExecutor(max_workers=max(1, a.parallel)) as pool:
         for fut in [pool.submit(one, *j) for j in jobs]:
@@ -329,14 +336,14 @@ def cmd_run(a):
             except Exception as e:
                 print(f"ERROR in a trial: {e}", flush=True)
     f.close()
-    missing = len(task_dirs) * len(a.models) * a.k - len(rows)
+    missing = len(task_dirs) * sum(ks.values()) - len(rows)
     if missing:
         print(f"{missing} trials not saved; run the same command again with --resume to fill them in", flush=True)
     rows.sort(key=lambda r: (r["task"], a.models.index(r["model"]), r["trial"]))
     with open(os.path.join(out, "results.jsonl"), "w") as f2:
         for r in rows:
             f2.write(json.dumps(r) + "\n")
-    meta = {"run_id": run_id, "models": a.models, "k": a.k, "judge_tools": a.judge_tools, "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs, "judge": judge_model,
+    meta = {"run_id": run_id, "models": a.models, "k": max(ks.values()), "k_per_model": ks, "judge_tools": a.judge_tools, "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs, "judge": judge_model,
             "ref_library": bool(lib),
             "tasks": [os.path.basename(d) for d in task_dirs], "tokens": tokens}
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=2)
@@ -356,7 +363,7 @@ def write_report(path):
     k = meta["k"]
     tasks = list(dict.fromkeys(r["task"] for r in rows))
     lines = [f"# Eval run {meta['run_id']}", "",
-             f"Models: {', '.join(meta['models'])} · k = {k} · references given: {meta['with_refs']} · "
+             "Models: " + ", ".join(f"{m} (k={(meta.get('k_per_model') or {}).get(m, k)})" for m in meta["models"]) + f" · references given: {meta['with_refs']} · "
              f"code library as a tool: {meta.get('model_library', False)} · judge: {meta['judge']}", "",
              "| Task | " + " | ".join(meta["models"]) + " |", "|---|" + "---|" * len(meta["models"])]
     for t in tasks:
@@ -369,13 +376,17 @@ def write_report(path):
             extra += f" [{na} no answer]" if na else ""
             cells.append(f"{s['c']}/{s['n']}{extra}")
         lines.append(f"| {t} | " + " | ".join(cells) + " |")
-    lines += ["", f"| Model | pass rate | pass@{k} | pass^{k} (all {k} trials pass) |", "|---|---|---|---|"]
+    kpm = meta.get("k_per_model") or {m: k for m in meta["models"]}
+    lines += ["", "| Model | trials per task (k) | pass rate | pass@k | pass^k (all k trials pass) |", "|---|---|---|---|---|"]
     for m in meta["models"]:
         ss = [summ[(t, m)] for t in tasks if (t, m) in summ]
+        if not ss:
+            continue
+        km = kpm.get(m, k)
         n, c = sum(s["n"] for s in ss), sum(s["c"] for s in ss)
-        pak = sum(pass_at_k(s["n"], s["c"], k) for s in ss) / len(ss)
+        pak = sum(pass_at_k(s["n"], s["c"], min(km, s["n"])) for s in ss) / len(ss)
         pck = sum(1 for s in ss if s["c"] == s["n"]) / len(ss)
-        lines.append(f"| {m} | {c / n:.0%} | {pak:.0%} | {pck:.0%} |")
+        lines.append(f"| {m} | {km} | {c / n:.0%} | {pak:.0%} | {pck:.0%} |")
     lines += ["", "## Failures", ""]
     for r in rows:
         if not r["passed"]:
@@ -535,7 +546,7 @@ def main():
     s = sub.add_parser("run")
     s.add_argument("--models", nargs="+", required=True)
     s.add_argument("--tasks", nargs="+", default=[os.path.join(ROOT, "tasks", "*")])
-    s.add_argument("--k", type=int, default=3, help="trials per task per model")
+    s.add_argument("--k", type=int, default=3, help="trials per task per model (or per model: --models haiku:3 sonnet:2)")
     s.add_argument("--with-refs", action="store_true", help="include each task's reference notes")
     s.add_argument("--ref-lib", help="folder of a local code-ref library (refs.sqlite + sources.json); also CODE_REF_DIR")
     s.add_argument("--judge", help="model that grades rubric items (default claude-sonnet-5-5)")

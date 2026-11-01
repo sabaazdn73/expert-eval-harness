@@ -18,6 +18,14 @@ How the tasks are designed, and where the human expert belongs in the process: [
 
 [dashboard/](dashboard/README.md) is a local workspace for building tasks with that method: the nine stages with the three human gates, the signed design-basis sheet, file uploads into the task folder, a check of every part the grader needs, the decision log, and model runs started and read from the page. It runs on `127.0.0.1` with the standard library only. A read-only copy shows progress and results on a website without the prompts, keys or traps: [tnega.app/eval](https://www.tnega.app/eval/).
 
+## Trials per model
+
+`--k` sets the trials per task for every model. To give each model its own number, add it after a colon:
+
+```
+python3 -m harness.run run --models claude-haiku-5-5:3 claude-sonnet-5-5:2 claude-opus-5-5:1 --tasks "..."
+```
+
 ## Key-scored tasks (point items)
 
 A task can also be graded against a full expert answer key instead of a short rubric. Add to `task.json`:

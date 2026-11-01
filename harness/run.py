@@ -223,7 +223,7 @@ def cmd_run(a):
     lib = RefLibrary(lib_dir) if lib_dir else None
     judge_lib = lib
     if lib:
-        print(f"reference library: {lib_dir}" + ("" if a.with_refs else " (grader only)"))
+        print(f"reference library: {lib_dir}" + (" (model: excerpts)" if a.with_refs else "") + (" (model: as tools)" if a.model_library else "") + " (grader)")
     if a.judge_tools:
         print(f"equipped grader: code execution + task files" + (f" + code library {lib_dir}" if judge_lib else ""))
     task_dirs = sorted(d for pat in a.tasks for d in glob.glob(pat) if os.path.isfile(os.path.join(d, "task.json")))

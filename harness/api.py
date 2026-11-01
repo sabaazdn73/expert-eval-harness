@@ -74,7 +74,21 @@ def _stream(req):
     return "".join(text), dict(usage, stop_reason=stop)
 
 
-def call(model, content, system=None, max_tokens=4000, temperature=None, effort=None):
+CACHE_1H = {"type": "ephemeral", "ttl": "1h"}
+
+
+def with_cache_point(content, ttl=CACHE_1H):
+    """Copy of content with a cache point on its last cacheable block, so the identical prefix
+    (task files and prompt) is billed once per hour per model and read from the cache after that."""
+    content = [dict(b) for b in content]
+    for b in reversed(content):
+        if b.get("type") in ("text", "document", "image"):
+            b["cache_control"] = dict(ttl)
+            break
+    return content
+
+
+def call(model, content, system=None, max_tokens=4000, temperature=None, effort=None, cache=True):
     """One streamed Messages API call. Returns (text, usage dict).
 
     Thinking tokens count toward max_tokens on current models, so give a large max_tokens for hard tasks.
@@ -83,7 +97,7 @@ def call(model, content, system=None, max_tokens=4000, temperature=None, effort=
     if model.startswith("mock"):
         return mock_call(model, content)
     body = {"model": model, "max_tokens": max_tokens, "stream": True,
-            "messages": [{"role": "user", "content": content}]}
+            "messages": [{"role": "user", "content": with_cache_point(content) if cache else content}]}
     if temperature is not None:
         body["temperature"] = temperature
     if effort:
@@ -112,8 +126,31 @@ def call(model, content, system=None, max_tokens=4000, temperature=None, effort=
     raise APIError("gave up after repeated retries")
 
 
+_UPLOADS = None
+
+
 def upload_file(path):
-    """Upload a file with the Files API and return its file_id (used for container_upload blocks)."""
+    """file_id for a local file, uploading it once: ids are kept in runs/.uploads.json by content hash,
+    so the same file is not uploaded again on every run."""
+    import hashlib, threading
+    global _UPLOADS
+    store = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "runs", ".uploads.json")
+    digest = hashlib.sha256(open(path, "rb").read()).hexdigest()
+    if _UPLOADS is None:
+        try:
+            _UPLOADS = json.load(open(store))
+        except (OSError, ValueError):
+            _UPLOADS = {}
+    if digest in _UPLOADS:
+        return _UPLOADS[digest]
+    fid = _upload(path)
+    _UPLOADS[digest] = fid
+    os.makedirs(os.path.dirname(store), exist_ok=True)
+    json.dump(_UPLOADS, open(store, "w"), indent=1)
+    return fid
+
+
+def _upload(path):
     import uuid
     boundary = uuid.uuid4().hex
     name = os.path.basename(path)

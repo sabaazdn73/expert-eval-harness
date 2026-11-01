@@ -83,7 +83,7 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None
     content = [dict(b) for b in content]
     for b in reversed(content):
         if b.get("type") in ("text", "document", "image"):
-            b["cache_control"] = {"type": "ephemeral"}
+            b["cache_control"] = dict(api.CACHE_1H)
             break
     messages = [{"role": "user", "content": content}]
     usage = {"input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0}

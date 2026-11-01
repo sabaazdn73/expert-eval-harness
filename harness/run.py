@@ -159,12 +159,18 @@ def judge_key(task, response, judge_model, equipped=False, lib=None):
            '"key_flags": ["possible problem in the key, with the evidence", ...]}')
     )
     trace, flags = [], []
+    # The key and the task are the same for every trial: put them first, behind a cache point,
+    # and the response after it, so each further grading reads the key from the cache.
+    cut = prompt.index("<response>")
+    static, dynamic = prompt[:cut], prompt[cut:]
     if equipped and not judge_model.startswith("mock"):
         content = [api.file_block(os.path.join(task["dir"], p)) for p in task.get("files", [])]
-        content.append({"type": "text", "text": grader_tools.GUIDE + "\n" + prompt})
+        content.append({"type": "text", "text": grader_tools.GUIDE + "\n" + static, "cache_control": dict(api.CACHE_1H)})
+        content.append({"type": "text", "text": dynamic})
         text, usage, trace = grader_tools.run_equipped(judge_model, content, lib)
     else:
-        text, usage = api.call(judge_model, [{"type": "text", "text": prompt}], max_tokens=32000)
+        content = [{"type": "text", "text": static, "cache_control": dict(api.CACHE_1H)}, {"type": "text", "text": dynamic}]
+        text, usage = api.call(judge_model, content, max_tokens=32000, cache=False)
     i = max(text.rfind('{"items"'), text.rfind('{ "items"'), text.rfind('{\n'))
     try:
         parsed = json.JSONDecoder().raw_decode(text[i:])[0] if i >= 0 else {}
@@ -329,8 +335,20 @@ def cmd_run(a):
         content = build_content(task, a.with_refs, mock, lib_block)
         jobs += [(task, content, lib_block, m, t) for m in a.models for t in range(ks[m]) if (task["id"], m, t) not in done]
     print(f"running {len(jobs)} trials, {a.parallel} at a time", flush=True)
+    # Warm the prompt cache: the first trial of each (task, model) starts alone; the other trials of that
+    # pair start a little later, once the first request has written the task files to the cache.
+    import time as _time
+    first, rest, seen = [], [], set()
+    for j in jobs:
+        key = (j[0]["id"], j[3])
+        (rest if key in seen else first).append(j)
+        seen.add(key)
     with ThreadPoolExecutor(max_workers=max(1, a.parallel)) as pool:
-        for fut in [pool.submit(one, *j) for j in jobs]:
+        futs = [pool.submit(one, *j) for j in first]
+        if rest and not mock:
+            _time.sleep(a.warmup)
+        futs += [pool.submit(one, *j) for j in rest]
+        for fut in futs:
             try:
                 fut.result()
             except Exception as e:
@@ -560,6 +578,7 @@ def main():
                    help="output_config.effort; default is each model's own default")
     s.add_argument("--max-calls", type=int, default=60, help="safety cap on model calls per run")
     s.add_argument("--parallel", type=int, default=3, help="trials run at the same time (lower it if you hit rate limits)")
+    s.add_argument("--warmup", type=int, default=45, help="seconds to wait after the first trial of each task before the others start, so they read the files from the prompt cache")
     s.add_argument("--resume", action="store_true", help="keep the trials already saved in runs/<name> and run only the missing ones")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_run)

@@ -14,6 +14,10 @@ This harness is the measuring side of [Tnega](https://github.com/sabaazdn73/tneg
 
 How the tasks are designed, and where the human expert belongs in the process: [Where the Human Belongs](docs/where-the-human-belongs.md). It sets out a human–AI division of labor for building expert evaluation tasks, with a worked structural engineering example (special RC shear walls under the 2024 IBC as adopted by Utah, ASCE 7-22 and ACI 318-19, with the Utah statewide amendments), templates and sample criteria.
 
+## Task pipeline dashboard
+
+[dashboard/](dashboard/README.md) is a local workspace for building tasks with that method: the nine stages with the three human gates, the signed design-basis sheet, file uploads into the task folder, a check of every part the grader needs, the decision log, and model runs started and read from the page. It runs on `127.0.0.1` with the standard library only. A read-only copy shows progress and results on a website without the prompts, keys or traps: [tnega.app/eval](https://www.tnega.app/eval/).
+
 ## Key-scored tasks (point items)
 
 A task can also be graded against a full expert answer key instead of a short rubric. Add to `task.json`:

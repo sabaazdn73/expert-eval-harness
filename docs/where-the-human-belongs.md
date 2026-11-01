@@ -135,7 +135,7 @@ Judgment pressure came from three sources:
 Blind runs used only the prompt and the files, with no code text.
 
 - **Stronger tier:** caught every item.
-- **Target tier:** 3 of 3 runs had 3 to 4 serious errors each:
+- **Target tier:** 3 of 3 runs had serious errors (3 to 4 each as first scored, 2 to 3 after the correction below):
   - none caught 18.10.2.4;
   - all accepted the draft's design shear of about 751 kips without checking it. I first scored this as an error; under the Utah amendment 751 kips is conservative, so it was not one (see [Correction](#correction-utah-amendments));
   - all kept the 4,000 psi slabs.

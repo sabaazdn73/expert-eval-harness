@@ -151,11 +151,15 @@ PRICES = {  # model prefix: (input, output, cache-read multiplier)
 import threading as _threading
 _METER = {"usd": 0.0, "budget": None, "by_model": {}}
 _METER_LOCK = _threading.Lock()
+_UNPRICED = set()
 
 
 def cost_of(model, u):
     p = next((v for k, v in PRICES.items() if model.startswith(k)), None)
     if not p:
+        if not model.startswith("mock") and model not in _UNPRICED:
+            _UNPRICED.add(model)
+            print(f"note: no price for {model} in api.PRICES; its cost is not in the estimate or --budget", flush=True)
         return 0.0
     inp, out, rd = p
     prompt = sum((u.get(k, 0) or 0) for k in ("input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens"))

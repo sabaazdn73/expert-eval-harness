@@ -4,7 +4,8 @@ The grader stays Claude, so every model's answer is scored the same way. Gemini 
 system prompt as Claude; tasks with code_execution get Gemini's own Python sandbox (it runs server side, inside one
 request), and data files are attached so code can load them.
 
-Auth: export GOOGLE_API_KEY (an Agent Platform API key; usage is billed to the key's project). Never commit the key.
+Auth: export GOOGLE_API_KEY (an Agent Platform API key; usage is billed to the key's project) and GOOGLE_CLOUD_PROJECT
+(the project id, so requests go to its global endpoint). Never commit the key.
 The key goes in a request header, never in the URL.
 """
 import base64
@@ -34,11 +35,15 @@ def _key():
 
 
 def endpoint(model):
-    """API-key requests use the publisher URL (the form Google documents for API keys); the key's project is billed.
-    GOOGLE_CLOUD_LOCATION picks a regional endpoint (default global)."""
+    """With GOOGLE_CLOUD_PROJECT set: the project's endpoint in GOOGLE_CLOUD_LOCATION (default global), which newer
+    models such as gemini-4-argon need (without a project, API-key requests resolve to us-central1).
+    Without it: the publisher URL Google documents for express-mode API keys."""
+    project = os.environ.get("GOOGLE_CLOUD_PROJECT", "").strip()
     loc = os.environ.get("GOOGLE_CLOUD_LOCATION", "global").strip() or "global"
     host = "aiplatform.googleapis.com" if loc == "global" else f"{loc}-aiplatform.googleapis.com"
-    return f"https://{host}/v1/publishers/google/models/{model}:streamGenerateContent?alt=sse"
+    path = (f"projects/{project}/locations/{loc}/publishers/google/models/{model}" if project
+            else f"publishers/google/models/{model}")
+    return f"https://{host}/v1/{path}:streamGenerateContent?alt=sse"
 
 
 DATA_MIME = {".csv": "text/csv", ".txt": "text/plain", ".json": "application/json"}
@@ -137,7 +142,7 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
                 api._wait(attempt, e.headers)
                 continue
             hint = (" (check the API key and that the Agent Platform API is enabled)"
-                    if e.code in (401, 403) else " (check the model id in Model Garden)" if e.code == 404 else "")
+                    if e.code in (401, 403) else " (check the model id in Model Garden, and set GOOGLE_CLOUD_PROJECT so the global endpoint is used)" if e.code == 404 else "")
             raise api.APIError(f"Gemini HTTP {e.code}: {raw[:400]}{hint}")
         except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
             if attempt < api.TRIES - 1:

@@ -20,6 +20,7 @@ import sys
 from harness import api
 from harness.refs import RefLibrary
 from harness import grader_tools
+from harness import gemini
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SYSTEM = ("You are an expert answering a professional task. Work carefully, state assumptions, "
@@ -282,6 +283,12 @@ def cmd_run(a):
     a.models = list(ks)
     mock = all(m.startswith("mock") for m in a.models)
     judge_model = a.judge or ("mock-judge" if mock else "claude-sonnet-5-5")
+    if gemini.is_gemini(judge_model):
+        sys.exit("the grader must be a Claude model (Gemini runs only as a model under test)")
+    if a.model_library and any(gemini.is_gemini(m) for m in a.models):
+        sys.exit("--model-library works with Claude models only; run Gemini without it")
+    if any(gemini.is_gemini(m) for m in a.models):
+        gemini._key()  # fail now, not after the Claude trials
     lib_dir = a.ref_lib or os.environ.get("CODE_REF_DIR")
     lib = RefLibrary(lib_dir) if lib_dir else None
     judge_lib = lib
@@ -361,7 +368,13 @@ def cmd_run(a):
             print(head + f"skipped: {e} (not saved; raise --budget and use --resume)", flush=True)
             return
         try:
-            if a.model_library and lib and not mock:
+            if gemini.is_gemini(model):
+                # Gemini under test, via Vertex AI; same prompt and files, its own sandbox for code tasks
+                code = bool(task.get("code_execution"))
+                text, usage, mtrace = gemini.run(model, content, system=CODE_SYSTEM if code else SYSTEM,
+                                                 code_execution=code, max_tokens=a.max_tokens, effort=a.effort)
+                note = f"ran code {len(mtrace)} times" if code else ""
+            elif a.model_library and lib and not mock:
                 # case study: the model under test can look up the code library itself
                 mtools = ([grader_tools.CODE_EXEC] if task.get("code_execution") else []) + grader_tools.CLIENT_TOOLS
                 text, usage, mtrace = grader_tools.run_equipped(

@@ -80,6 +80,21 @@ python3 -m harness.run run --models claude-haiku-5-5:2 claude-sonnet-5-5:2 --jud
   --ref-lib ~/Documents/Codex/code-ref-mcp --budget 15 --tasks "/path/to/tasks/*" --name main-1
 ```
 
+## Gemini models
+
+Gemini runs as a model under test through Vertex AI (Google Cloud's Agent Platform), with the same prompt, files and
+system prompt as Claude, and Gemini's own Python sandbox for code-execution tasks. The grader stays Claude, so every
+answer is scored by the same key and grader.
+
+```
+export GOOGLE_API_KEY=...            # Agent Platform API key, kept in your shell only
+export GOOGLE_CLOUD_PROJECT=<project-id>
+python3 -m harness.run run --models claude-sonnet-5-5:2 gemini-4-argon:2 gemini-3-flash-preview:2 \
+  --judge claude-opus-5-5 --judge-tools --tasks "/path/to/tasks/*" --name cross-1
+```
+
+Use the model ids shown in Model Garden. Google bills Gemini; the run's cost estimate and `--budget` include it.
+
 ### Equipped grader (`--judge-tools`)
 
 For key-scored tasks the grader can check a response instead of only reading it:

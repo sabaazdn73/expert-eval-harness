@@ -213,5 +213,53 @@ class Runs(unittest.TestCase):
                 shutil.rmtree(out, ignore_errors=True)
 
 
+class Gemini(unittest.TestCase):
+    def test_parts_from_claude_content(self):
+        from harness import gemini
+        content = [{"type": "text", "text": "(File loads.csv is in the sandbox; also shown below.)"},
+                   {"type": "container_upload", "file_id": "f1"},
+                   {"type": "text", "text": '<file name="loads.csv">\na,b\n1,2\n</file>'},
+                   {"type": "document", "source": {"type": "base64", "media_type": "application/pdf", "data": "UERG"}},
+                   {"type": "text", "text": "Prompt", "cache_control": {"type": "ephemeral"}}]
+        b = gemini.body_for(content, system="S", code_execution=True, max_tokens=128000, effort="xhigh")
+        parts = b["contents"][0]["parts"]
+        self.assertIn("attached for code execution", parts[0]["text"])
+        self.assertEqual(parts[2]["inlineData"]["mimeType"], "text/csv")
+        self.assertEqual(base64_decode(parts[2]["inlineData"]["data"]), "a,b\n1,2")
+        self.assertEqual(parts[3]["inlineData"]["mimeType"], "application/pdf")
+        self.assertNotIn("cache_control", json.dumps(b))
+        self.assertEqual(b["generationConfig"]["maxOutputTokens"], 65536)
+        self.assertEqual(b["generationConfig"]["thinkingConfig"]["thinkingLevel"], "high")
+        self.assertEqual(b["tools"], [{"codeExecution": {}}])
+
+    def test_stream(self):
+        from harness import gemini
+        ev = [{"candidates": [{"content": {"parts": [{"text": "plan", "thought": True}, {"text": "Let me compute. "}]}}]},
+              {"candidates": [{"content": {"parts": [{"executableCode": {"code": "print(1+1)"}},
+                                                     {"codeExecutionResult": {"output": "2"}}, {"text": "Answer 2"}]},
+                               "finishReason": "STOP"}],
+               "usageMetadata": {"promptTokenCount": 1000, "cachedContentTokenCount": 400, "candidatesTokenCount": 50,
+                                 "thoughtsTokenCount": 200}}]
+        text, u, trace = gemini.assemble([("data: " + json.dumps(e)).encode() for e in ev])
+        self.assertEqual(text, "Let me compute. Answer 2")
+        self.assertEqual((u["input_tokens"], u["cache_read_input_tokens"], u["output_tokens"], u["stop_reason"]),
+                         (600, 400, 250, "end_turn"))
+        self.assertEqual(len(trace), 1)
+        with self.assertRaises(api.StreamCut):
+            gemini.assemble([("data: " + json.dumps(ev[0])).encode()])
+
+    def test_key_never_in_url(self):
+        from harness import gemini
+        with mock.patch.dict(os.environ, {"GOOGLE_API_KEY": "SECRET", "GOOGLE_CLOUD_PROJECT": "p1"}):
+            url = gemini.endpoint("gemini-4-argon")
+        self.assertNotIn("SECRET", url)
+        self.assertIn("projects/p1/locations/global/publishers/google/models/gemini-4-argon:streamGenerateContent", url)
+
+
+def base64_decode(s):
+    import base64
+    return base64.b64decode(s).decode()
+
+
 if __name__ == "__main__":
     unittest.main()

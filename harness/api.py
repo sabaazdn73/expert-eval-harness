@@ -142,6 +142,11 @@ PRICES = {  # model prefix: (input, output, cache-read multiplier)
     "claude-sonnet-5-5": (2.0, 10.0, 0.05),
     "claude-opus-5-5": (4.0, 20.0, 0.05),
     "claude-fable-5-1": (10.0, 50.0, 0.025),
+    # Gemini on Vertex AI, global endpoint (introductory Argon price until 30 Nov 2026, then 4 / 20)
+    "gemini-4-argon": (2.0, 10.0, 0.05),
+    "gemini-3.1-pro": (2.0, 12.0, 0.1),
+    "gemini-3-flash": (0.5, 3.0, 0.1),
+    "gemini-3.1-flash-lite": (0.25, 1.5, 0.1),
 }
 import threading as _threading
 _METER = {"usd": 0.0, "budget": None, "by_model": {}}

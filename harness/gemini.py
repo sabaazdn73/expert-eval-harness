@@ -4,8 +4,7 @@ The grader stays Claude, so every model's answer is scored the same way. Gemini 
 system prompt as Claude; tasks with code_execution get Gemini's own Python sandbox (it runs server side, inside one
 request), and data files are attached so code can load them.
 
-Auth: export GOOGLE_API_KEY (an Agent Platform API key) and, for a full Google Cloud project,
-GOOGLE_CLOUD_PROJECT (and optionally GOOGLE_CLOUD_LOCATION, default global). Never commit the key.
+Auth: export GOOGLE_API_KEY (an Agent Platform API key; usage is billed to the key's project). Never commit the key.
 The key goes in a request header, never in the URL.
 """
 import base64
@@ -35,12 +34,11 @@ def _key():
 
 
 def endpoint(model):
-    project = os.environ.get("GOOGLE_CLOUD_PROJECT", "").strip()
+    """API-key requests use the publisher URL (the form Google documents for API keys); the key's project is billed.
+    GOOGLE_CLOUD_LOCATION picks a regional endpoint (default global)."""
     loc = os.environ.get("GOOGLE_CLOUD_LOCATION", "global").strip() or "global"
     host = "aiplatform.googleapis.com" if loc == "global" else f"{loc}-aiplatform.googleapis.com"
-    path = (f"projects/{project}/locations/{loc}/publishers/google/models/{model}" if project
-            else f"publishers/google/models/{model}")  # express mode
-    return f"https://{host}/v1/{path}:streamGenerateContent?alt=sse"
+    return f"https://{host}/v1/publishers/google/models/{model}:streamGenerateContent?alt=sse"
 
 
 DATA_MIME = {".csv": "text/csv", ".txt": "text/plain", ".json": "application/json"}
@@ -138,7 +136,7 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
             if e.code in RETRY_CODES and attempt < api.TRIES - 1:
                 api._wait(attempt, e.headers)
                 continue
-            hint = (" (check the API key, that the Agent Platform API is enabled, and GOOGLE_CLOUD_PROJECT)"
+            hint = (" (check the API key and that the Agent Platform API is enabled)"
                     if e.code in (401, 403) else " (check the model id in Model Garden)" if e.code == 404 else "")
             raise api.APIError(f"Gemini HTTP {e.code}: {raw[:400]}{hint}")
         except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:

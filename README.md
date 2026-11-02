@@ -87,9 +87,8 @@ system prompt as Claude, and Gemini's own Python sandbox for code-execution task
 answer is scored by the same key and grader.
 
 ```
-export GOOGLE_API_KEY=...            # Agent Platform API key, kept in your shell only
-export GOOGLE_CLOUD_PROJECT=<project-id>
-python3 -m harness.run run --models claude-sonnet-5-5:2 gemini-4-argon:2 gemini-3-flash-preview:2 \
+export GOOGLE_API_KEY=...            # Agent Platform API key, kept in your shell only; its project is billed
+python3 -m harness.run run --models claude-sonnet-5-5:2 gemini-4-argon:2 gemini-3.8-flash:2 \
   --judge claude-opus-5-5 --judge-tools --tasks "/path/to/tasks/*" --name cross-1
 ```
 

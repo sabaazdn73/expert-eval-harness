@@ -250,10 +250,10 @@ class Gemini(unittest.TestCase):
 
     def test_key_never_in_url(self):
         from harness import gemini
-        with mock.patch.dict(os.environ, {"GOOGLE_API_KEY": "SECRET", "GOOGLE_CLOUD_PROJECT": "p1"}):
+        with mock.patch.dict(os.environ, {"GOOGLE_API_KEY": "SECRET"}):
             url = gemini.endpoint("gemini-4-argon")
         self.assertNotIn("SECRET", url)
-        self.assertIn("projects/p1/locations/global/publishers/google/models/gemini-4-argon:streamGenerateContent", url)
+        self.assertEqual(url, "https://aiplatform.googleapis.com/v1/publishers/google/models/gemini-4-argon:streamGenerateContent?alt=sse")
 
 
 def base64_decode(s):

@@ -125,6 +125,8 @@ class Streams(unittest.TestCase):
     def test_cost_estimate(self):
         self.assertAlmostEqual(api.cost_of("claude-sonnet-5-5", {"input_tokens": 1_000_000}), 2.0)
         self.assertAlmostEqual(api.cost_of("claude-sonnet-5-5", {"cache_read_input_tokens": 1_000_000}), 0.1)
+        self.assertAlmostEqual(api.cost_of("claude-haiku-5-5", {"input_tokens": 50_000}), 0.005)
+        self.assertAlmostEqual(api.cost_of("claude-haiku-5-5", {"input_tokens": 200_000}), 0.1)
 
 
 class Library(unittest.TestCase):

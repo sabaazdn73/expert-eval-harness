@@ -153,6 +153,9 @@ def cost_of(model, u):
     if not p:
         return 0.0
     inp, out, rd = p
+    prompt = sum((u.get(k, 0) or 0) for k in ("input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens"))
+    if model.startswith("claude-haiku-5-5") and prompt > 100_000:  # Haiku 5.5 bills long prompts at 5x
+        inp, out = inp * 5, out * 5
     cc = u.get("cache_creation") or {}
     w1h = cc.get("ephemeral_1h_input_tokens")
     w5m = cc.get("ephemeral_5m_input_tokens")

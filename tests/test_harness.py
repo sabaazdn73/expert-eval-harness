@@ -175,6 +175,7 @@ class Library(unittest.TestCase):
         self.assertEqual(errors, [])
 
 
+@mock.patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key", "GOOGLE_API_KEY": "test-key"})
 class Runs(unittest.TestCase):
     def test_grade_error_keeps_answer_and_resume_regrades_it(self):
         with tempfile.TemporaryDirectory() as d:
@@ -264,3 +265,200 @@ def base64_decode(s):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Providers(unittest.TestCase):
+    """Claude (Anthropic Console) and Gemini (Google Cloud) are metered and budgeted separately."""
+
+    def setUp(self):
+        api.reset_meter()
+
+    def tearDown(self):
+        api.reset_meter()
+
+    def test_provider_of_models(self):
+        self.assertEqual(api.provider("claude-opus-5-5"), "anthropic")
+        self.assertEqual(api.provider("gemini-4-argon"), "google")
+        self.assertEqual(api.provider("mock-good"), "mock")
+
+    def test_separate_meters_and_budgets(self):
+        api.set_budget(1.0, "anthropic")
+        api.set_budget(100.0, "google")
+        api._charge("gemini-4-argon", {"input_tokens": 1_000_000})  # $2 on Google
+        by = api.spent_by_provider()
+        self.assertAlmostEqual(by["google"], 2.0)
+        self.assertAlmostEqual(by["anthropic"], 0.0)
+        api.check_budget("anthropic")  # Google spend does not touch the Claude budget
+        api._charge("claude-opus-5-5", {"input_tokens": 300_000})  # $1.20 on Anthropic
+        with self.assertRaises(api.BudgetExceeded):
+            api.check_budget("anthropic")
+        api.check_budget("google")  # Google still under its own budget
+        with self.assertRaises(api.BudgetExceeded):
+            api.check_budget({"google", "anthropic"})  # a Gemini trial graded by Opus needs both
+
+    def test_flash_is_priced(self):
+        self.assertGreater(api.cost_of("gemini-3.8-flash", {"input_tokens": 1_000_000}), 0)
+
+
+class TwoGraders(unittest.TestCase):
+    def test_primary_decides_secondary_kept_and_agreement(self):
+        with tempfile.TemporaryDirectory() as d:
+            task = key_task(d)
+            full = json.dumps({"items": [{"id": "1", "points": 2, "reason": "a"}, {"id": "2", "points": 1, "reason": "b"}]})
+            part = json.dumps({"items": [{"id": "1", "points": 2, "reason": "a"}, {"id": "2", "points": 0, "reason": "c"}]})
+            from harness import gemini
+            with mock.patch.object(api, "call", return_value=(full, {"stop_reason": "end_turn"})), \
+                 mock.patch.object(gemini, "run", return_value=(part, {"stop_reason": "end_turn"}, [])) as g:
+                fields, _ = run.grade_multi(task, "answer", ["claude-opus-5-5", "gemini-4-argon"], False, None, "")
+            self.assertEqual(g.call_count, 1)
+            self.assertTrue(fields["passed"])
+            self.assertEqual(fields["score"], 3.0)
+            self.assertEqual(fields["grades"]["gemini-4-argon"]["score"], 2.0)
+            rows = [dict(fields, task="t", model="m", trial=0)]
+            agr = run.grader_agreement(rows, ["claude-opus-5-5", "gemini-4-argon"])["gemini-4-argon"]
+            self.assertEqual(agr["items"], 2)
+            self.assertEqual(agr["item_agreement"], 0.5)
+            self.assertEqual(len(agr["disagreements"]), 1)
+            self.assertEqual(agr["disagreements"][0]["item"], "2")
+
+    def test_strict_consensus(self):
+        with tempfile.TemporaryDirectory() as d:
+            task = key_task(d)
+            full = json.dumps({"items": [{"id": "1", "points": 2}, {"id": "2", "points": 1}]})
+            fail1 = json.dumps({"items": [{"id": "1", "points": 0}, {"id": "2", "points": 1}]})
+            from harness import gemini
+            with mock.patch.object(api, "call", return_value=(full, {"stop_reason": "end_turn"})), \
+                 mock.patch.object(gemini, "run", return_value=(fail1, {"stop_reason": "end_turn"}, [])):
+                fields, _ = run.grade_multi(task, "x", ["claude-opus-5-5", "gemini-4-argon"], False, None, "", "strict")
+            self.assertFalse(fields["passed"])
+            self.assertEqual(fields["score"], 1.0)
+
+    def test_failed_secondary_is_retried_alone(self):
+        with tempfile.TemporaryDirectory() as d:
+            task = key_task(d)
+            full = json.dumps({"items": [{"id": "1", "points": 2}, {"id": "2", "points": 1}]})
+            from harness import gemini
+            with mock.patch.object(api, "call", return_value=(full, {"stop_reason": "end_turn"})) as c, \
+                 mock.patch.object(gemini, "run", return_value=("no json", {"stop_reason": "end_turn"}, [])):
+                fields, _ = run.grade_multi(task, "x", ["claude-opus-5-5", "gemini-4-argon"], False, None, "")
+            self.assertTrue(fields["secondary_grade_error"])
+            self.assertTrue(fields["passed"])  # the primary decides
+            with mock.patch.object(api, "call", return_value=(full, {"stop_reason": "end_turn"})) as c2, \
+                 mock.patch.object(gemini, "run", return_value=(full, {"stop_reason": "end_turn"}, [])):
+                fields2, _ = run.grade_multi(task, "x", ["claude-opus-5-5", "gemini-4-argon"], False, None, "",
+                                             prior=fields["grades"])
+            self.assertEqual(c2.call_count, 0)  # the primary's grade is kept, not paid for again
+            self.assertFalse(fields2["secondary_grade_error"])
+
+    def test_failed_primary_is_a_grade_error(self):
+        with tempfile.TemporaryDirectory() as d:
+            task = key_task(d)
+            with mock.patch.object(api, "call", return_value=("no json", {"stop_reason": "end_turn"})):
+                with self.assertRaises(run.GradeError):
+                    run.grade_multi(task, "x", ["claude-opus-5-5"], False, None, "")
+
+
+class Adjudication(unittest.TestCase):
+    def test_expert_call_overrides_item_and_recomputes_pass(self):
+        row = {"task": "t", "model": "m", "trial": 0, "passed": True, "score": 3.0, "pass_score": 3, "checks": [],
+               "rubric": [{"id": "1", "points": 2.0, "max": 2, "required": True, "verdict": "pass"},
+                          {"id": "2", "points": 1.0, "max": 1, "required": False, "verdict": "pass"}]}
+        out = run.apply_adjudications([row], [{"task": "t", "model": "m", "trial": 1, "item": "2", "points": 0, "note": "wrong"}])
+        self.assertFalse(out[0]["passed"])
+        self.assertEqual(out[0]["score"], 2.0)
+        self.assertTrue(row["passed"])  # the stored grader result is not changed
+
+
+class Estimate(unittest.TestCase):
+    def test_estimate_by_provider(self):
+        with tempfile.TemporaryDirectory() as d:
+            task = key_task(d)
+            a = mock.Mock(judge_tools=False, est_output=40000, est_output_low=12000)
+            est = run.estimate_cost([task], {"claude-haiku-5-5": 2, "claude-sonnet-5-5": 1, "gemini-4-argon": 2},
+                                    ["claude-opus-5-5", "gemini-4-argon"], a)
+            self.assertGreater(est["high"]["anthropic"], est["low"]["anthropic"])
+            self.assertGreater(est["high"]["google"], 0)
+            self.assertIn("claude-opus-5-5", est["by_model"])
+
+
+class ReviewFixes(unittest.TestCase):
+    def test_verdict_and_points_parsing(self):
+        self.assertEqual(run._verdict(" PASS "), "pass")
+        self.assertEqual(run._verdict("Fail"), "fail")
+        self.assertEqual(run._points("2/2", 2), 2.0)
+        self.assertEqual(run._points(5, 2), 2.0)
+        with self.assertRaises(run.GradeError):
+            run._points("full marks", 2)
+        with self.assertRaises(run.GradeError):
+            run._points(None, 2)
+
+    def test_primary_failure_keeps_secondary_grade(self):
+        with tempfile.TemporaryDirectory() as d:
+            task = key_task(d)
+            full = json.dumps({"items": [{"id": "1", "points": 2}, {"id": "2", "points": 1}]})
+            from harness import gemini
+            with mock.patch.object(api, "call", return_value=("no json", {"stop_reason": "end_turn"})), \
+                 mock.patch.object(gemini, "run", return_value=(full, {"stop_reason": "end_turn"}, [])):
+                with self.assertRaises(run.GradeError) as cm:
+                    run.grade_multi(task, "x", ["claude-opus-5-5", "gemini-4-argon"], False, None, "")
+            self.assertIn("gemini-4-argon", cm.exception.grades)
+            self.assertFalse(cm.exception.grades["gemini-4-argon"].get("error"))
+
+    def test_legacy_row_primary_not_paid_again(self):
+        with tempfile.TemporaryDirectory() as d:
+            task = key_task(d)
+            row = {"task": "t", "model": "m", "trial": 0, "passed": True, "score": 3.0,
+                   "rubric": [{"id": "1", "points": 2.0, "max": 2, "required": True, "verdict": "pass"}]}
+            prior = run.legacy_grades(row, "claude-opus-5-5")
+            full = json.dumps({"items": [{"id": "1", "points": 2}, {"id": "2", "points": 1}]})
+            from harness import gemini
+            with mock.patch.object(api, "call") as c, \
+                 mock.patch.object(gemini, "run", return_value=(full, {"stop_reason": "end_turn"}, [])) as g:
+                fields, _ = run.grade_multi(task, "x", ["claude-opus-5-5", "gemini-4-argon"], False, None, "", prior=prior)
+            self.assertEqual(c.call_count, 0)
+            self.assertEqual(g.call_count, 1)
+            self.assertTrue(fields["passed"])
+
+    def test_no_answer_counts_as_fail_for_second_grader(self):
+        rows = [{"task": "t", "model": "m", "trial": 0, "no_answer": "cut off", "passed": False, "score": None},
+                {"task": "t", "model": "m", "trial": 1, "passed": True, "score": 1.0,
+                 "grades": {"a": {"passed": True, "score": 1.0, "rubric": []}, "b": {"passed": True, "score": 1.0, "rubric": []}}}]
+        v = run._view(rows, "b")
+        self.assertEqual(run.summarise(v)[("t", "m")], {"n": 2, "c": 1})
+
+    def test_unfilled_adjudication_is_ignored(self):
+        row = {"task": "t", "model": "m", "trial": 0, "passed": True, "score": 2.0, "pass_score": 2, "checks": [],
+               "rubric": [{"id": "1", "points": 2.0, "max": 2, "required": False, "verdict": "pass"}]}
+        adj = [{"task": "t", "model": "m", "trial": 1, "item": "1", "points": None, "verdict": None, "note": ""}]
+        self.assertTrue(run.apply_adjudications([row], adj)[0]["passed"])
+        self.assertEqual(run.unmatched_adjudications([row], [{"task": "t", "model": "m", "trial": 1, "item": "9", "points": 1}])[0]["item"], "9")
+
+    def test_compressed_pdf_page_count(self):
+        import zlib
+        body = b"<< /Type /Pages /Kids [] /Count 40 >>"
+        stream = zlib.compress(body)
+        pdf = b"%PDF-1.5\n1 0 obj\n<< /Type /ObjStm /Filter /FlateDecode >>\nstream\n" + stream + b"\nendstream\nendobj\n"
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as f:
+            f.write(pdf)
+        try:
+            self.assertEqual(run._pdf_pages(f.name), 40)
+        finally:
+            os.unlink(f.name)
+
+    def test_results_last_line_wins(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "results.jsonl")
+            with open(p, "w") as f:
+                f.write(json.dumps({"task": "t", "model": "m", "trial": 0, "passed": False}) + "\n")
+                f.write(json.dumps({"task": "t", "model": "m", "trial": 0, "passed": True}) + "\n")
+            rows = run.read_results(p)
+            self.assertEqual(len(rows), 1)
+            self.assertTrue(rows[0]["passed"])
+
+    def test_resume_meter_starts_from_earlier_spend(self):
+        api.reset_meter()
+        api.set_budget(1.0, "anthropic")
+        api.add_spend("anthropic", 1.5)
+        with self.assertRaises(api.BudgetExceeded):
+            api.check_budget("anthropic")
+        api.reset_meter()

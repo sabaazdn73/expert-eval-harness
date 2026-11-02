@@ -1,8 +1,11 @@
-"""Gemini models under test, through Vertex AI (Google Cloud's Agent Platform), standard library only.
+"""Gemini through Vertex AI (Google Cloud's Agent Platform), standard library only: as a model under test and as
+a second grader.
 
-The grader stays Claude, so every model's answer is scored the same way. Gemini gets the same prompt, files and
-system prompt as Claude; tasks with code_execution get Gemini's own Python sandbox (it runs server side, inside one
-request), and data files are attached so code can load them.
+Gemini gets the same prompt, files and system prompt as Claude; tasks with code_execution get Gemini's own Python
+sandbox (it runs server side, inside one request), and data files are attached so code can load them. As a grader it
+gets the same grading prompt as the Claude grader; the equipped grader gets code execution and the task files (the
+local code library is a Claude client tool and is not offered to Gemini). Gemini usage is metered and budgeted on
+the Google account, separately from Claude.
 
 Auth: export GOOGLE_API_KEY (an Agent Platform API key; usage is billed to the key's project) and GOOGLE_CLOUD_PROJECT
 (the project id, so requests go to its global endpoint). Never commit the key.

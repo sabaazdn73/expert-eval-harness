@@ -4,7 +4,7 @@
 
 Each task is a folder with the prompt, any input files, an answer key and a rubric written by a domain expert. The harness runs every task on several models, several times each, grades the answers, and reports how often each model gets it right.
 
-> **Status: v0.2.** Runs on live Claude models (Haiku, Sonnet, Opus) with key-scored tasks, an equipped grader and a cost budget. All tasks in this repository are original; private tasks are kept outside it.
+> **Status: v0.3.** Runs on live Claude and Gemini models with key-scored tasks, one or two graders (Claude and Gemini) with agreement statistics and expert adjudication, an equipped grader, and separate cost budgets per billing account. All tasks in this repository are original; private tasks are kept outside it.
 
 ## Related project
 
@@ -67,33 +67,56 @@ Add `--only-errors` to grade again, in place, only the rows whose grading failed
 
 ## Cost control and failed grading
 
-- **Budget.** `--budget 20` (USD, the default) stops starting new trials once the estimated spend reaches the figure; trials already running finish. The estimate is printed at the end and kept in `meta.json` (`est_cost_usd`, per model). It is an estimate from list prices: the Console shows the billed amount.
+- **Two accounts, two budgets.** Claude is billed on the Anthropic Console and Gemini on Google Cloud, so they are metered and budgeted separately: `--budget-claude 20` and `--budget-google 20` (USD, the defaults; `--budget` is the old name of `--budget-claude`). A grader's cost counts on its own account: an Opus grader spends Claude budget even when it grades a Gemini answer. A trial does not start once the account of its model, or of any of its graders, has reached its budget; trials already running finish and are graded. `meta.json` keeps the estimate per account (`est_cost_by_provider`) and per model. These are estimates from list prices: each provider's billing page shows the billed amount.
+- **Estimate before spending.** Every run first prints a low–high cost estimate per model and per account (from the task files' size and an assumed output length, `--est-output`). The run refuses to start if the high estimate is above a budget (add `--yes` to start anyway). `--dry-run` prints the plan and the estimate and calls nothing.
 - **Caching.** Task files and the prompt are cached for an hour, so repeated trials of a task read them at a fraction of the price; the grader caches the key and task once and sends only each answer new. `--warmup` (seconds) lets the first trial of each task fill the cache before the others start. In tool loops a rolling cache point means each turn pays only for what is new.
 - **A grading failure is not a model failure.** If the grader's reply cannot be read or misses an item, the answer is saved with `grade_error` and is left out of the scores. `--resume` grades those rows again without calling the model under test, and fills in any trials that are missing.
 - **Cut streams are retried**, as are rate limits and overloads, so a half-received answer is never graded.
 - `--max-turns` (default 25) caps the tool turns of one trial. A run directory is never overwritten without `--resume` or `--overwrite`.
 
-A full run, two trials each of Haiku and Sonnet with Opus as the equipped grader:
+A full run, two trials each of Haiku and Sonnet with Opus as the equipped grader, Claude spend capped at $15:
 
 ```
 python3 -m harness.run run --models claude-haiku-5-5:2 claude-sonnet-5-5:2 --judge claude-opus-5-5 --judge-tools \
-  --ref-lib ~/Documents/Codex/code-ref-mcp --budget 15 --tasks "/path/to/tasks/*" --name main-1
+  --ref-lib ~/Documents/Codex/code-ref-mcp --budget-claude 15 --tasks "/path/to/tasks/*" --name main-1
 ```
 
 ## Gemini models
 
 Gemini runs as a model under test through Vertex AI (Google Cloud's Agent Platform), with the same prompt, files and
-system prompt as Claude, and Gemini's own Python sandbox for code-execution tasks. The grader stays Claude, so every
-answer is scored by the same key and grader.
+system prompt as Claude, and Gemini's own Python sandbox for code-execution tasks. It can also be a second grader.
 
 ```
 export GOOGLE_API_KEY=...            # Agent Platform API key, kept in your shell only; its project is billed
 export GOOGLE_CLOUD_PROJECT=<project-id>   # requests go to the project's global endpoint (needed for gemini-4-argon)
 python3 -m harness.run run --models claude-sonnet-5-5:2 gemini-4-argon:2 gemini-3.8-flash:2 \
-  --judge claude-opus-5-5 --judge-tools --tasks "/path/to/tasks/*" --name cross-1
+  --judge claude-opus-5-5 --tasks "/path/to/tasks/*" --name cross-1
 ```
 
-Use the model ids shown in Model Garden. Google bills Gemini; the run's cost estimate and `--budget` include it.
+Use the model ids shown in Model Garden.
+
+### Two graders, agreement and expert adjudication
+
+`--judge claude-opus-5-5 gemini-4-argon` grades every answer with both, blind to which model wrote it. The first grader
+is the primary: it decides pass and score (`--consensus strict` instead passes a trial only if every grader passes it).
+The report then has results by each grader, their agreement (item-level agreement and Cohen's kappa, pass/fail agreement)
+and the list of items where they disagree. Two graders from different model families guard against a grader favouring
+its own family's answers. The expert settles the disagreements: copy `adjudications_template.json` (written next to the
+report) to `adjudications.json`, fill in the points (or verdict) for each item, and run `report` again; the report then
+leads with the adjudicated results, and the graders' own scores stay in `results.jsonl`. A failed second grader does
+not fail the row: `--resume` or `regrade --only-errors` grades only what is missing, without paying the primary again.
+
+### Before the one paid run
+
+```
+python3 -m harness.run preflight --tasks "/path/to/tasks/*" --models claude-haiku-5-5 gemini-4-argon --judge claude-opus-5-5 gemini-4-argon --ping
+python3 -m harness.run run ... --dry-run
+```
+
+`preflight` checks every task (files present, key items and scores consistent, check fields in the answer format), the
+API keys, and with `--ping` sends one tiny request per model so a wrong model id fails for a few cents. Each run records
+the sha256 of every task's prompt, key and files in `meta.json` (`task_sha256`), so a reported result can be tied to the
+exact task version.
 
 ### Equipped grader (`--judge-tools`)
 

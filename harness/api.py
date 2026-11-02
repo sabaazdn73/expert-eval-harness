@@ -142,14 +142,27 @@ PRICES = {  # model prefix: (input, output, cache-read multiplier)
     "claude-sonnet-5-5": (2.0, 10.0, 0.05),
     "claude-opus-5-5": (4.0, 20.0, 0.05),
     "claude-fable-5-1": (10.0, 50.0, 0.025),
-    # Gemini on Vertex AI, global endpoint (introductory Argon price until 30 Nov 2026, then 4 / 20)
+    # Gemini on Vertex AI (Agent Platform pricing page, global endpoint, Standard tier, checked 2026-11-02):
+    # Argon introductory price until 30 Nov 2026 (then 4 / 20); 3.8 Flash introductory until 31 Dec 2026 (then 1.5 / 7.5)
     "gemini-4-argon": (2.0, 10.0, 0.05),
+    "gemini-3.8-flash": (0.75, 3.75, 0.1),
     "gemini-3.1-pro": (2.0, 12.0, 0.1),
     "gemini-3-flash": (0.5, 3.0, 0.1),
     "gemini-3.1-flash-lite": (0.25, 1.5, 0.1),
 }
+
+
+def provider(model):
+    """Who bills a model: 'anthropic' (Claude Console), 'google' (Google Cloud Agent Platform) or 'mock'.
+    The two are metered and budgeted separately, because they are paid from different accounts."""
+    if model.startswith("mock"):
+        return "mock"
+    return "google" if model.startswith("gemini") else "anthropic"
+
+
+PROVIDERS = ("anthropic", "google")
 import threading as _threading
-_METER = {"usd": 0.0, "budget": None, "by_model": {}}
+_METER = {"usd": {p: 0.0 for p in PROVIDERS}, "budget": {p: None for p in PROVIDERS}, "by_model": {}}
 _METER_LOCK = _threading.Lock()
 _UNPRICED = set()
 
@@ -175,25 +188,52 @@ def cost_of(model, u):
     return tok / 1e6
 
 
-def set_budget(usd):
-    _METER["budget"] = usd
+def set_budget(usd, prov="anthropic"):
+    """Estimated USD after which no new trial starts that would spend on this provider's account."""
+    _METER["budget"][prov] = usd
+
+
+def reset_meter():
+    with _METER_LOCK:
+        _METER["usd"] = {p: 0.0 for p in PROVIDERS}
+        _METER["budget"] = {p: None for p in PROVIDERS}
+        _METER["by_model"] = {}
+
+
+def add_spend(prov, usd):
+    """Count spend from an earlier session of the same run (a resume), so the budget covers the whole run."""
+    with _METER_LOCK:
+        if prov in _METER["usd"]:
+            _METER["usd"][prov] += usd
 
 
 def spent():
-    return _METER["usd"], dict(_METER["by_model"])
+    """(total USD over both providers, USD by model). Use spent_by_provider() for the two bills separately."""
+    return sum(_METER["usd"].values()), dict(_METER["by_model"])
+
+
+def spent_by_provider():
+    return dict(_METER["usd"])
 
 
 def _charge(model, usage):
     c = cost_of(model, usage)
+    p = provider(model)
     with _METER_LOCK:
-        _METER["usd"] += c
+        if p in _METER["usd"]:
+            _METER["usd"][p] += c
         _METER["by_model"][model] = _METER["by_model"].get(model, 0.0) + c
 
 
-def check_budget():
-    b = _METER["budget"]
-    if b is not None and _METER["usd"] >= b:
-        raise BudgetExceeded(f"budget of ${b:.2f} reached (estimated spend ${_METER['usd']:.2f}); stopping new requests")
+def check_budget(provs=PROVIDERS):
+    """Raise BudgetExceeded if any of these providers has reached its budget (a trial checks the provider of the
+    model under test and the providers of its graders, since grading spends too)."""
+    for p in ([provs] if isinstance(provs, str) else provs):
+        b = _METER["budget"].get(p)
+        if b is not None and _METER["usd"].get(p, 0.0) >= b:
+            name = {"anthropic": "Claude (Anthropic Console)", "google": "Gemini (Google Cloud)"}.get(p, p)
+            raise BudgetExceeded(f"{name} budget of ${b:.2f} reached (estimated spend ${_METER['usd'][p]:.2f}); "
+                                 "stopping new requests on that account")
 
 
 def _assemble(r):

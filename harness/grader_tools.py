@@ -53,6 +53,18 @@ GUIDE = (
 )
 
 
+# The Gemini grader has code execution (Gemini's own sandbox) and the task files, but not the local code library
+# (a Claude client tool). Same instructions otherwise, so the two graders are asked the same thing.
+GUIDE_GEMINI = (
+    "You have tools. Use them to verify, not to re-solve the task from scratch:\n"
+    "- code execution: recompute every number an item depends on (ratios, limits, drifts, forces) from the response's own inputs "
+    "and from the source documents, and compare with the key's tolerances.\n"
+    "- The task's input files are attached: check the figures the response takes from them.\n"
+    "Score from the key. If you find that the key itself looks wrong, ambiguous, or misses a valid alternative reading the response uses, "
+    "still score by the key, and report it in key_flags for a human to review.\n"
+)
+
+
 def _client_tool(name, args, lib):
     """Run one client tool. Never raises: errors go back to the model as text, so a bad query does not end
     the trial (and waste the turns already paid for)."""

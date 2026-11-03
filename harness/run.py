@@ -92,6 +92,17 @@ def extract_json(text):
 
 
 def check_one(check, answer):
+    """One deterministic check. "also" lists other accepted values (each with its own expected and tolerance), for a
+    key that accepts two defensible readings; the check passes if the main value or any alternative matches."""
+    ok, detail = _check_value(check, answer)
+    for alt in ([] if ok else check.get("also", [])):
+        ok2, d2 = _check_value(dict(check, **alt), answer)
+        if ok2:
+            return True, d2 + " (accepted alternative)"
+    return ok, detail
+
+
+def _check_value(check, answer):
     field = check["field"]
     if answer is None or field not in answer:
         return False, f"{field}: missing"

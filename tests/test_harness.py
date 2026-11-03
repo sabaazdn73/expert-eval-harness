@@ -462,3 +462,14 @@ class ReviewFixes(unittest.TestCase):
         with self.assertRaises(api.BudgetExceeded):
             api.check_budget("anthropic")
         api.reset_meter()
+
+
+def test_check_accepts_listed_alternative():
+    from harness.run import check_one
+    c = {"field": "x", "type": "number", "expected": 14.26, "tol_abs": 0.25, "also": [{"expected": 19.0, "tol_abs": 0.3}]}
+    assert check_one(c, {"x": 14.3})[0]
+    assert check_one(c, {"x": 19.1})[0]
+    assert not check_one(c, {"x": 17.0})[0]
+    ch = {"field": "a", "type": "choice", "expected": "revise and resubmit", "also": [{"expected": "rejected"}]}
+    assert check_one(ch, {"a": "Rejected"})[0]
+    assert not check_one(ch, {"a": "approve"})[0]

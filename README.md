@@ -38,6 +38,8 @@ A task can also be graded against a full expert answer key instead of a short ru
 "judge_note": "optional note to the grader"
 ```
 
+A deterministic check can accept a second defensible reading with `"also"`, a list of other expected values with their own tolerances: `{"field": "phiVn", "expected": 14.26, "tol_abs": 0.25, "also": [{"expected": 19.0, "tol_abs": 0.3}]}`.
+
 The judge scores every item against the key (no partial credit within an item); the harness adds the points and applies
 the pass rule (score at or above `pass_score` and every required item earned). The report shows each trial's score.
 Tasks can live outside this repository: `--tasks "/path/to/private-tasks/*"`.

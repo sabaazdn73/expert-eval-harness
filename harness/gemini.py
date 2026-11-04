@@ -27,6 +27,34 @@ CUT_RETRIES = 2  # retries after a timeout or a cut stream (rate limits and 5xx 
 LOOP_RUNS = 20  # a cut stream with at least this many code runs and no answer is not retried
 
 
+TRACE_DIR = None  # set by the run: every Gemini request under test and every event it streams back is written here
+
+
+def _redact(body):
+    """The request as sent, with attached file bytes replaced by their size (the key is in a header, never here)."""
+    b = json.loads(json.dumps(body))
+    for c in b.get("contents", []):
+        for p in c.get("parts", []):
+            if "inlineData" in p:
+                p["inlineData"] = {"mimeType": p["inlineData"].get("mimeType"),
+                                   "data": f"<{len(p['inlineData'].get('data', ''))} base64 chars>"}
+    return b
+
+
+def _tracer(tag):
+    if not (TRACE_DIR and tag):
+        return None
+    os.makedirs(TRACE_DIR, exist_ok=True)
+    path = os.path.join(TRACE_DIR, "".join(ch if ch.isalnum() or ch in "-_." else "_" for ch in tag) + ".jsonl")
+
+    def write(rec):
+        import time
+        rec = {"t": round(time.time(), 2), **rec}
+        with open(path, "a") as f:
+            f.write(json.dumps(rec) + "\n")
+    return write
+
+
 def _note(model, attempt, why):
     """Say why a request is retried, so a long silence in the run log has a visible cause."""
     import sys
@@ -109,7 +137,7 @@ def body_for(content, system=None, code_execution=False, max_tokens=MAX_OUT, eff
 STOP = {"STOP": "end_turn", "MAX_TOKENS": "max_tokens"}
 
 
-def assemble(lines):
+def assemble(lines, sink=None):
     """SSE stream of GenerateContentResponse chunks -> (text, usage, trace). Raises StreamCut if no finishReason."""
     text, trace, usage, finish = [], [], {}, None
     events, last_keys, feedback = 0, [], None
@@ -119,6 +147,8 @@ def assemble(lines):
             continue
         ev = json.loads(line[5:].strip())
         events += 1
+        if sink:
+            sink({"kind": "event", "data": ev})
         last_keys = sorted(ev)
         feedback = ev.get("promptFeedback") or feedback
         if "error" in ev:
@@ -155,25 +185,36 @@ def assemble(lines):
     return "".join(text), u, trace
 
 
-def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, effort=None):
-    """One Gemini trial. Returns (text, usage in the harness's Claude-style keys, trace of code runs)."""
-    data = json.dumps(body_for(content, system, code_execution, max_tokens, effort)).encode()
+def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, effort=None, tag=None):
+    """One Gemini trial. Returns (text, usage in the harness's Claude-style keys, trace of code runs).
+    With TRACE_DIR set and a tag, the request and every streamed event go to TRACE_DIR/<tag>.jsonl."""
+    body = body_for(content, system, code_execution, max_tokens, effort)
+    data = json.dumps(body).encode()
+    log = _tracer(tag)
+    if log:
+        log({"kind": "request", "model": model, "body": _redact(body)})
     headers = {"x-goog-api-key": _key(), "content-type": "application/json"}
     cuts = 0  # timeouts and cut streams: each one may have been billed for a long think, so retry them less
     partial = None  # the longest answer that arrived without a finishReason
     stream = True  # after a cut stream, ask for the whole response in one piece instead
     for attempt in range(api.TRIES):
         req = urllib.request.Request(endpoint(model, stream), data=data, headers=headers, method="POST")
+        if log:
+            log({"kind": "attempt", "n": attempt + 1, "stream": stream})
         try:
             with urllib.request.urlopen(req, timeout=600 if stream else 1800) as r:
                 if stream:
-                    text, usage, trace = assemble(r)
+                    text, usage, trace = assemble(r, sink=log)
                 else:
-                    text, usage, trace = assemble([b"data: " + json.dumps(json.loads(r.read())).encode()])
+                    text, usage, trace = assemble([b"data: " + json.dumps(json.loads(r.read())).encode()], sink=log)
+            if log:
+                log({"kind": "done", "chars": len(text), "code_runs": len(trace), "usage": usage})
             api._charge(model, usage)
             return text, usage, trace
         except urllib.error.HTTPError as e:
             raw = e.read().decode(errors="replace")
+            if log:
+                log({"kind": "error", "http": e.code, "body": raw[:2000]})
             if e.code in RETRY_CODES and attempt < api.TRIES - 1:
                 _note(model, attempt, f"HTTP {e.code}")
                 api._wait(attempt, e.headers)
@@ -183,6 +224,8 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
             raise api.APIError(f"Gemini HTTP {e.code}: {raw[:400]}{hint}")
         except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
             cuts += 1
+            if log:
+                log({"kind": "error", "type": type(e).__name__, "message": str(getattr(e, "reason", e))[:2000]})
             got = getattr(e, "partial", None)
             if got and (got[0].strip() or got[2]) and (not partial or (len(got[0]), len(got[2])) > (len(partial[0]), len(partial[2]))):
                 partial = got

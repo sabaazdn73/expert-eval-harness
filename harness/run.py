@@ -681,6 +681,7 @@ def cmd_run(a):
     lock = threading.Lock()
     done, old_meta = set(), {}
     res_path = os.path.join(out, "results.jsonl")
+    gemini.TRACE_DIR = os.path.join(out, "traces")  # what goes to each Gemini model under test and what comes back
     if a.resume and os.path.exists(res_path):
         rows = read_results(res_path)
         done = {(r["task"], r["model"], r["trial"]) for r in rows}
@@ -761,7 +762,8 @@ def cmd_run(a):
                 # Gemini under test, via Vertex AI; same prompt and files, its own sandbox for code tasks
                 code = bool(task.get("code_execution"))
                 text, usage, mtrace = gemini.run(model, content, system=CODE_SYSTEM if code else SYSTEM,
-                                                 code_execution=code, max_tokens=a.max_tokens, effort=a.effort)
+                                                 code_execution=code, max_tokens=a.max_tokens, effort=a.effort,
+                                                 tag=f"{task['id']}__{model}__trial{trial + 1}")
                 note = f"ran code {len(mtrace)} times" if code else ""
             elif a.model_library and lib and not mock:
                 # case study: the model under test can look up the code library itself

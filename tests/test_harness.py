@@ -302,6 +302,25 @@ class GeminiNonStreamTest(unittest.TestCase):
             text, u, _ = gemini.run("gemini-x", [{"type": "text", "text": "q"}])
         self.assertEqual((op.call_count, u["stop_reason"]), (1, "code_loop_cut"))
 
+    def test_trace_file_records_request_events_and_result(self):
+        from harness import gemini
+        ev = {"candidates": [{"content": {"parts": [{"executableCode": {"code": "print(1)"}},
+                                                    {"codeExecutionResult": {"output": "1"}}, {"text": "done"}]},
+                              "finishReason": "STOP"}], "usageMetadata": {"promptTokenCount": 3}}
+        resp = mock.MagicMock()
+        resp.__enter__.return_value = [b"data: " + json.dumps(ev).encode()]
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(gemini, "TRACE_DIR", d), \
+             mock.patch.dict(os.environ, {"GOOGLE_API_KEY": "secret-k"}), \
+             mock.patch.object(gemini.urllib.request, "urlopen", return_value=resp), mock.patch.object(gemini.api, "_charge"):
+            gemini.run("gemini-x", [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": "QUJD"}},
+                                     {"type": "text", "text": "q"}], tag="t1__gemini-x__trial1")
+            raw = open(os.path.join(d, "t1__gemini-x__trial1.jsonl")).read()
+        kinds = [json.loads(l)["kind"] for l in raw.splitlines()]
+        self.assertEqual(kinds, ["request", "attempt", "event", "done"])
+        self.assertIn("codeExecutionResult", raw)
+        self.assertIn("<4 base64 chars>", raw)
+        self.assertNotIn("secret-k", raw)
+
     def test_every_try_cut_returns_longest_answer_marked(self):
         from harness import gemini, api
         cut = api.StreamCut("stream ended without finishReason")

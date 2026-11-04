@@ -71,7 +71,10 @@ def to_parts(content, code_execution):
             text = b["text"]
             if text.startswith("(File ") and text.endswith("is in the sandbox; also shown below.)"):
                 name = text[len("(File "):-len(" is in the sandbox; also shown below.)")]
-                text = f"(File {name} is attached for code execution; also shown below.)"
+                # Gemini's sandbox does not keep the file name: say so, or the model keeps opening a path that is
+                # not there until Vertex ends the request (a01r3 looped this way, 15 to 23 code runs, no answer).
+                text = (f"(File {name} is shown below and attached as data. In the code sandbox it does not have this "
+                        f"file name: list the working directory to find it, or copy the values you need from below.)")
             parts.append({"text": text})
             # a data file shown inline: also attach it, so Gemini's sandbox can load it with code
             if code_execution and text.startswith('<file name="'):
@@ -139,8 +142,9 @@ def assemble(lines):
     if not finish:
         # Vertex sometimes closes a 200 stream without a finishReason. The answer may be whole or cut, so the request
         # is retried; what arrived is kept on the error in case every retry fails the same way.
+        last_code = (trace[-1]["input"][:160].replace("\n", " | ") if trace else "")
         cut = api.StreamCut(f"stream ended without finishReason ({events} events, {sum(map(len, text))} chars of "
-                            f"answer, {len(trace)} code runs, last event keys {last_keys})")
+                            f"answer, {len(trace)} code runs; last code: {last_code})")
         cut.partial = ("".join(text), usage, trace)
         raise cut
     cached = usage.get("cachedContentTokenCount", 0) or 0

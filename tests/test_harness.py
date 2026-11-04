@@ -224,7 +224,7 @@ class Gemini(unittest.TestCase):
                    {"type": "text", "text": "Prompt", "cache_control": {"type": "ephemeral"}}]
         b = gemini.body_for(content, system="S", code_execution=True, max_tokens=128000, effort="xhigh")
         parts = b["contents"][0]["parts"]
-        self.assertIn("attached for code execution", parts[0]["text"])
+        self.assertIn("does not have this file name", parts[0]["text"])
         self.assertEqual(parts[2]["inlineData"]["mimeType"], "text/csv")
         self.assertEqual(base64_decode(parts[2]["inlineData"]["data"]), "a,b\n1,2")
         self.assertEqual(parts[3]["inlineData"]["mimeType"], "application/pdf")

@@ -69,7 +69,7 @@ def summary(folder):
             r = json.loads(line)
             attempts += r["kind"] == "attempt"
             errors += r["kind"] == "error"
-            done = done or r["kind"] == "done"
+            done = done or (r["kind"] == "done" and r.get("chars", 0) > 0)
             codes += r["kind"] == "tool"
             if r["kind"] == "event":
                 for c in r["data"].get("candidates", [])[:1]:

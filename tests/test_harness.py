@@ -275,9 +275,26 @@ class GeminiNonStreamTest(unittest.TestCase):
         self.assertEqual(u["stop_reason"], "end_turn")
         self.assertTrue(gemini.endpoint("gemini-x", stream=False).endswith(":generateContent"))
 
-    def test_cut_stream_says_what_arrived(self):
+    def test_cut_stream_keeps_what_arrived(self):
         from harness import gemini, api
-        ev = {"candidates": [{"content": {"parts": [{"text": "half"}]}}]}
+        ev = {"candidates": [{"content": {"parts": [{"text": "full answer"}]}}]}
+        with self.assertRaises(api.StreamCut) as cm:
+            gemini.assemble([b"data: " + json.dumps(ev).encode()])
+        self.assertEqual(cm.exception.partial[0], "full answer")
+
+    def test_every_try_cut_returns_longest_answer_marked(self):
+        from harness import gemini, api
+        cut = api.StreamCut("stream ended without finishReason")
+        cut.partial = ("answer", {"promptTokenCount": 10, "candidatesTokenCount": 5}, [])
+        with mock.patch.dict(os.environ, {"GOOGLE_API_KEY": "k"}), \
+             mock.patch.object(gemini.urllib.request, "urlopen", side_effect=cut), \
+             mock.patch.object(api, "_wait"), mock.patch.object(api, "_charge"):
+            text, u, _ = gemini.run("gemini-x", [{"type": "text", "text": "q"}])
+        self.assertEqual((text, u["stop_reason"]), ("answer", "no_finish_reason"))
+
+    def test_empty_cut_stream_says_what_arrived(self):
+        from harness import gemini, api
+        ev = {"candidates": [{"content": {"parts": [{"text": "plan", "thought": True}]}}]}
         with self.assertRaises(api.StreamCut) as cm:
             gemini.assemble([b"data: " + json.dumps(ev).encode()])
         self.assertIn("1 events", str(cm.exception))

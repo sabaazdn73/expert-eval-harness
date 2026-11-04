@@ -133,11 +133,15 @@ def assemble(lines):
             finish = c.get("finishReason") or finish
         if ev.get("usageMetadata"):
             usage = ev["usageMetadata"]
+    if not finish and feedback and feedback.get("blockReason"):  # the prompt itself was refused: retrying cannot help
+        raise api.APIError(f"prompt blocked: {feedback}")
     if not finish:
-        if feedback and feedback.get("blockReason"):  # the prompt itself was refused: retrying cannot help
-            raise api.APIError(f"prompt blocked: {feedback}")
-        raise api.StreamCut(f"stream ended without finishReason ({events} events, {sum(map(len, text))} chars of "
+        # Vertex sometimes closes a 200 stream without a finishReason. The answer may be whole or cut, so the request
+        # is retried; what arrived is kept on the error in case every retry fails the same way.
+        cut = api.StreamCut(f"stream ended without finishReason ({events} events, {sum(map(len, text))} chars of "
                             f"answer, {len(trace)} code runs, last event keys {last_keys})")
+        cut.partial = ("".join(text), usage, trace)
+        raise cut
     cached = usage.get("cachedContentTokenCount", 0) or 0
     u = {"input_tokens": (usage.get("promptTokenCount", 0) or 0) - cached + (usage.get("toolUsePromptTokenCount", 0) or 0),
          "cache_read_input_tokens": cached,
@@ -151,6 +155,7 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
     data = json.dumps(body_for(content, system, code_execution, max_tokens, effort)).encode()
     headers = {"x-goog-api-key": _key(), "content-type": "application/json"}
     cuts = 0  # timeouts and cut streams: each one may have been billed for a long think, so retry them less
+    partial = None  # the longest answer that arrived without a finishReason
     stream = True  # after a cut stream, ask for the whole response in one piece instead
     for attempt in range(api.TRIES):
         req = urllib.request.Request(endpoint(model, stream), data=data, headers=headers, method="POST")
@@ -173,6 +178,9 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
             raise api.APIError(f"Gemini HTTP {e.code}: {raw[:400]}{hint}")
         except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
             cuts += 1
+            got = getattr(e, "partial", None)
+            if got and got[0].strip() and (not partial or len(got[0]) > len(partial[0])):
+                partial = got
             if isinstance(e, api.StreamCut) and stream:
                 stream = False
             if attempt < api.TRIES - 1 and cuts <= CUT_RETRIES:
@@ -180,5 +188,16 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
                       + ("" if stream else "; next try without streaming"))
                 api._wait(attempt)
                 continue
+            if partial:  # every try ended without a finishReason: keep the longest answer, marked for the report
+                text, usage, trace = partial
+                cached = usage.get("cachedContentTokenCount", 0) or 0
+                u = {"input_tokens": (usage.get("promptTokenCount", 0) or 0) - cached
+                     + (usage.get("toolUsePromptTokenCount", 0) or 0),
+                     "cache_read_input_tokens": cached,
+                     "output_tokens": (usage.get("candidatesTokenCount", 0) or 0) + (usage.get("thoughtsTokenCount", 0) or 0),
+                     "stop_reason": "no_finish_reason"}
+                _note(model, attempt, f"kept an answer of {len(text)} chars that arrived without a finishReason")
+                api._charge(model, u)
+                return text, u, trace
             raise api.APIError(f"could not reach Vertex AI: {getattr(e, 'reason', e)}")
     raise api.APIError("gave up after repeated retries")

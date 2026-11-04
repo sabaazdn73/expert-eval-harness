@@ -108,11 +108,15 @@ STOP = {"STOP": "end_turn", "MAX_TOKENS": "max_tokens"}
 def assemble(lines):
     """SSE stream of GenerateContentResponse chunks -> (text, usage, trace). Raises StreamCut if no finishReason."""
     text, trace, usage, finish = [], [], {}, None
+    events, last_keys, feedback = 0, [], None
     for raw in lines:
         line = raw.decode("utf-8", errors="replace").strip() if isinstance(raw, bytes) else raw.strip()
         if not line.startswith("data:"):
             continue
         ev = json.loads(line[5:].strip())
+        events += 1
+        last_keys = sorted(ev)
+        feedback = ev.get("promptFeedback") or feedback
         if "error" in ev:
             err = ev["error"]
             if err.get("code") in RETRY_CODES or err.get("status") in ("UNAVAILABLE", "RESOURCE_EXHAUSTED", "INTERNAL"):
@@ -130,7 +134,10 @@ def assemble(lines):
         if ev.get("usageMetadata"):
             usage = ev["usageMetadata"]
     if not finish:
-        raise api.StreamCut("stream ended without finishReason")
+        if feedback and feedback.get("blockReason"):  # the prompt itself was refused: retrying cannot help
+            raise api.APIError(f"prompt blocked: {feedback}")
+        raise api.StreamCut(f"stream ended without finishReason ({events} events, {sum(map(len, text))} chars of "
+                            f"answer, {len(trace)} code runs, last event keys {last_keys})")
     cached = usage.get("cachedContentTokenCount", 0) or 0
     u = {"input_tokens": (usage.get("promptTokenCount", 0) or 0) - cached + (usage.get("toolUsePromptTokenCount", 0) or 0),
          "cache_read_input_tokens": cached,

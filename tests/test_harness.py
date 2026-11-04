@@ -473,3 +473,8 @@ def test_check_accepts_listed_alternative():
     ch = {"field": "a", "type": "choice", "expected": "revise and resubmit", "also": [{"expected": "rejected"}]}
     assert check_one(ch, {"a": "Rejected"})[0]
     assert not check_one(ch, {"a": "approve"})[0]
+
+
+def test_item_ids_written_as_the_grader_may_write_them():
+    from harness.run import _item_id
+    assert [_item_id(x) for x in ["1", 1, "item 1", "Item 5a", "#3", "1.", "item_2"]] == ["1", "1", "1", "5a", "3", "1", "2"]

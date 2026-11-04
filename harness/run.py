@@ -224,6 +224,13 @@ def judge(task, response, judge_model, lib_block=""):
     return [dict(by_id[str(r["id"])], id=r["id"], verdict=_verdict(by_id[str(r["id"])].get("verdict"))) for r in rubric], usage
 
 
+def _item_id(x):
+    """An item id as the grader may write it: "1", 1, "item 1", "Item 5a", "#3", "1." all read as the key's id."""
+    s = str(x if x is not None else "").strip().lower()
+    s = re.sub(r"^(item|criterion|criteria)[\s_-]*", "", s)
+    return s.lstrip("#").rstrip(".:)").strip()
+
+
 def judge_key(task, response, judge_model, equipped=False, lib=None):
     """Score a response against an expert's full answer key with point items (key mode)."""
     key = open(os.path.join(task["dir"], task["key_file"]), encoding="utf-8").read()
@@ -257,14 +264,14 @@ def judge_key(task, response, judge_model, equipped=False, lib=None):
             content = [{"type": "text", "text": static, "cache_control": dict(api.CACHE_1H)}]
         content.append({"type": "text", "text": dynamic})
         _, parsed, usage, trace = _judge_call(judge_model, content, equipped, lib)
-        got = {str(v.get("id")): v for v in parsed["items"]}
+        got = {_item_id(v.get("id", v.get("item_id", v.get("item")))): v for v in parsed["items"] if isinstance(v, dict)}
         flags = parsed.get("key_flags", []) or []
-        missing = [str(i["id"]) for i in items if str(i["id"]) not in got]
+        missing = [str(i["id"]) for i in items if _item_id(i["id"]) not in got]
         if missing:
-            raise GradeError(f"grader gave no score for items {missing}")
+            raise GradeError(f"grader gave no score for items {missing} (grader item ids: {list(got)[:15]})")
     scored = []
     for i in items:
-        v = got.get(str(i["id"]), {})
+        v = got.get(_item_id(i["id"]), {})
         pts = _points(v.get("points"), i["points"]) if not judge_model.startswith("mock") else float(v.get("points", 0))
         if not task.get("partial_credit") and pts < i["points"]:
             pts = 0.0  # keys are all-or-nothing per item unless the task says otherwise

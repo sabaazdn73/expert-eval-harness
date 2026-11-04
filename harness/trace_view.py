@@ -21,8 +21,10 @@ def show(path, width=300):
         t0 = t0 or r.get("t", 0)
         at = f"{r.get('t', 0) - t0:7.1f}s"
         k = r["kind"]
-        if k == "request":
-            parts = [p for c in r["body"].get("contents", []) for p in c.get("parts", [])]
+        if k == "request" and "body" not in r:  # Claude in the local sandbox: the system prompt only
+            print(f"{at} REQUEST {r.get('model')}: tool run_python, system prompt {len(r.get('system', ''))} chars")
+        elif k == "request":
+            parts =[p for c in r["body"].get("contents", []) for p in c.get("parts", [])]
             texts = sum(len(p.get("text", "")) for p in parts)
             files = [p["inlineData"]["mimeType"] for p in parts if "inlineData" in p]
             cfg = r["body"].get("generationConfig", {})

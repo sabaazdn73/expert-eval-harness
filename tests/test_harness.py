@@ -282,6 +282,16 @@ class GeminiNonStreamTest(unittest.TestCase):
             gemini.assemble([b"data: " + json.dumps(ev).encode()])
         self.assertEqual(cm.exception.partial[0], "full answer")
 
+    def test_every_try_only_ran_code_is_no_answer(self):
+        from harness import gemini, api
+        cut = api.StreamCut("stream ended without finishReason")
+        cut.partial = ("", {"promptTokenCount": 10}, [{"tool": "code_execution", "input": "x=1"}])
+        with mock.patch.dict(os.environ, {"GOOGLE_API_KEY": "k"}), \
+             mock.patch.object(gemini.urllib.request, "urlopen", side_effect=cut), \
+             mock.patch.object(api, "_wait"), mock.patch.object(api, "_charge"):
+            text, u, trace = gemini.run("gemini-x", [{"type": "text", "text": "q"}])
+        self.assertEqual((text, u["stop_reason"], len(trace)), ("", "code_loop_cut", 1))
+
     def test_every_try_cut_returns_longest_answer_marked(self):
         from harness import gemini, api
         cut = api.StreamCut("stream ended without finishReason")

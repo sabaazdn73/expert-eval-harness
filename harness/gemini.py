@@ -179,7 +179,7 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
         except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
             cuts += 1
             got = getattr(e, "partial", None)
-            if got and got[0].strip() and (not partial or len(got[0]) > len(partial[0])):
+            if got and (got[0].strip() or got[2]) and (not partial or (len(got[0]), len(got[2])) > (len(partial[0]), len(partial[2]))):
                 partial = got
             if isinstance(e, api.StreamCut) and stream:
                 stream = False
@@ -195,8 +195,9 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
                      + (usage.get("toolUsePromptTokenCount", 0) or 0),
                      "cache_read_input_tokens": cached,
                      "output_tokens": (usage.get("candidatesTokenCount", 0) or 0) + (usage.get("thoughtsTokenCount", 0) or 0),
-                     "stop_reason": "no_finish_reason"}
-                _note(model, attempt, f"kept an answer of {len(text)} chars that arrived without a finishReason")
+                     "stop_reason": "no_finish_reason" if text.strip() else "code_loop_cut"}
+                _note(model, attempt, f"kept an answer of {len(text)} chars that arrived without a finishReason" if text.strip()
+                      else f"every try ran code ({len(trace)} runs) and ended without a final answer")
                 api._charge(model, u)
                 return text, u, trace
             raise api.APIError(f"could not reach Vertex AI: {getattr(e, 'reason', e)}")

@@ -792,6 +792,8 @@ def cmd_run(a):
             stop = usage.get("stop_reason")
             why = ("cut off at max_tokens before any answer (thinking used the whole budget)" if stop == "max_tokens"
                    else f"stopped after {a.max_turns} tool turns without a final answer" if stop == "max_turns"
+                   else f"Vertex ended the request after {len(mtrace)} code runs without a final answer"
+                   if stop == "code_loop_cut"
                    else f"empty answer (stop_reason {stop})")
             row["no_answer"] = why
             record(row, usage, {}, head + f"NO ANSWER - {why}; not graded" + (f"  [{note}]" if note else ""))

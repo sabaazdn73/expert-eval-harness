@@ -24,6 +24,7 @@ from harness import api
 RETRY_CODES = (429, 500, 502, 503, 504)
 MAX_OUT = 65536  # Gemini's synchronous output limit
 CUT_RETRIES = 2  # retries after a timeout or a cut stream (rate limits and 5xx keep api.TRIES)
+LOOP_RUNS = 20  # a cut stream with at least this many code runs and no answer is not retried
 
 
 def _note(model, attempt, why):
@@ -183,7 +184,10 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
                 partial = got
             if isinstance(e, api.StreamCut) and stream:
                 stream = False
-            if attempt < api.TRIES - 1 and cuts <= CUT_RETRIES:
+            # Vertex ends a request after about 23 code runs. A cut with that many runs and no answer is the model
+            # looping on code, not the network: the same request ends the same way, so do not pay for it again.
+            looped = bool(got) and not got[0].strip() and len(got[2]) >= LOOP_RUNS
+            if attempt < api.TRIES - 1 and cuts <= CUT_RETRIES and not looped:
                 _note(model, attempt, f"{type(e).__name__}: {str(getattr(e, 'reason', e))[:300]}"
                       + ("" if stream else "; next try without streaming"))
                 api._wait(attempt)

@@ -42,10 +42,17 @@ def show(path, width=300):
                         print(f"{at}   RESULT [{res.get('outcome', '')}]: {_short(res.get('output', ''), width)}")
                     elif "text" in p:
                         print(f"{at}   answer: {_short(p['text'], width)}")
+                    elif "functionCall" in p:
+                        print(f"{at}   calls {p['functionCall'].get('name')}")
                     elif "inlineData" in p:
                         print(f"{at}   (model returned {p['inlineData'].get('mimeType')})")
                 if c.get("finishReason"):
                     print(f"{at}   finishReason {c['finishReason']}")
+        elif k == "workspace":
+            print(f"{at} SANDBOX ({r.get('isolation')}): files {r.get('files')}")
+        elif k == "tool":
+            print(f"{at}   run_python #{r['call']} ({r['seconds']} s): {_short(r.get('code', ''), width)}")
+            print(f"{at}   -> {_short(r.get('result', ''), width)}")
         elif k == "error":
             print(f"{at} ERROR {r.get('http') or r.get('type')}: {_short(r.get('message') or r.get('body', ''), width)}")
         elif k == "done":
@@ -63,6 +70,7 @@ def summary(folder):
             attempts += r["kind"] == "attempt"
             errors += r["kind"] == "error"
             done = done or r["kind"] == "done"
+            codes += r["kind"] == "tool"
             if r["kind"] == "event":
                 for c in r["data"].get("candidates", [])[:1]:
                     codes += sum("executableCode" in p for p in (c.get("content") or {}).get("parts", []))

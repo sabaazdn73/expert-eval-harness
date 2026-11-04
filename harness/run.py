@@ -21,6 +21,7 @@ from harness import api
 from harness.refs import RefLibrary
 from harness import grader_tools
 from harness import gemini
+from harness import sandbox
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HARNESS_VERSION = "2026-11-02 (separate Claude/Google budgets, second grader, adjudication, preflight)"
@@ -34,6 +35,14 @@ CODE_SYSTEM = SYSTEM + (
     "the data files with code, then build the analysis step by step in code and check intermediate results. Do the "
     "arithmetic in code, not in your head, and keep your private reasoning short between tool calls. When the analysis "
     "is done, write the final answer as text.")
+
+
+LOCAL_CODE_SYSTEM = SYSTEM + (
+    " You have a Python sandbox through the run_python tool: each call runs a program in a working folder that holds the "
+    "task's input files under their own names. Work like an engineer at a computer: start by loading the data files with "
+    "code, then build the analysis step by step in code and check intermediate results. Do the arithmetic in code, not in "
+    "your head, and keep your private reasoning short between tool calls. When the analysis is done, write the final "
+    "answer as text.")
 
 
 LIB_NOTE = (" You also have the firm's code library through the code_ref tools (editions, search, page). "
@@ -53,11 +62,15 @@ def load_task(task_dir):
 DATA_EXT = (".csv", ".xlsx", ".xls", ".json", ".txt")
 
 
-def build_content(task, with_refs, mock, lib_block=""):
+def build_content(task, with_refs, mock, lib_block="", local=False):
+    """local: the files are in the local sandbox folder under their own names (--sandbox local), so nothing is
+    uploaded to a provider's container."""
     content = []
     for p in task.get("files", []):
         path = os.path.join(task["dir"], p)
-        if task.get("code_execution") and not mock and p.lower().endswith(DATA_EXT):
+        if local and task.get("code_execution") and not mock and p.lower().endswith(DATA_EXT):
+            content.append({"type": "text", "text": f"(File {os.path.basename(p)} is in your working folder; also shown below.)"})
+        elif task.get("code_execution") and not mock and p.lower().endswith(DATA_EXT):
             # data files go into the sandbox, so the model can load them with code instead of retyping them
             content.append({"type": "text", "text": f"(File {os.path.basename(p)} is in the sandbox; also shown below.)"})
             content.append({"type": "container_upload", "file_id": api.upload_file(path)})
@@ -758,7 +771,26 @@ def cmd_run(a):
             print(head + f"skipped: {e} (not saved; raise --budget and use --resume)", flush=True)
             return
         try:
-            if gemini.is_gemini(model):
+            if a.sandbox == "local" and task.get("code_execution") and not mock:
+                # the same sandbox for every model: run_python in a local folder with the task files under their names
+                tag = f"{task['id']}__{model}__trial{trial + 1}"
+                files = [os.path.join(task["dir"], p) for p in task.get("files", [])]
+                log = gemini._tracer(tag)
+                with sandbox.Workspace(files, log=log) as ws:
+                    if gemini.is_gemini(model):
+                        text, usage, mtrace = gemini.run_tools(model, content, ws.tool, system=LOCAL_CODE_SYSTEM,
+                                                               max_tokens=a.max_tokens, effort=a.effort,
+                                                               max_turns=a.max_turns, tag=tag)
+                    else:
+                        if log:
+                            log({"kind": "request", "model": model, "system": LOCAL_CODE_SYSTEM})
+                        text, usage, mtrace = grader_tools.run_equipped(
+                            model, content, None, max_tokens=a.max_tokens, max_turns=a.max_turns,
+                            tools=[sandbox.CLAUDE_TOOL], system=LOCAL_CODE_SYSTEM, effort=a.effort, executor=ws.tool)
+                        if log:
+                            log({"kind": "done", "chars": len(text), "code_runs": ws.calls, "usage": usage})
+                note = f"ran code {sum(1 for t in mtrace if t.get('tool') != 'harness')} times, local sandbox"
+            elif gemini.is_gemini(model):
                 # Gemini under test, via Vertex AI; same prompt and files, its own sandbox for code tasks
                 code = bool(task.get("code_execution"))
                 text, usage, mtrace = gemini.run(model, content, system=CODE_SYSTEM if code else SYSTEM,
@@ -825,7 +857,7 @@ def cmd_run(a):
         task = load_task(d)
         tasks_by_id[task["id"]] = task
         lib_block = lib.block_for(task) if lib else ""
-        content = build_content(task, a.with_refs, mock, lib_block)
+        content = build_content(task, a.with_refs, mock, lib_block, local=a.sandbox == "local")
         jobs += [(task, content, lib_block, m, t) for m in a.models for t in range(ks[m]) if (task["id"], m, t) not in done]
         regrades += [(i, task, lib_block) for i, r in enumerate(rows) if r["task"] == task["id"] and not r.get("no_answer")
                      and (r.get("grade_error") or r.get("secondary_grade_error")
@@ -877,6 +909,7 @@ def cmd_run(a):
     meta = {"run_id": run_id, "models": order, "k": max(ks.values()), "k_per_model": ks, "judge_tools": a.judge_tools,
             "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs,
             "judge": judge_model, "judges": judges, "consensus": a.consensus, "ref_library": bool(lib),
+            "sandbox": a.sandbox,
             "tasks": [os.path.basename(d) for d in task_dirs], "budgets": budgets,
             "task_sha256": {t: task_fingerprint(tk) for t, tk in tasks_by_id.items()},
             "harness_version": HARNESS_VERSION, "started": started,
@@ -976,6 +1009,8 @@ def write_report(path):
     lines = [f"# Eval run {meta['run_id']}", "",
              "Models: " + ", ".join(f"{m} (k={(meta.get('k_per_model') or {}).get(m, k)})" for m in meta["models"])
              + f" · references given: {meta['with_refs']} · code library as a tool: {meta.get('model_library', False)}"
+             + (" · sandbox: the same local run_python tool for every model" if meta.get("sandbox") == "local"
+                else " · sandbox: each provider's own code tool")
              + f" · graders: {', '.join(judges)} (primary {judges[0]}" + (", equipped" if meta.get("judge_tools") else "")
              + (f", consensus {meta.get('consensus')}" if len(judges) > 1 else "") + ")" + cost
              + (f" · regraded from {meta['regraded_from']}" if meta.get("regraded_from") else ""), ""]
@@ -1352,6 +1387,9 @@ def main():
     s.add_argument("--est-output", type=int, default=40000, help="high estimate of output (thinking + answer) tokens per trial")
     s.add_argument("--est-output-low", type=int, default=12000, help="low estimate of output tokens per trial")
     s.add_argument("--max-turns", type=int, default=25, help="tool-loop turns per trial before it is stopped")
+    s.add_argument("--sandbox", choices=["provider", "local"], default="provider",
+                   help="code tasks: each provider's own code tool (provider), or the same local run_python tool for "
+                        "every model (local; check the machine first with python3 -m harness.sandbox)")
     s.add_argument("--overwrite", action="store_true", help="start the named run again, discarding its saved results")
     s.add_argument("--resume", action="store_true", help="keep the trials already saved in runs/<name> and run only the missing ones")
     s.add_argument("--name")

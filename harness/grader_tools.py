@@ -90,11 +90,13 @@ def _client_tool(name, args, lib):
         return f"error: {type(e).__name__}: {e}"
 
 
-def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None, system=None, effort=None):
+def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None, system=None, effort=None,
+                 executor=None):
     """Run a conversation with tools until the model ends its turn. Returns (final_text, usage, trace).
 
     Used by the equipped grader (code execution + code library) and, with tools=[CODE_EXEC],
-    for tasks where the model under test may run code."""
+    for tasks where the model under test may run code. executor(name, input) runs other client tools (the local
+    sandbox's run_python) and returns None for a tool it does not know."""
     tools = tools if tools is not None else [CODE_EXEC] + CLIENT_TOOLS
     # Every turn resends the whole conversation, files included. Cache the opening message (files + prompt)
     # so later turns read it from the prompt cache at a fraction of the input price.
@@ -145,7 +147,9 @@ def run_equipped(model, content, lib, max_tokens=64000, max_turns=25, tools=None
             results = []
             for b in blocks:
                 if b.get("type") == "tool_use":
-                    out = _client_tool(b["name"], b.get("input", {}), lib)
+                    out = executor(b["name"], b.get("input", {})) if executor else None
+                    if out is None:
+                        out = _client_tool(b["name"], b.get("input", {}), lib)
                     r = {"type": "tool_result", "tool_use_id": b["id"], "content": out}
                     if isinstance(out, str) and out.startswith("error:"):
                         r["is_error"] = True

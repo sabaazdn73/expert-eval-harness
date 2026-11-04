@@ -253,3 +253,102 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
                 return text, u, trace
             raise api.APIError(f"could not reach Vertex AI: {getattr(e, 'reason', e)}")
     raise api.APIError("gave up after repeated retries")
+
+
+def _post(model, body, log=None):
+    """One non-streaming generateContent call with the usual retries. Returns the parsed response."""
+    data = json.dumps(body).encode()
+    headers = {"x-goog-api-key": _key(), "content-type": "application/json"}
+    cuts = 0
+    for attempt in range(api.TRIES):
+        req = urllib.request.Request(endpoint(model, stream=False), data=data, headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=1800) as r:
+                return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            raw = e.read().decode(errors="replace")
+            if log:
+                log({"kind": "error", "http": e.code, "body": raw[:2000]})
+            if e.code in RETRY_CODES and attempt < api.TRIES - 1:
+                _note(model, attempt, f"HTTP {e.code}")
+                api._wait(attempt, e.headers)
+                continue
+            raise api.APIError(f"Gemini HTTP {e.code}: {raw[:400]}")
+        except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
+            cuts += 1
+            if log:
+                log({"kind": "error", "type": type(e).__name__, "message": str(getattr(e, "reason", e))[:2000]})
+            if attempt < api.TRIES - 1 and cuts <= CUT_RETRIES:
+                _note(model, attempt, f"{type(e).__name__}: {str(getattr(e, 'reason', e))[:200]}")
+                api._wait(attempt)
+                continue
+            raise api.APIError(f"could not reach Vertex AI: {getattr(e, 'reason', e)}")
+    raise api.APIError("gave up after repeated retries")
+
+
+def run_tools(model, content, executor, system=None, max_tokens=MAX_OUT, effort=None, max_turns=25, tag=None):
+    """Gemini under test with the harness's own tool (the local sandbox's run_python), through function calling:
+    the same tool, files and turn limit as Claude gets with --sandbox local. Returns (text, usage, trace).
+    Each turn is one generateContent call; the model's content goes back unchanged (thought signatures included)."""
+    from harness import sandbox
+    contents = [{"role": "user", "parts": to_parts(content, code_execution=False)}]
+    thinking = {"includeThoughts": True}
+    if effort:
+        thinking["thinkingLevel"] = {"xhigh": "high", "max": "high"}.get(effort, effort)
+    body = {"generationConfig": {"maxOutputTokens": min(int(max_tokens), MAX_OUT), "thinkingConfig": thinking},
+            "tools": [{"functionDeclarations": [sandbox.GEMINI_DECL]}]}
+    if system:
+        body["systemInstruction"] = {"parts": [{"text": system}]}
+    log = _tracer(tag)
+    if log:
+        log({"kind": "request", "model": model, "body": _redact(dict(body, contents=contents))})
+    total = {"input_tokens": 0, "cache_read_input_tokens": 0, "output_tokens": 0}
+    trace = []
+    for turn in range(max_turns):
+        if log:
+            log({"kind": "attempt", "n": turn + 1, "stream": False, "turn": True})
+        res = _post(model, dict(body, contents=contents), log)
+        if log:
+            log({"kind": "event", "data": res})
+        meta = res.get("usageMetadata") or {}
+        cached = meta.get("cachedContentTokenCount", 0) or 0
+        u = {"input_tokens": (meta.get("promptTokenCount", 0) or 0) - cached
+             + (meta.get("toolUsePromptTokenCount", 0) or 0),
+             "cache_read_input_tokens": cached,
+             "output_tokens": (meta.get("candidatesTokenCount", 0) or 0) + (meta.get("thoughtsTokenCount", 0) or 0)}
+        api._charge(model, u)
+        for k in total:
+            total[k] += u[k]
+        cands = res.get("candidates") or []
+        if not cands:
+            fb = res.get("promptFeedback")
+            raise api.APIError(f"no candidates (promptFeedback {fb})" if fb else "no candidates in the response")
+        cand = cands[0]
+        msg = cand.get("content") or {"parts": []}
+        msg.setdefault("role", "model")
+        msg.setdefault("parts", [])
+        contents.append(msg)
+        calls = [p["functionCall"] for p in msg["parts"] if "functionCall" in p]
+        if calls:
+            replies = []
+            for c in calls:
+                args = c.get("args") or {}
+                trace.append({"tool": c.get("name"), "input": str(args.get("code", ""))[:2000]})
+                out = executor(c.get("name"), args)
+                fr = {"name": c.get("name"), "response": {"output": out if out is not None
+                                                          else f"error: unknown tool {c.get('name')}"}}
+                if c.get("id"):
+                    fr["id"] = c["id"]
+                replies.append({"functionResponse": fr})
+            contents.append({"role": "user", "parts": replies})
+            continue
+        text = "".join(p.get("text", "") for p in msg["parts"] if "text" in p and not p.get("thought"))
+        finish = cand.get("finishReason") or "NO_FINISH_REASON"
+        total["stop_reason"] = STOP.get(finish, finish.lower())
+        if log:
+            log({"kind": "done", "chars": len(text), "code_runs": len(trace), "usage": total})
+        return text, total, trace
+    total["stop_reason"] = "max_turns"
+    if log:
+        log({"kind": "done", "chars": 0, "code_runs": len(trace), "usage": total})
+    return "", total, trace + [{"tool": "harness", "input": f"stopped after {max_turns} turns"}]

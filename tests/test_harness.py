@@ -554,3 +554,91 @@ def test_check_accepts_listed_alternative():
 def test_item_ids_written_as_the_grader_may_write_them():
     from harness.run import _item_id
     assert [_item_id(x) for x in ["1", 1, "item 1", "Item 5a", "#3", "1.", "item_2"]] == ["1", "1", "1", "5a", "3", "1", "2"]
+
+
+class LocalSandboxTest(unittest.TestCase):
+    def setUp(self):
+        self.env = mock.patch.dict(os.environ, {"EEH_UNSAFE_SANDBOX": "1", "ANTHROPIC_API_KEY": "sk-secret"})
+        self.env.start()
+
+    def tearDown(self):
+        self.env.stop()
+
+    def test_workspace_runs_code_with_files_by_name_and_no_keys(self):
+        from harness import sandbox
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "Pier Forces.csv")
+            open(p, "w").write("a,b\n1,2\n")
+            logged = []
+            with sandbox.Workspace([p], log=logged.append) as ws:
+                r = ws.run("import os\nprint(open('Pier Forces.csv').read().split()[0])\nprint(sorted(k for k in os.environ if 'KEY' in k))")
+                self.assertIn("a,b", r)
+                self.assertIn("[]", r)
+                self.assertIn("exit code 0", r)
+                self.assertIn("timeout", ws.run("import time; time.sleep(5)", timeout=1))
+                self.assertIsNone(ws.tool("other_tool", {}))
+            self.assertEqual(logged[0]["kind"], "workspace")
+            self.assertEqual([x["kind"] for x in logged[1:]], ["tool", "tool"])
+
+    def test_refuses_without_isolation(self):
+        from harness import sandbox
+        with mock.patch.dict(os.environ, {"EEH_UNSAFE_SANDBOX": ""}), mock.patch.object(sandbox.sys, "platform", "linux"):
+            with self.assertRaises(RuntimeError):
+                sandbox.Workspace([])
+
+    def test_gemini_function_calling_loop(self):
+        from harness import gemini
+        call = {"candidates": [{"content": {"role": "model", "parts": [
+            {"text": "plan", "thought": True, "thoughtSignature": "sig"},
+            {"functionCall": {"id": "c1", "name": "run_python", "args": {"code": "print(2)"}}}]}}],
+            "usageMetadata": {"promptTokenCount": 10, "candidatesTokenCount": 3}}
+        final = {"candidates": [{"content": {"role": "model", "parts": [{"text": "Answer 2"}]}, "finishReason": "STOP"}],
+                 "usageMetadata": {"promptTokenCount": 20, "candidatesTokenCount": 4}}
+        sent = []
+
+        def post(model, body, log=None):
+            sent.append(json.loads(json.dumps(body)))
+            return [call, final][len(sent) - 1]
+        with mock.patch.object(gemini, "_post", side_effect=post), mock.patch.object(gemini.api, "_charge"):
+            text, u, trace = gemini.run_tools("gemini-x", [{"type": "text", "text": "q"}],
+                                              lambda n, a: "exit code 0\n2" if n == "run_python" else None)
+        self.assertEqual((text, u["stop_reason"], len(trace)), ("Answer 2", "end_turn", 1))
+        second = sent[1]["contents"]
+        self.assertEqual(second[1]["parts"][0]["thoughtSignature"], "sig")  # model turn returned unchanged
+        fr = second[2]["parts"][0]["functionResponse"]
+        self.assertEqual((fr["id"], fr["response"]["output"]), ("c1", "exit code 0\n2"))
+        self.assertEqual(sent[0]["tools"][0]["functionDeclarations"][0]["name"], "run_python")
+        self.assertEqual((u["input_tokens"], u["output_tokens"]), (30, 7))
+
+    def test_gemini_loop_stops_at_max_turns(self):
+        from harness import gemini
+        call = {"candidates": [{"content": {"role": "model", "parts": [
+            {"functionCall": {"name": "run_python", "args": {"code": "x"}}}]}}]}
+        with mock.patch.object(gemini, "_post", return_value=call), mock.patch.object(gemini.api, "_charge"):
+            text, u, trace = gemini.run_tools("gemini-x", [{"type": "text", "text": "q"}], lambda n, a: "ok", max_turns=3)
+        self.assertEqual((text, u["stop_reason"], len(trace)), ("", "max_turns", 4))
+
+    def test_claude_loop_uses_local_executor(self):
+        from harness import grader_tools, sandbox
+        replies = [{"content": [{"type": "tool_use", "id": "t1", "name": "run_python", "input": {"code": "print(1)"}}],
+                    "stop_reason": "tool_use", "usage": {}},
+                   {"content": [{"type": "text", "text": "done"}], "stop_reason": "end_turn", "usage": {}}]
+        bodies = []
+
+        def create(body):
+            bodies.append(json.loads(json.dumps(body)))
+            return replies[len(bodies) - 1]
+        with mock.patch.object(grader_tools.api, "create", side_effect=create):
+            text, u, trace = grader_tools.run_equipped("claude-x", [{"type": "text", "text": "q"}], None,
+                                                       tools=[sandbox.CLAUDE_TOOL], executor=lambda n, a: "exit code 0\n1")
+        self.assertEqual(text, "done")
+        self.assertEqual(bodies[1]["messages"][2]["content"][0]["content"], "exit code 0\n1")
+
+    def test_local_content_has_no_container_upload(self):
+        with tempfile.TemporaryDirectory() as d:
+            open(os.path.join(d, "t.csv"), "w").write("a\n1\n")
+            task = {"dir": d, "files": ["t.csv"], "code_execution": True, "prompt_text": "q"}
+            with mock.patch.object(api, "upload_file", side_effect=AssertionError("uploaded")):
+                c = run.build_content(task, False, False, local=True)
+            self.assertFalse(any(b.get("type") == "container_upload" for b in c))
+            self.assertIn("working folder", c[0]["text"])

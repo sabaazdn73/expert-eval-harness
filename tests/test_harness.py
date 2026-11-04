@@ -264,6 +264,25 @@ def base64_decode(s):
     return base64.b64decode(s).decode()
 
 
+class GeminiNonStreamTest(unittest.TestCase):
+    def test_whole_response_goes_through_assemble(self):
+        from harness import gemini
+        resp = {"candidates": [{"content": {"parts": [{"text": "thinking", "thought": True}, {"text": "answer"}]},
+                                "finishReason": "STOP"}],
+                "usageMetadata": {"promptTokenCount": 10, "candidatesTokenCount": 5}}
+        text, u, trace = gemini.assemble([b"data: " + json.dumps(resp).encode()])
+        self.assertEqual(text, "answer")
+        self.assertEqual(u["stop_reason"], "end_turn")
+        self.assertTrue(gemini.endpoint("gemini-x", stream=False).endswith(":generateContent"))
+
+    def test_cut_stream_says_what_arrived(self):
+        from harness import gemini, api
+        ev = {"candidates": [{"content": {"parts": [{"text": "half"}]}}]}
+        with self.assertRaises(api.StreamCut) as cm:
+            gemini.assemble([b"data: " + json.dumps(ev).encode()])
+        self.assertIn("1 events", str(cm.exception))
+
+
 if __name__ == "__main__":
     unittest.main()
 

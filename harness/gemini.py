@@ -44,7 +44,7 @@ def _key():
     return key
 
 
-def endpoint(model):
+def endpoint(model, stream=True):
     """With GOOGLE_CLOUD_PROJECT set: the project's endpoint in GOOGLE_CLOUD_LOCATION (default global), which newer
     models such as gemini-4-argon need (without a project, API-key requests resolve to us-central1).
     Without it: the publisher URL Google documents for express-mode API keys."""
@@ -53,7 +53,7 @@ def endpoint(model):
     host = "aiplatform.googleapis.com" if loc == "global" else f"{loc}-aiplatform.googleapis.com"
     path = (f"projects/{project}/locations/{loc}/publishers/google/models/{model}" if project
             else f"publishers/google/models/{model}")
-    return f"https://{host}/v1/{path}:streamGenerateContent?alt=sse"
+    return f"https://{host}/v1/{path}:" + ("streamGenerateContent?alt=sse" if stream else "generateContent")
 
 
 DATA_MIME = {".csv": "text/csv", ".txt": "text/plain", ".json": "application/json"}
@@ -151,11 +151,15 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
     data = json.dumps(body_for(content, system, code_execution, max_tokens, effort)).encode()
     headers = {"x-goog-api-key": _key(), "content-type": "application/json"}
     cuts = 0  # timeouts and cut streams: each one may have been billed for a long think, so retry them less
+    stream = True  # after a cut stream, ask for the whole response in one piece instead
     for attempt in range(api.TRIES):
-        req = urllib.request.Request(endpoint(model), data=data, headers=headers, method="POST")
+        req = urllib.request.Request(endpoint(model, stream), data=data, headers=headers, method="POST")
         try:
-            with urllib.request.urlopen(req, timeout=600) as r:
-                text, usage, trace = assemble(r)
+            with urllib.request.urlopen(req, timeout=600 if stream else 1800) as r:
+                if stream:
+                    text, usage, trace = assemble(r)
+                else:
+                    text, usage, trace = assemble([b"data: " + json.dumps(json.loads(r.read())).encode()])
             api._charge(model, usage)
             return text, usage, trace
         except urllib.error.HTTPError as e:
@@ -169,8 +173,11 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
             raise api.APIError(f"Gemini HTTP {e.code}: {raw[:400]}{hint}")
         except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
             cuts += 1
+            if isinstance(e, api.StreamCut) and stream:
+                stream = False
             if attempt < api.TRIES - 1 and cuts <= CUT_RETRIES:
-                _note(model, attempt, f"{type(e).__name__}: {str(getattr(e, 'reason', e))[:120]}")
+                _note(model, attempt, f"{type(e).__name__}: {str(getattr(e, 'reason', e))[:300]}"
+                      + ("" if stream else "; next try without streaming"))
                 api._wait(attempt)
                 continue
             raise api.APIError(f"could not reach Vertex AI: {getattr(e, 'reason', e)}")

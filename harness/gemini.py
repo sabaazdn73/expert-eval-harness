@@ -23,6 +23,13 @@ from harness import api
 
 RETRY_CODES = (429, 500, 502, 503, 504)
 MAX_OUT = 65536  # Gemini's synchronous output limit
+CUT_RETRIES = 2  # retries after a timeout or a cut stream (rate limits and 5xx keep api.TRIES)
+
+
+def _note(model, attempt, why):
+    """Say why a request is retried, so a long silence in the run log has a visible cause."""
+    import sys
+    print(f"  [{model}] retry {attempt + 1}/{api.TRIES - 1}: {why}", file=sys.stderr, flush=True)
 
 
 def is_gemini(model):
@@ -86,8 +93,12 @@ def body_for(content, system=None, code_execution=False, max_tokens=MAX_OUT, eff
         body["systemInstruction"] = {"parts": [{"text": system}]}
     if code_execution:
         body["tools"] = [{"codeExecution": {}}]
+    # Stream thought summaries: without them a long think sends nothing for minutes, the read times out and the
+    # request is retried from the start (each attempt billed). The summaries are skipped when the answer is assembled.
+    thinking = {"includeThoughts": True}
     if effort:
-        body["generationConfig"]["thinkingConfig"] = {"thinkingLevel": {"xhigh": "high", "max": "high"}.get(effort, effort)}
+        thinking["thinkingLevel"] = {"xhigh": "high", "max": "high"}.get(effort, effort)
+    body["generationConfig"]["thinkingConfig"] = thinking
     return body
 
 
@@ -132,6 +143,7 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
     """One Gemini trial. Returns (text, usage in the harness's Claude-style keys, trace of code runs)."""
     data = json.dumps(body_for(content, system, code_execution, max_tokens, effort)).encode()
     headers = {"x-goog-api-key": _key(), "content-type": "application/json"}
+    cuts = 0  # timeouts and cut streams: each one may have been billed for a long think, so retry them less
     for attempt in range(api.TRIES):
         req = urllib.request.Request(endpoint(model), data=data, headers=headers, method="POST")
         try:
@@ -142,13 +154,16 @@ def run(model, content, system=None, code_execution=False, max_tokens=MAX_OUT, e
         except urllib.error.HTTPError as e:
             raw = e.read().decode(errors="replace")
             if e.code in RETRY_CODES and attempt < api.TRIES - 1:
+                _note(model, attempt, f"HTTP {e.code}")
                 api._wait(attempt, e.headers)
                 continue
             hint = (" (check the API key and that the Agent Platform API is enabled)"
                     if e.code in (401, 403) else " (check the model id in Model Garden, and set GOOGLE_CLOUD_PROJECT so the global endpoint is used)" if e.code == 404 else "")
             raise api.APIError(f"Gemini HTTP {e.code}: {raw[:400]}{hint}")
         except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
-            if attempt < api.TRIES - 1:
+            cuts += 1
+            if attempt < api.TRIES - 1 and cuts <= CUT_RETRIES:
+                _note(model, attempt, f"{type(e).__name__}: {str(getattr(e, 'reason', e))[:120]}")
                 api._wait(attempt)
                 continue
             raise api.APIError(f"could not reach Vertex AI: {getattr(e, 'reason', e)}")

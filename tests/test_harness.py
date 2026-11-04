@@ -231,6 +231,7 @@ class Gemini(unittest.TestCase):
         self.assertNotIn("cache_control", json.dumps(b))
         self.assertEqual(b["generationConfig"]["maxOutputTokens"], 65536)
         self.assertEqual(b["generationConfig"]["thinkingConfig"]["thinkingLevel"], "high")
+        self.assertTrue(b["generationConfig"]["thinkingConfig"]["includeThoughts"])  # keeps a long think streaming
         self.assertEqual(b["tools"], [{"codeExecution": {}}])
 
     def test_stream(self):

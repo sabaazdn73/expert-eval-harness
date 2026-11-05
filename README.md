@@ -51,6 +51,12 @@ uploaded into the sandbox as well as shown in the prompt, so the model can load 
 honest solution is a calculation a professional would run in software: without it, models can spend their whole output
 budget computing in their head and return no answer.
 
+`--sandbox local` gives every model the same sandbox instead of each provider's own code tool: a `run_python` tool that
+runs the model's code in a fresh local folder holding the task files under their real names, with the same time limit
+per call and the same turn limit (`--max-turns`) for every model. On macOS the code runs under `sandbox-exec` with no
+network, writes only inside its folder and no API keys in its environment (`python3 -m harness.sandbox` checks this).
+Every request, tool call and result is written to `runs/<name>/traces/`; `python3 -m harness.trace_view` prints them.
+
 ### Compare runs
 
 ```
@@ -161,7 +167,27 @@ python3 -m harness.run run --models claude-haiku-5-5 --k 3                # judg
 python3 -m harness.run run --models claude-haiku-5-5 --k 3 --with-refs    # the model also sees the excerpts
 ```
 
+With `--sandbox local --model-library`, the models under test also get the library as look-up tools (list the
+editions, search the text, read a page); `--grade-without-library` keeps the graders as in a run without it, so the two
+runs differ only in what the models could look up.
+
 The library is never part of this repository: it can contain copyrighted standards held for private verification.
+
+## Findings so far (micro1 Eval Hackathon, November 2026)
+
+Six structural review tasks built for the hackathon (US codes), Claude Haiku 5.5, Claude Sonnet 5.5 and Gemini 3.8 Flash two trials
+each and Gemini 4 Argon one, graded by Claude Opus 5.5 and Gemini 4 Argon. The tasks and the raw answers are not in this
+repository.
+
+1. **No trial passed** in the shared sandbox (0 of 42). The models did the arithmetic well (100% of computation items)
+   but chose the neighbouring clause (0% of governing-clause items), an older edition (21%), or skipped checks the draft
+   did not raise (0%).
+2. **The sandbox changed a score.** In Vertex AI's own code tool Gemini 4 Argon wrote no answer on the task with CSV
+   files; in the shared local sandbox it scored 8 of 14.
+3. **With the code text in reach, 13 of 42 passed.** Given the library as look-up tools (median 20 to 31 look-ups per
+   trial), governing-clause items rose from 0% to 73% and unraised checks from 0% to 44%. One required check was still
+   missed by every answer, two tasks had no pass, and trials without an answer rose from 3 to 10 because look-ups count
+   against the turn limit. The library covers exactly the sources the tasks cite, so this is the best case for look-up.
 
 ## Quick start
 

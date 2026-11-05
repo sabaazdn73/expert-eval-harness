@@ -648,17 +648,17 @@ def cmd_run(a):
     mock = all(m.startswith("mock") for m in a.models)
     judges = list(dict.fromkeys(a.judge or (["mock-judge"] if mock else ["claude-sonnet-5-5"])))
     judge_model = judges[0]  # primary grader; any further graders are scored alongside it for agreement
-    if a.model_library and any(gemini.is_gemini(m) for m in a.models):
-        sys.exit("--model-library works with Claude models only; run Gemini without it")
+    if a.model_library and a.sandbox != "local" and any(gemini.is_gemini(m) for m in a.models):
+        sys.exit("--model-library works with Gemini only in the shared sandbox: add --sandbox local")
     if any(gemini.is_gemini(m) for m in a.models + judges) and not a.dry_run:
         gemini._key()  # fail now, not after the Claude trials
     if any(api.provider(m) == "anthropic" for m in a.models + judges) and not a.dry_run:
         api._key()
     lib_dir = a.ref_lib or os.environ.get("CODE_REF_DIR")
     lib = RefLibrary(lib_dir) if lib_dir else None
-    judge_lib = lib
+    judge_lib = None if a.grade_without_library else lib
     if lib:
-        print(f"reference library: {lib_dir}" + (" (model: excerpts)" if a.with_refs else "") + (" (model: as tools)" if a.model_library else "") + " (grader)")
+        print(f"reference library: {lib_dir}" + (" (model: excerpts)" if a.with_refs else "") + (" (model: as tools)" if a.model_library else "") + ("" if a.grade_without_library else " (grader)"))
     if a.judge_tools:
         print(f"equipped grader: code execution + task files" + (f" + code library {lib_dir}" if judge_lib else ""))
     task_dirs = sorted(d for pat in a.tasks for d in glob.glob(pat) if os.path.isfile(os.path.join(d, "task.json")))
@@ -743,7 +743,8 @@ def cmd_run(a):
         """Grade an answer into its row with every grader. On primary-grader failure the answer is kept with
         grade_error; graders that already scored it are kept, so a retry only pays for the missing ones."""
         try:
-            fields, usage_by = grade_multi(task, text, judges, a.judge_tools, lib, lib_block, a.consensus,
+            fields, usage_by = grade_multi(task, text, judges, a.judge_tools, judge_lib,
+                                           "" if a.grade_without_library else lib_block, a.consensus,
                                            prior=row.get("grades"))
         except Exception as e:
             row.update(passed=False, score=None, grade_error=f"{type(e).__name__}: {str(e)[:300]}")
@@ -776,20 +777,37 @@ def cmd_run(a):
                 tag = f"{task['id']}__{model}__trial{trial + 1}"
                 files = [os.path.join(task["dir"], p) for p in task.get("files", [])]
                 log = gemini._tracer(tag)
+                # --model-library: the code library's text tools as well, the same for both families (no page
+                # images, which a Gemini function response cannot carry)
+                libtools = [t for t in grader_tools.CLIENT_TOOLS if t["name"] != "code_ref_page_image"] \
+                    if (a.model_library and lib) else []
+                system = LOCAL_CODE_SYSTEM + (LIB_NOTE if libtools else "")
                 with sandbox.Workspace(files, log=log) as ws:
+                    def tool(name, args):
+                        out = ws.tool(name, args)
+                        if out is None and libtools:
+                            out = grader_tools._client_tool(name, args, lib)
+                            if log:
+                                log({"kind": "tool", "tool": name, "call": 0, "seconds": 0, "code": json.dumps(args),
+                                     "result": str(out)[:4000]})
+                        return out
                     if gemini.is_gemini(model):
-                        text, usage, mtrace = gemini.run_tools(model, content, ws.tool, system=LOCAL_CODE_SYSTEM,
+                        text, usage, mtrace = gemini.run_tools(model, content, tool, system=system,
                                                                max_tokens=a.max_tokens, effort=a.effort,
-                                                               max_turns=a.max_turns, tag=tag)
+                                                               max_turns=a.max_turns, tag=tag, extra_tools=libtools)
                     else:
                         if log:
-                            log({"kind": "request", "model": model, "system": LOCAL_CODE_SYSTEM})
+                            log({"kind": "request", "model": model, "system": system})
                         text, usage, mtrace = grader_tools.run_equipped(
-                            model, content, None, max_tokens=a.max_tokens, max_turns=a.max_turns,
-                            tools=[sandbox.CLAUDE_TOOL], system=LOCAL_CODE_SYSTEM, effort=a.effort, executor=ws.tool)
+                            model, content, lib if libtools else None, max_tokens=a.max_tokens, max_turns=a.max_turns,
+                            tools=[sandbox.CLAUDE_TOOL] + libtools, system=system, effort=a.effort, executor=tool)
                         if log:
                             log({"kind": "done", "chars": len(text), "code_runs": ws.calls, "usage": usage})
-                note = f"ran code {sum(1 for t in mtrace if t.get('tool') != 'harness')} times, local sandbox"
+                looked = [t for t in mtrace if str(t.get("tool", "")).startswith("code_ref")]
+                runs = sum(1 for t in mtrace if t.get("tool") == sandbox.TOOL_NAME or (t.get("tool") not in ("harness",) and not str(t.get("tool", "")).startswith("code_ref")))
+                note = f"ran code {runs} times" + (f", {len(looked)} library look-ups" if libtools else "") + ", local sandbox"
+                if libtools:
+                    usage["library_lookups"] = [t.get("input") for t in looked]
             elif gemini.is_gemini(model):
                 # Gemini under test, via Vertex AI; same prompt and files, its own sandbox for code tasks
                 code = bool(task.get("code_execution"))
@@ -1368,6 +1386,9 @@ def main():
                         "adjudication; strict: a trial passes only if every grader passes it")
     s.add_argument("--model-library", action="store_true",
                    help="case study: give the model under test the --ref-lib code library as tools (editions, search, page)")
+    s.add_argument("--grade-without-library", action="store_true",
+                   help="grade as a run without the library would (no excerpts, no library tools for the graders), "
+                        "so a run with --model-library compares one to one with one without it")
     s.add_argument("--judge-tools", action="store_true",
                    help="equipped grader for key-scored tasks: code execution, the task's files and the --ref-lib code library")
     s.add_argument("--max-tokens", type=int, default=128000,

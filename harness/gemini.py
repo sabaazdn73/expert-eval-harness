@@ -286,7 +286,8 @@ def _post(model, body, log=None):
     raise api.APIError("gave up after repeated retries")
 
 
-def run_tools(model, content, executor, system=None, max_tokens=MAX_OUT, effort=None, max_turns=25, tag=None):
+def run_tools(model, content, executor, system=None, max_tokens=MAX_OUT, effort=None, max_turns=25, tag=None,
+              extra_tools=()):
     """Gemini under test with the harness's own tool (the local sandbox's run_python), through function calling:
     the same tool, files and turn limit as Claude gets with --sandbox local. Returns (text, usage, trace).
     Each turn is one generateContent call; the model's content goes back unchanged (thought signatures included)."""
@@ -296,7 +297,10 @@ def run_tools(model, content, executor, system=None, max_tokens=MAX_OUT, effort=
     if effort:
         thinking["thinkingLevel"] = {"xhigh": "high", "max": "high"}.get(effort, effort)
     body = {"generationConfig": {"maxOutputTokens": min(int(max_tokens), MAX_OUT), "thinkingConfig": thinking},
-            "tools": [{"functionDeclarations": [sandbox.GEMINI_DECL]}]}
+            "tools": [{"functionDeclarations": [sandbox.GEMINI_DECL] + [
+                {"name": t["name"], "description": t["description"], "parameters": t["input_schema"]}
+                if t["input_schema"].get("properties") else {"name": t["name"], "description": t["description"]}
+                for t in extra_tools]}]}
     if system:
         body["systemInstruction"] = {"parts": [{"text": system}]}
     log = _tracer(tag)
@@ -333,7 +337,7 @@ def run_tools(model, content, executor, system=None, max_tokens=MAX_OUT, effort=
             replies = []
             for c in calls:
                 args = c.get("args") or {}
-                trace.append({"tool": c.get("name"), "input": str(args.get("code", ""))[:2000]})
+                trace.append({"tool": c.get("name"), "input": str(args.get("code", args))[:2000]})
                 out = executor(c.get("name"), args)
                 fr = {"name": c.get("name"), "response": {"output": out if out is not None
                                                           else f"error: unknown tool {c.get('name')}"}}

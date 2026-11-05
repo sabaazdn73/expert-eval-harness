@@ -642,3 +642,26 @@ class LocalSandboxTest(unittest.TestCase):
                 c = run.build_content(task, False, False, local=True)
             self.assertFalse(any(b.get("type") == "container_upload" for b in c))
             self.assertIn("working folder", c[0]["text"])
+
+
+class LibraryToolsTest(unittest.TestCase):
+    def test_gemini_gets_library_declarations_and_results(self):
+        from harness import gemini, grader_tools
+        libtools = [t for t in grader_tools.CLIENT_TOOLS if t["name"] != "code_ref_page_image"]
+        call = {"candidates": [{"content": {"role": "model", "parts": [
+            {"functionCall": {"name": "code_ref_search", "args": {"query": "18.10.2.4"}}}]}}]}
+        final = {"candidates": [{"content": {"role": "model", "parts": [{"text": "done"}]}, "finishReason": "STOP"}]}
+        sent = []
+
+        def post(model, body, log=None):
+            sent.append(json.loads(json.dumps(body)))
+            return [call, final][len(sent) - 1]
+        seen = []
+        with mock.patch.object(gemini, "_post", side_effect=post), mock.patch.object(gemini.api, "_charge"):
+            text, u, trace = gemini.run_tools("gemini-x", [{"type": "text", "text": "q"}],
+                                              lambda n, a: seen.append((n, a)) or "hits", extra_tools=libtools)
+        names = [d["name"] for d in sent[0]["tools"][0]["functionDeclarations"]]
+        self.assertEqual(names, ["run_python", "code_ref_editions", "code_ref_search", "code_ref_page"])
+        self.assertNotIn("parameters", sent[0]["tools"][0]["functionDeclarations"][1])  # no-argument tool
+        self.assertEqual(seen, [("code_ref_search", {"query": "18.10.2.4"})])
+        self.assertEqual((text, trace[0]["tool"]), ("done", "code_ref_search"))

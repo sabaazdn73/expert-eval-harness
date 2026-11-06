@@ -1,6 +1,6 @@
 # Expert Eval Harness
 
-**Expert-written tasks, automatic grading, and a gate that decides which tasks are hard enough to keep.** A small, dependency-free Python harness for evaluating Claude models on professional tasks in structural engineering and finance.
+**Expert-written tasks, automatic grading, and a gate that decides which tasks are hard enough to keep.** A small, dependency-free Python harness for evaluating Claude and Gemini models on professional tasks in structural engineering and finance.
 
 Each task is a folder with the prompt, any input files, an answer key and a rubric written by a domain expert. The harness runs every task on several models, several times each, grades the answers, and reports how often each model gets it right.
 

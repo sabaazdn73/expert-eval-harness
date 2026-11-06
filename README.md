@@ -175,6 +175,10 @@ The library is never part of this repository: it can contain copyrighted standar
 
 ## Findings so far (micro1 Eval Hackathon, November 2026)
 
+![Structural Review Eval: the six tasks, and each model's mean score and pass rate in the shared sandbox and with the code library](docs/structural-review-eval.png)
+
+Walkthrough video: [youtube.com/watch?v=IWcEG7c-mQU](https://www.youtube.com/watch?v=IWcEG7c-mQU)
+
 Six structural review tasks built for the hackathon (US codes), Claude Haiku 5.5, Claude Sonnet 5.5 and Gemini 3.8 Flash two trials
 each and Gemini 4 Argon one, graded by Claude Opus 5.5 and Gemini 4 Argon. The tasks and the raw answers are not in this
 repository.

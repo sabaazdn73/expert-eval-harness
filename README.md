@@ -230,6 +230,9 @@ Every task folder holds `task.json`, `prompt.md`, the input `files/`, the expert
    full marks, `lure.md` takes the trap and must fail, and `boundary.md` sits one point below the pass line.
    `expected.json` holds the scores each one must get.
 
+Grader check for any task with a `grader_check/` folder: `python3 grader_check.py --judge claude-opus-5-5 gemini-4-argon --tasks "tasks/str-beam-stirrup-rfi-aci318"`
+(`--judge mock-judge` for an offline wiring test). Notes for coding agents working in this repository are in [AGENTS.md](AGENTS.md).
+
 To run the public sample: `python3 -m harness.run run --models claude-haiku-5-5 --k 2 --tasks "tasks/str-beam-stirrup-rfi-aci318"`
 (add `--judge-tools` for the equipped grader). An agent connected to this repository can evaluate any model the same way on
 the sample and the other tasks here, or on its own private tasks with `--tasks "/path/to/tasks/*"`.

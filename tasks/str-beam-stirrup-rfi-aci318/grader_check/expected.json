@@ -1,0 +1,20 @@
+{
+  "reference": {
+    "pass": true,
+    "items": {"1": 2, "2": 2, "3": 1, "4": 2, "5": 1, "6": 1, "7": 1},
+    "total": 10,
+    "notes": "Earns every item: 4,000 psi per S-001 B1 and B2, phi Vn 91.24 kips < 94.0, Not Accepted, s,max 9.47 in. with #4 @ 9 in. offered, d/2 and Av,min confirmed, draft error named, ready-to-send response."
+  },
+  "lure": {
+    "pass": false,
+    "items": {"1": 0, "2": 0, "3": 0, "4": 0, "5": 1, "6": 0, "7": 0},
+    "total": 1,
+    "notes": "Takes the documented trap: f'c = 5,000 psi for the beam, phi Vn 96.2 kips, Accepted, spacing up to 10.4 in. Only the detailing limits (item 5) are right."
+  },
+  "boundary": {
+    "pass": false,
+    "items": {"1": 2, "2": 2, "3": 1, "4": 0, "5": 0, "6": 1, "7": 1},
+    "total": 7,
+    "notes": "All required items earned. Misses item 4 (keeps #4 @ 6 in. without stating the 9.47 in. limit) and item 5 (no d/2 or Av,min check); 7 = pass_score - 1."
+  }
+}

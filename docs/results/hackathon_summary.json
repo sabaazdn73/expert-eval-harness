@@ -1,0 +1,429 @@
+{
+ "note": "Aggregate numbers only. The raw answers of the with-library run are not published because they quote the standards; the run itself is kept privately (runs/with-code-library).",
+ "runs": {
+  "same-sandbox": {
+   "date": "2026-11-04",
+   "library": false
+  },
+  "with-code-library": {
+   "date": "2026-11-05",
+   "library": true,
+   "runtime": "10:01 to 14:30 Lisbon time",
+   "est_cost_usd": {
+    "anthropic": 15.71,
+    "google": 10.48
+   }
+  }
+ },
+ "same_task_versions": true,
+ "without_library": {
+  "trials": 42,
+  "passes": 0,
+  "no_answer": 3,
+  "required_items": [
+   46,
+   143
+  ],
+  "by_model": {
+   "claude-haiku-5-5": {
+    "trials": 12,
+    "passes": 0,
+    "no_answer": 0,
+    "mean_score_share_pct": 32
+   },
+   "claude-sonnet-5-5": {
+    "trials": 12,
+    "passes": 0,
+    "no_answer": 0,
+    "mean_score_share_pct": 42
+   },
+   "gemini-3.8-flash": {
+    "trials": 12,
+    "passes": 0,
+    "no_answer": 2,
+    "mean_score_share_pct": 26
+   },
+   "gemini-4-argon": {
+    "trials": 6,
+    "passes": 0,
+    "no_answer": 1,
+    "mean_score_share_pct": 38
+   }
+  },
+  "by_kind": {
+   "Computation on a given method": [
+    70,
+    70
+   ],
+   "Review action (overturn the draft)": [
+    20,
+    27
+   ],
+   "Utah amendment applied": [
+    7,
+    10
+   ],
+   "Current code edition": [
+    4,
+    19
+   ],
+   "Governing clause, not the neighbouring one": [
+    0,
+    26
+   ],
+   "Permitted relaxation recognised": [
+    0,
+    14
+   ],
+   "Check the draft did not raise": [
+    0,
+    24
+   ]
+  },
+  "scores": {
+   "a01r3-special-walls-utah": {
+    "claude-haiku-5-5": [
+     2.0,
+     0.0
+    ],
+    "claude-sonnet-5-5": [
+     7.0,
+     7.0
+    ],
+    "gemini-3.8-flash": [
+     "no answer",
+     "no answer"
+    ],
+    "gemini-4-argon": [
+     8.0
+    ]
+   },
+   "m1-t1-screen-panel-connections": {
+    "claude-haiku-5-5": [
+     3.0,
+     3.0
+    ],
+    "claude-sonnet-5-5": [
+     3.0,
+     4.0
+    ],
+    "gemini-3.8-flash": [
+     4.0,
+     4.0
+    ],
+    "gemini-4-argon": [
+     6.0
+    ]
+   },
+   "m1-t2-skybridge-sliding-bearing": {
+    "claude-haiku-5-5": [
+     5.0,
+     4.0
+    ],
+    "claude-sonnet-5-5": [
+     5.0,
+     4.0
+    ],
+    "gemini-3.8-flash": [
+     2.0,
+     2.0
+    ],
+    "gemini-4-argon": [
+     3.0
+    ]
+   },
+   "m1-t3-concrete-mix-submittals": {
+    "claude-haiku-5-5": [
+     7.0,
+     7.0
+    ],
+    "claude-sonnet-5-5": [
+     7.0,
+     8.0
+    ],
+    "gemini-3.8-flash": [
+     6.0,
+     6.0
+    ],
+    "gemini-4-argon": [
+     7.0
+    ]
+   },
+   "m1-t4-core-wall-joint-rfi": {
+    "claude-haiku-5-5": [
+     4.0,
+     5.0
+    ],
+    "claude-sonnet-5-5": [
+     7.0,
+     7.0
+    ],
+    "gemini-3.8-flash": [
+     6.0,
+     6.0
+    ],
+    "gemini-4-argon": [
+     5.0
+    ]
+   },
+   "m1-t6-egress-stair-sliding-seat": {
+    "claude-haiku-5-5": [
+     4.0,
+     3.0
+    ],
+    "claude-sonnet-5-5": [
+     1.0,
+     3.0
+    ],
+    "gemini-3.8-flash": [
+     2.0,
+     0.0
+    ],
+    "gemini-4-argon": [
+     "no answer"
+    ]
+   }
+  },
+  "passes_by_task": {
+   "a01r3-special-walls-utah": 0,
+   "m1-t1-screen-panel-connections": 0,
+   "m1-t2-skybridge-sliding-bearing": 0,
+   "m1-t3-concrete-mix-submittals": 0,
+   "m1-t4-core-wall-joint-rfi": 0,
+   "m1-t6-egress-stair-sliding-seat": 0
+  },
+  "pass_score": {
+   "a01r3-special-walls-utah": 11,
+   "m1-t1-screen-panel-connections": 10,
+   "m1-t2-skybridge-sliding-bearing": 9,
+   "m1-t3-concrete-mix-submittals": 11,
+   "m1-t4-core-wall-joint-rfi": 8,
+   "m1-t6-egress-stair-sliding-seat": 9
+  },
+  "max_score": {
+   "a01r3-special-walls-utah": 14,
+   "m1-t1-screen-panel-connections": 13,
+   "m1-t2-skybridge-sliding-bearing": 12,
+   "m1-t3-concrete-mix-submittals": 14,
+   "m1-t4-core-wall-joint-rfi": 10,
+   "m1-t6-egress-stair-sliding-seat": 12
+  },
+  "grader_agreement": {
+   "items": [
+    347,
+    363
+   ],
+   "pass_fail": [
+    39,
+    39
+   ]
+  }
+ },
+ "with_library": {
+  "trials": 42,
+  "passes": 13,
+  "no_answer": 10,
+  "required_items": [
+   78,
+   115
+  ],
+  "by_model": {
+   "claude-haiku-5-5": {
+    "trials": 12,
+    "passes": 2,
+    "no_answer": 0,
+    "mean_score_share_pct": 55,
+    "library_lookups_median": 20.5
+   },
+   "claude-sonnet-5-5": {
+    "trials": 12,
+    "passes": 5,
+    "no_answer": 2,
+    "mean_score_share_pct": 63,
+    "library_lookups_median": 31.0
+   },
+   "gemini-3.8-flash": {
+    "trials": 12,
+    "passes": 3,
+    "no_answer": 6,
+    "mean_score_share_pct": 35,
+    "library_lookups_median": 20.5
+   },
+   "gemini-4-argon": {
+    "trials": 6,
+    "passes": 3,
+    "no_answer": 2,
+    "mean_score_share_pct": 54,
+    "library_lookups_median": 30.5
+   }
+  },
+  "by_kind": {
+   "Computation on a given method": [
+    61,
+    64
+   ],
+   "Review action (overturn the draft)": [
+    19,
+    23
+   ],
+   "Utah amendment applied": [
+    3,
+    4
+   ],
+   "Current code edition": [
+    6,
+    12
+   ],
+   "Governing clause, not the neighbouring one": [
+    16,
+    22
+   ],
+   "Permitted relaxation recognised": [
+    6,
+    14
+   ],
+   "Check the draft did not raise": [
+    7,
+    16
+   ]
+  },
+  "scores": {
+   "a01r3-special-walls-utah": {
+    "claude-haiku-5-5": [
+     8.0,
+     6.0
+    ],
+    "claude-sonnet-5-5": [
+     "no answer",
+     "no answer"
+    ],
+    "gemini-3.8-flash": [
+     "no answer",
+     "no answer"
+    ],
+    "gemini-4-argon": [
+     "no answer"
+    ]
+   },
+   "m1-t1-screen-panel-connections": {
+    "claude-haiku-5-5": [
+     7.0,
+     4.0
+    ],
+    "claude-sonnet-5-5": [
+     9.0,
+     11.0
+    ],
+    "gemini-3.8-flash": [
+     "no answer",
+     "no answer"
+    ],
+    "gemini-4-argon": [
+     10.0
+    ]
+   },
+   "m1-t2-skybridge-sliding-bearing": {
+    "claude-haiku-5-5": [
+     3.0,
+     11.0
+    ],
+    "claude-sonnet-5-5": [
+     11.0,
+     11.0
+    ],
+    "gemini-3.8-flash": [
+     "no answer",
+     11.0
+    ],
+    "gemini-4-argon": [
+     12.0
+    ]
+   },
+   "m1-t3-concrete-mix-submittals": {
+    "claude-haiku-5-5": [
+     7.0,
+     8.0
+    ],
+    "claude-sonnet-5-5": [
+     6.0,
+     8.0
+    ],
+    "gemini-3.8-flash": [
+     13.0,
+     12.0
+    ],
+    "gemini-4-argon": [
+     14.0
+    ]
+   },
+   "m1-t4-core-wall-joint-rfi": {
+    "claude-haiku-5-5": [
+     4.0,
+     7.0
+    ],
+    "claude-sonnet-5-5": [
+     6.0,
+     6.0
+    ],
+    "gemini-3.8-flash": [
+     6.0,
+     6.0
+    ],
+    "gemini-4-argon": [
+     5.0
+    ]
+   },
+   "m1-t6-egress-stair-sliding-seat": {
+    "claude-haiku-5-5": [
+     10.0,
+     7.0
+    ],
+    "claude-sonnet-5-5": [
+     12.0,
+     12.0
+    ],
+    "gemini-3.8-flash": [
+     "no answer",
+     3.0
+    ],
+    "gemini-4-argon": [
+     "no answer"
+    ]
+   }
+  },
+  "passes_by_task": {
+   "a01r3-special-walls-utah": 0,
+   "m1-t1-screen-panel-connections": 2,
+   "m1-t2-skybridge-sliding-bearing": 5,
+   "m1-t3-concrete-mix-submittals": 3,
+   "m1-t4-core-wall-joint-rfi": 0,
+   "m1-t6-egress-stair-sliding-seat": 3
+  },
+  "pass_score": {
+   "a01r3-special-walls-utah": 11,
+   "m1-t1-screen-panel-connections": 10,
+   "m1-t2-skybridge-sliding-bearing": 9,
+   "m1-t3-concrete-mix-submittals": 11,
+   "m1-t4-core-wall-joint-rfi": 8,
+   "m1-t6-egress-stair-sliding-seat": 9
+  },
+  "max_score": {
+   "a01r3-special-walls-utah": 14,
+   "m1-t1-screen-panel-connections": 13,
+   "m1-t2-skybridge-sliding-bearing": 12,
+   "m1-t3-concrete-mix-submittals": 14,
+   "m1-t4-core-wall-joint-rfi": 10,
+   "m1-t6-egress-stair-sliding-seat": 12
+  },
+  "grader_agreement": {
+   "items": [
+    285,
+    294
+   ],
+   "pass_fail": [
+    32,
+    32
+   ]
+  }
+ }
+}

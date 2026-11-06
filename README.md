@@ -180,18 +180,59 @@ The library is never part of this repository: it can contain copyrighted standar
 Walkthrough video: [youtube.com/watch?v=IWcEG7c-mQU](https://www.youtube.com/watch?v=IWcEG7c-mQU)
 
 Six structural review tasks built for the hackathon (US codes), Claude Haiku 5.5, Claude Sonnet 5.5 and Gemini 3.8 Flash two trials
-each and Gemini 4 Argon one, graded by Claude Opus 5.5 and Gemini 4 Argon. The tasks and the raw answers are not in this
-repository.
+each and Gemini 4 Argon one, graded by Claude Opus 5.5 and Gemini 4 Argon. What each task gives the model, what it asks and how
+it is scored: [docs/hackathon-tasks.md](docs/hackathon-tasks.md). All results, tables and figures: [docs/results.md](docs/results.md).
+The task prompts, keys and raw answers are not in this repository, so that the tasks stay usable for evaluation; a complete task
+built to the same standard is in [`tasks/str-beam-stirrup-rfi-aci318`](tasks/str-beam-stirrup-rfi-aci318).
+
+| Model | Passes, shared sandbox | Passes, with the code library | Mean score, shared sandbox | Mean score, with the library | No answer (without / with) |
+|---|---|---|---|---|---|
+| Claude Haiku 5.5 | 0 of 12 | 2 of 12 | 32% | 55% | 0 / 0 |
+| Claude Sonnet 5.5 | 0 of 12 | 5 of 12 | 42% | 63% | 0 / 2 |
+| Gemini 3.8 Flash | 0 of 12 | 3 of 12 | 26% | 35% | 2 / 6 |
+| Gemini 4 Argon | 0 of 6 | 3 of 6 | 38% | 54% | 1 / 2 |
+| All | 0 of 42 (95% CI 0 to 8%) | 13 of 42 (95% CI 19 to 46%) | 34% | 51% | 3 / 10 |
 
 1. **No trial passed** in the shared sandbox (0 of 42). The models did the arithmetic well (100% of computation items)
    but chose the neighbouring clause (0% of governing-clause items), an older edition (21%), or skipped checks the draft
    did not raise (0%).
 2. **The sandbox changed a score.** In Vertex AI's own code tool Gemini 4 Argon wrote no answer on the task with CSV
-   files; in the shared local sandbox it scored 8 of 14.
+   files; in the shared local sandbox it scored 8 of 14. In the same sandbox Claude models mostly answered after one code
+   run, while Gemini 3.8 Flash kept computing and twice reached the 40-turn limit without an answer.
 3. **With the code text in reach, 13 of 42 passed.** Given the library as look-up tools (median 20 to 31 look-ups per
    trial), governing-clause items rose from 0% to 73% and unraised checks from 0% to 44%. One required check was still
    missed by every answer, two tasks had no pass, and trials without an answer rose from 3 to 10 because look-ups count
    against the turn limit. The library covers exactly the sources the tasks cite, so this is the best case for look-up.
+4. **The graders agreed.** 96% of items in the first run and 97% in the second, and the same pass or fail on every graded
+   trial (39 of 39 and 32 of 32). Every disagreement was decided by the expert.
+
+| | |
+|---|---|
+| ![Scores against the pass line](docs/figures/1_scores_vs_pass_line.png) | ![Items by kind](docs/figures/2_items_by_kind.png) |
+| ![Effect of the sandbox](docs/figures/3_sandbox_effect.png) | ![Grader agreement](docs/figures/4_grader_agreement.png) |
+| ![Code runs per trial](docs/figures/5_code_runs.png) | ![Effect of the code library](docs/figures/6_library_effect.png) |
+
+### How a task is built and scored
+
+Every task folder holds `task.json`, `prompt.md`, the input `files/`, the expert `key.md` and a `grader_check/` folder:
+
+1. **Inputs.** The documents an engineer of record would have: general notes, drawing sheets, sections of the calculation
+   package, the document under review (a submittal, an RFI or a delegated design) and a junior engineer's draft review.
+2. **Prompt.** A short request in the engineer's own words: review the document and the draft before I sign, tell me
+   whether it can be accepted and the checks behind it with numbers and code references, and write the response to send.
+3. **Key.** The basis checked on the code text, the verified answer, what is right and wrong in the document and in the
+   draft, the fix, wrong but plausible answers, and scored items. Each item is earned in full or not at all, calculated
+   numbers are scored by an accepted range, and some items are required.
+4. **Score.** The grader scores every item against the key; the harness adds the points (reported as a share of the
+   task's points, 0 to 100) and applies the pass rule: at least `pass_score` and every required item earned. Short JSON
+   fields in the answer are also checked automatically against `checks` with tolerances.
+5. **Grader check.** Before a paid run the key is tested on three answers written for it: `reference.md` must pass with
+   full marks, `lure.md` takes the trap and must fail, and `boundary.md` sits one point below the pass line.
+   `expected.json` holds the scores each one must get.
+
+To run the public sample: `python3 -m harness.run run --models claude-haiku-5-5 --k 2 --tasks "tasks/str-beam-stirrup-rfi-aci318"`
+(add `--judge-tools` for the equipped grader). An agent connected to this repository can evaluate any model the same way on
+the sample and the other tasks here, or on its own private tasks with `--tasks "/path/to/tasks/*"`.
 
 ## Quick start
 
@@ -222,6 +263,7 @@ python3 -m harness.run gate runs/<run_id> --mode quality --model claude-haiku-5-
 | `fin-invented-standard` | Finance | A confident request built on an accounting amendment that does not exist |
 | `str-beam-flexure-aci318` | Structural | RC beam flexure check that fails by under 3% |
 | `str-load-combination-wind` | Structural | Governing compression and uplift with wind reversing the load |
+| `str-beam-stirrup-rfi-aci318` | Structural | Review of a contractor's RFI and a junior engineer's draft before the EOR signs: stirrup spacing checked with the concrete strength the general notes give for the beam (full key, grader-check answers; built to the hackathon standard) |
 
 ## Adding a task
 

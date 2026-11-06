@@ -1,0 +1,111 @@
+{
+  "id": "str-beam-stirrup-rfi-aci318",
+  "domain": "structural",
+  "title": "Beam B-3 stirrup spacing RFI, review before the EOR signs (ACI 318-19, public sample)",
+  "prompt": "prompt.md",
+  "files": [
+    "files/26-900 S-001 General Notes.pdf",
+    "files/26-900 S-201 Beam Schedule and Details.pdf",
+    "files/26-900 Calc 4.3 Beam B-3 Shear.pdf",
+    "files/26-900 RFI-012 Beam B-3 Stirrup Spacing.pdf",
+    "files/26-900 RFI-012 Draft Response.pdf"
+  ],
+  "key_file": "key.md",
+  "items": [
+    {
+      "id": "1",
+      "points": 2,
+      "required": true
+    },
+    {
+      "id": "2",
+      "points": 2,
+      "required": true
+    },
+    {
+      "id": "3",
+      "points": 1,
+      "required": true
+    },
+    {
+      "id": "4",
+      "points": 2
+    },
+    {
+      "id": "5",
+      "points": 1
+    },
+    {
+      "id": "6",
+      "points": 1
+    },
+    {
+      "id": "7",
+      "points": 1
+    }
+  ],
+  "max_score": 10,
+  "pass_score": 8,
+  "code_execution": false,
+  "answer_format": {
+    "fc_beam_psi": "number (the f'c that applies to beam B-3)",
+    "phiVn_proposed_kips": "number (design shear strength at d with #4 @ 10 in.)",
+    "proposal_ok": "true or false (#4 @ 10 in. is adequate)",
+    "max_spacing_in": "number (largest end-zone spacing of #4 two-leg stirrups that is adequate)",
+    "rfi_acceptable": "true or false"
+  },
+  "checks": [
+    {
+      "field": "fc_beam_psi",
+      "type": "number",
+      "expected": 4000,
+      "tol_abs": 1
+    },
+    {
+      "field": "phiVn_proposed_kips",
+      "type": "number",
+      "expected": 91.24,
+      "tol_abs": 0.3,
+      "also": [
+        {
+          "expected": 80.25,
+          "tol_abs": 1.75
+        }
+      ]
+    },
+    {
+      "field": "proposal_ok",
+      "type": "bool",
+      "expected": false
+    },
+    {
+      "field": "max_spacing_in",
+      "type": "number",
+      "expected": 9.47,
+      "tol_abs": 0.05,
+      "also": [
+        {
+          "expected": 9.0,
+          "tol_abs": 0.01
+        },
+        {
+          "expected": 7.85,
+          "tol_abs": 0.25
+        }
+      ]
+    },
+    {
+      "field": "rfi_acceptable",
+      "type": "bool",
+      "expected": false
+    }
+  ],
+  "checks_gate": false,
+  "mock_answer": {
+    "fc_beam_psi": 4000,
+    "phiVn_proposed_kips": 91.24,
+    "proposal_ok": false,
+    "max_spacing_in": 9.47,
+    "rfi_acceptable": false
+  }
+}

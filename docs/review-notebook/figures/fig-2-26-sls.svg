@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Serviceability combinations for an office beam</title><desc>Bars of line load on the 9 m office beam (gk = 24.585 kN/m, qk = 11.4 kN/m including partitions): characteristic 35.99, quasi-permanent 28.0 and ULS 6.10 50.29 kN/m. Long-term deflection and creep use the quasi-permanent value, 78% of the characteristic.</desc><defs></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Office beam, line load (kN/m)</text>
+<text class="tl" x="250.0" y="97.0" text-anchor="end">ULS 6.10  1.35gk + 1.5qk</text>
+<rect x="260.0" y="80.0" width="274.3" height="26.0" rx="2" stroke-width="1" fill="#F1EFE8" stroke="#888780"/>
+<text class="th" x="540.3" y="97.0" text-anchor="start">50.3</text>
+<text class="tl" x="250.0" y="137.0" text-anchor="end">characteristic  gk + qk</text>
+<rect x="260.0" y="120.0" width="196.3" height="26.0" rx="2" stroke-width="1" fill="#B5D4F4" stroke="#185FA5"/>
+<text class="th" x="462.3" y="137.0" text-anchor="start">36.0</text>
+<text class="tl" x="250.0" y="177.0" text-anchor="end">quasi-permanent  gk + ψ2 qk</text>
+<rect x="260.0" y="160.0" width="152.8" height="26.0" rx="2" stroke-width="1" fill="#185FA5" stroke="#0C447C"/>
+<text class="th" x="418.8" y="177.0" text-anchor="start">28.0</text>
+<line x1="260.0" y1="74.0" x2="260.0" y2="192.0" stroke="#2C2C2A" stroke-width="1" stroke-linecap="butt"/>
+<rect x="40.0" y="240.0" width="628.0" height="216.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="52.0" y="262.0" text-anchor="start">gk = 7.07 × 3 + 3.375 = 24.585 kN/m;  qk = (3.0 + 0.8 partitions) × 3 = 11.4 kN/m</text>
+<text class="ts" x="52.0" y="282.0" text-anchor="start">Characteristic (EN 1990 6.14b): for irreversible effects, e.g. cracking of brittle partitions.</text>
+<text class="ts" x="52.0" y="302.0" text-anchor="start">Quasi-permanent (6.16b), ψ2 = 0.3 for offices: 24.585 + 0.3 × 11.4 = 28.0 kN/m</text>
+<text class="ts" x="52.0" y="322.0" text-anchor="start">  → long-term deflection, creep, crack width in many reinforced concrete checks.</text>
+<text class="ts" x="52.0" y="342.0" text-anchor="start">Frequent (6.15b) uses ψ1 on the leading load: vibration and reversible limits.</text>
+<text class="ts" x="52.0" y="362.0" text-anchor="start">Partitions often taken as permanent: 24.585 + 2.4 + 0.3 × 9.0 = 29.7 kN/m.</text>
+<text class="ts" x="52.0" y="382.0" text-anchor="start">Never check deflection with the ULS load, and never apply creep to the full imposed load.</text>
+<text class="ts" x="52.0" y="402.0" text-anchor="start">ASCE 7 covers serviceability in Appendix C and its commentary.</text></svg>

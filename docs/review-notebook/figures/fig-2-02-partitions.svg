@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Light partitions as a uniform load, heavy walls as line loads</title><desc>Plan of a 9 by 9 m office bay. Light movable partitions of 1.6 kN/m are shown dashed and become a uniform load: 0.8 kN/m2 under EN 1991-1-1, at least 0.72 kN/m2 of live load under ASCE 7. A 150 mm masonry wall 3.5 m high, 9.45 kN/m, is drawn as a heavy line and goes into the model as a line load.</desc><defs></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Plan of one office bay, 9 × 9 m</text>
+<rect x="40.0" y="94.0" width="306.0" height="306.0" rx="0" stroke-width="1" class="c-white"/>
+<line x1="40.0" y1="298.0" x2="346.0" y2="298.0" stroke="#7F77DD" stroke-width="2" stroke-linecap="butt"/>
+<text class="ts halo" x="342.0" y="293.0" text-anchor="end">beam</text>
+<line x1="40.0" y1="196.0" x2="346.0" y2="196.0" stroke="#7F77DD" stroke-width="2" stroke-linecap="butt"/>
+<text class="ts halo" x="342.0" y="191.0" text-anchor="end">beam</text>
+<rect x="34.0" y="394.0" width="12.0" height="12.0" rx="0" stroke-width="0" fill="#5F5E5A"/>
+<rect x="34.0" y="88.0" width="12.0" height="12.0" rx="0" stroke-width="0" fill="#5F5E5A"/>
+<rect x="340.0" y="394.0" width="12.0" height="12.0" rx="0" stroke-width="0" fill="#5F5E5A"/>
+<rect x="340.0" y="88.0" width="12.0" height="12.0" rx="0" stroke-width="0" fill="#5F5E5A"/>
+<line x1="108.0" y1="325.2" x2="108.0" y2="223.2" stroke="#854F0B" stroke-width="2.5" stroke-linecap="butt" stroke-dasharray="7 4"/>
+<line x1="108.0" y1="223.2" x2="196.4" y2="223.2" stroke="#854F0B" stroke-width="2.5" stroke-linecap="butt" stroke-dasharray="7 4"/>
+<line x1="257.6" y1="332.0" x2="257.6" y2="114.4" stroke="#854F0B" stroke-width="2.5" stroke-linecap="butt" stroke-dasharray="7 4"/>
+<line x1="196.4" y1="162.0" x2="325.6" y2="162.0" stroke="#854F0B" stroke-width="2.5" stroke-linecap="butt" stroke-dasharray="7 4"/>
+<line x1="53.6" y1="349.0" x2="332.4" y2="349.0" stroke="#993C1D" stroke-width="7" stroke-linecap="butt"/>
+<text class="tl halo" x="193.0" y="373.0" text-anchor="middle">masonry wall 150 mm, 3.5 m high: 9.45 kN/m</text>
+<text class="tl halo" x="152.2" y="213.2" text-anchor="middle">light partitions 1.6 kN/m</text>
+<rect x="370.0" y="52.0" width="298.0" height="196.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="th" x="382.0" y="74.0" text-anchor="start">Light partitions (movable)</text>
+<text class="ts" x="382.0" y="96.0" text-anchor="start">EN 1991-1-1: self-weight ≤ 1 / 2 / 3 kN/m</text>
+<text class="ts" x="382.0" y="113.0" text-anchor="start">  → 0.5 / 0.8 / 1.2 kN/m² imposed</text>
+<text class="ts" x="382.0" y="130.0" text-anchor="start">  here 1.6 kN/m → 0.8 kN/m²</text>
+<text class="ts" x="382.0" y="147.0" text-anchor="start">ASCE 7: at least 0.72 kN/m² live load,</text>
+<text class="ts" x="382.0" y="164.0" text-anchor="start">  never reduced (4.3.2)</text>
+<text class="ts" x="382.0" y="181.0" text-anchor="start">Office imposed (EN, example):</text>
+<text class="ts" x="382.0" y="198.0" text-anchor="start">  3.0 + 0.8 = 3.8 kN/m²</text>
+<rect x="370.0" y="262.0" width="298.0" height="132.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="th" x="382.0" y="284.0" text-anchor="start">Heavy walls (above 3 kN/m)</text>
+<text class="ts" x="382.0" y="306.0" text-anchor="start">3.5 × 0.15 × 18 = 9.45 kN/m</text>
+<text class="ts" x="382.0" y="323.0" text-anchor="start">Model it where it stands, as a</text>
+<text class="ts" x="382.0" y="340.0" text-anchor="start">line load (dead load), not spread</text>
+<text class="ts" x="382.0" y="357.0" text-anchor="start">over the floor as a uniform load.</text></svg>

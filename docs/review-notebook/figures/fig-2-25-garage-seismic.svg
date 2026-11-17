@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Garage column: the 0.5L exception does not apply</title><desc>Bars for the parking edge column of Module 1 (D = 349.3 kN, L = 81 kN, QE = +/-60 kN, SDS = 0.8): 2a gives 548.8 kN; seismic combination 6 with 1.0L gives 616.0 kN and governs; with 0.5L, which garages may not use, it gives 575.5 kN, 6.6% low. Combination 7 gives 198.5 kN.</desc><defs></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Edge column of the parking floor (kN)</text>
+<text class="tl" x="270.0" y="87.0" text-anchor="end">1a  1.4D</text>
+<rect x="280.0" y="70.0" width="209.6" height="26.0" rx="2" stroke-width="1" fill="#B5D4F4" stroke="#185FA5"/>
+<text class="th" x="495.6" y="87.0" text-anchor="start">489.0</text>
+<text class="tl" x="270.0" y="127.0" text-anchor="end">2a  1.2D + 1.6L</text>
+<rect x="280.0" y="110.0" width="235.2" height="26.0" rx="2" stroke-width="1" fill="#B5D4F4" stroke="#185FA5"/>
+<text class="th" x="521.2" y="127.0" text-anchor="start">548.8</text>
+<text class="tl" x="270.0" y="167.0" text-anchor="end">6  1.36D + QE + 1.0L</text>
+<rect x="280.0" y="150.0" width="264.0" height="26.0" rx="2" stroke-width="1" fill="#185FA5" stroke="#0C447C"/>
+<text class="th" x="550.0" y="167.0" text-anchor="start">616.0</text>
+<text class="tl" x="270.0" y="207.0" text-anchor="end">6 with 0.5L (wrong in a garage)</text>
+<rect x="280.0" y="190.0" width="246.6" height="26.0" rx="2" stroke-width="1" fill="#F1EFE8" stroke="#888780" stroke-dasharray="5 3"/>
+<text class="th" x="532.6" y="207.0" text-anchor="start">575.5</text>
+<text class="tl" x="270.0" y="247.0" text-anchor="end">7  0.74D − QE</text>
+<rect x="280.0" y="230.0" width="85.1" height="26.0" rx="2" stroke-width="1" fill="#B5D4F4" stroke="#185FA5"/>
+<text class="th" x="371.1" y="247.0" text-anchor="start">198.5</text>
+<line x1="280.0" y1="64.0" x2="280.0" y2="262.0" stroke="#2C2C2A" stroke-width="1" stroke-linecap="butt"/>
+<rect x="40.0" y="300.0" width="628.0" height="156.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="52.0" y="322.0" text-anchor="start">6: (1.2 + 0.2 × 0.8) × 349.3 + 60 + 1.0 × 81 = 475.0 + 60 + 81 = 616.0 kN</text>
+<text class="ts" x="52.0" y="342.0" text-anchor="start">The 0.5L exception (ASCE 7-22 2.3.1, 2.3.6) excludes garages and public assembly.</text>
+<text class="ts" x="52.0" y="362.0" text-anchor="start">Garage live load may stay out of the seismic weight (12.7.2), but in the</text>
+<text class="ts" x="52.0" y="382.0" text-anchor="start">combination it is 1.0L.  Here combination 6 governs over 2a by 12%.</text>
+<text class="ts" x="52.0" y="402.0" text-anchor="start">EN 1990 seismic situation: G + ψ2 Q + AEd (ψ2 for the category: check the NA).</text></svg>

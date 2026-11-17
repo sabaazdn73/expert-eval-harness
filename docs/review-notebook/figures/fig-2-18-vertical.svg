@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Vertical seismic effect and overstrength on an interior column</title><desc>Bars of factored axial load on the ground-storey interior column (D = 2,918.8 kN, L = 408.2 kN, QE = +/-250 kN, SDS = 0.8): combination 6 gives 4,433.8 kN, combination 7 gives 1,909.9 kN; leaving Ev out of combination 7 would give 2,376.9 kN, 467 kN too high. With Omega0 = 3: 4,933.8 and 1,409.9 kN.</desc><defs></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Factored axial force, interior ground-storey column (kN)</text>
+<text class="tl" x="280.0" y="87.0" text-anchor="end">6: (1.2 + 0.2SDS)D + QE + 0.5L + 0.15S</text>
+<rect x="290.0" y="70.0" width="266.0" height="26.0" rx="2" stroke-width="1" fill="#B5D4F4" stroke="#185FA5"/>
+<text class="th" x="562.0" y="87.0" text-anchor="start">4,433.8</text>
+<text class="tl" x="280.0" y="127.0" text-anchor="end">7: (0.9 − 0.2SDS)D − QE</text>
+<rect x="290.0" y="110.0" width="114.6" height="26.0" rx="2" stroke-width="1" fill="#B5D4F4" stroke="#185FA5"/>
+<text class="th" x="410.6" y="127.0" text-anchor="start">1,909.9</text>
+<text class="tl" x="280.0" y="167.0" text-anchor="end">7 without Ev (wrong)</text>
+<rect x="290.0" y="150.0" width="142.6" height="26.0" rx="2" stroke-width="1" fill="#F1EFE8" stroke="#888780" stroke-dasharray="5 3"/>
+<text class="th" x="438.6" y="167.0" text-anchor="start">2,376.9</text>
+<text class="tl" x="280.0" y="207.0" text-anchor="end">6 with Ω0 QE (illustrative)</text>
+<rect x="290.0" y="190.0" width="296.0" height="26.0" rx="2" stroke-width="1" fill="#C0DD97" stroke="#3B6D11"/>
+<text class="th" x="592.0" y="207.0" text-anchor="start">4,933.8</text>
+<text class="tl" x="280.0" y="247.0" text-anchor="end">7 with Ω0 QE (illustrative)</text>
+<rect x="290.0" y="230.0" width="84.6" height="26.0" rx="2" stroke-width="1" fill="#C0DD97" stroke="#3B6D11"/>
+<text class="th" x="380.6" y="247.0" text-anchor="start">1,409.9</text>
+<line x1="290.0" y1="64.0" x2="290.0" y2="262.0" stroke="#2C2C2A" stroke-width="1" stroke-linecap="butt"/>
+<rect x="40.0" y="290.0" width="628.0" height="166.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="52.0" y="312.0" text-anchor="start">Ev = 0.2 SDS D = 0.2 × 0.8 × 2,918.8 = 467.0 kN: added in 6, taken away in 7.</text>
+<text class="ts" x="52.0" y="332.0" text-anchor="start">6: 1.36 × 2,918.8 + 250 + 0.5 × 408.2 + 0.15 × 68.0 = 4,433.8 kN (0.5L: office)</text>
+<text class="ts" x="52.0" y="352.0" text-anchor="start">7: 0.74 × 2,918.8 − 250 = 1,909.9 kN (still compression: no uplift)</text>
+<text class="ts" x="52.0" y="372.0" text-anchor="start">Ω0 = 3 (illustrative here): only where the standard asks for it, e.g. collectors and</text>
+<text class="ts" x="52.0" y="392.0" text-anchor="start">columns under discontinuous walls: 4,933.8 and 1,409.9 kN.  ρ = 1.0 assumed.</text>
+<text class="ts" x="52.0" y="412.0" text-anchor="start">D = 3 × (8.862 × 81 + 23.44) + 8.292 × 81 + 23.44;  L = 233.3 + 175.0</text></svg>

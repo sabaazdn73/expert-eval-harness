@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Office floor build-up and its dead load</title><desc>Section through the office floor: 10 mm tiles, 60 mm screed, 200 mm reinforced concrete slab, a 300 by 450 mm beam web below, and a suspended ceiling with services. The slab-level dead load is 7.07 kN/m2; with beams and girders averaged over the bay it is 8.86 kN/m2.</desc><defs><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Section through the floor (not to scale vertically)</text>
+<rect x="30.0" y="70.0" width="290.0" height="20.0" rx="0" stroke-width="0.8" class="c-amber"/>
+<text class="tl halo" x="40.0" y="84.0" text-anchor="start">Tiles and adhesive</text>
+<text class="th" x="332.0" y="84.0" text-anchor="start">0.25 kN/m²</text>
+<rect x="30.0" y="90.0" width="290.0" height="30.0" rx="0" stroke-width="0.8" class="c-white"/>
+<text class="tl halo" x="40.0" y="109.0" text-anchor="start">Screed 60 mm × 22 kN/m³</text>
+<text class="th" x="332.0" y="109.0" text-anchor="start">1.32 kN/m²</text>
+<rect x="30.0" y="120.0" width="290.0" height="80.0" rx="0" stroke-width="0.8" class="c-gray"/>
+<text class="tl halo" x="40.0" y="164.0" text-anchor="start">RC slab 200 mm × 25 kN/m³</text>
+<text class="th" x="332.0" y="164.0" text-anchor="start">5.00 kN/m²</text>
+<rect x="150.0" y="200.0" width="60.0" height="112.0" rx="0" stroke-width="0.8" class="c-gray"/>
+<text class="ts" x="180.0" y="260.0" text-anchor="middle">beam</text>
+<text class="ts" x="180.0" y="276.0" text-anchor="middle">web</text>
+<line x1="136.0" y1="202.0" x2="136.0" y2="310.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="131.0" y1="200.0" x2="141.0" y2="200.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="131.0" y1="312.0" x2="141.0" y2="312.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="129.0" y="260.0" text-anchor="end">450</text>
+<line x1="152.0" y1="328.0" x2="208.0" y2="328.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="150.0" y1="323.0" x2="150.0" y2="333.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="210.0" y1="323.0" x2="210.0" y2="333.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="180.0" y="323.0" text-anchor="middle">300</text>
+<line x1="50.0" y1="200.0" x2="50.0" y2="360.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" stroke-dasharray="3 3"/>
+<line x1="110.0" y1="200.0" x2="110.0" y2="360.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" stroke-dasharray="3 3"/>
+<line x1="170.0" y1="200.0" x2="170.0" y2="360.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" stroke-dasharray="3 3"/>
+<line x1="230.0" y1="200.0" x2="230.0" y2="360.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" stroke-dasharray="3 3"/>
+<line x1="290.0" y1="200.0" x2="290.0" y2="360.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" stroke-dasharray="3 3"/>
+<rect x="30.0" y="360.0" width="290.0" height="8.0" rx="0" stroke-width="0.8" class="c-white"/>
+<line x1="100.0" y1="344.0" x2="310.0" y2="344.0" stroke="#993C1D" stroke-width="2" stroke-linecap="butt" stroke-dasharray="8 5"/>
+<text class="ts halo" x="230.0" y="336.0" text-anchor="start">services</text>
+<text class="tl" x="40.0" y="386.0" text-anchor="start">Ceiling and services</text>
+<text class="th" x="332.0" y="368.0" text-anchor="start">0.50 kN/m²</text>
+<rect x="440.0" y="60.0" width="228.0" height="210.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="452.0" y="84.0" text-anchor="start">SDL = 1.32 + 0.25 + 0.50</text>
+<text class="ts" x="452.0" y="101.0" text-anchor="start">  = 2.07 kN/m²</text>
+<text class="ts" x="452.0" y="118.0" text-anchor="start">Slab level 5.00 + 2.07 = 7.07</text>
+<text class="ts" x="452.0" y="135.0" text-anchor="start">Beam webs 3.375 kN/m ÷ 3 m</text>
+<text class="ts" x="452.0" y="152.0" text-anchor="start">  = 1.125 kN/m²</text>
+<text class="ts" x="452.0" y="169.0" text-anchor="start">Girder webs 6.0 kN/m ÷ 9 m</text>
+<text class="ts" x="452.0" y="186.0" text-anchor="start">  = 0.667 kN/m²</text>
+<text class="ts" x="452.0" y="203.0" text-anchor="start">Average over the bay</text>
+<text class="ts" x="452.0" y="220.0" text-anchor="start">  7.07 + 1.125 + 0.667 = 8.86</text>
+<text class="ts" x="452.0" y="237.0" text-anchor="start"></text>
+<rect x="440.0" y="286.0" width="228.0" height="110.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="452.0" y="308.0" text-anchor="start">Column 0.5 × 0.5 × 3.75 × 25</text>
+<text class="ts" x="452.0" y="325.0" text-anchor="start">  = 23.4 kN per storey</text>
+<text class="ts" x="452.0" y="342.0" text-anchor="start"></text>
+<text class="ts" x="452.0" y="359.0" text-anchor="start">Trap: 24 kN/m³ and no screed</text>
+<text class="ts" x="452.0" y="376.0" text-anchor="start">  gives 5.55, not 7.07 (−21%)</text></svg>

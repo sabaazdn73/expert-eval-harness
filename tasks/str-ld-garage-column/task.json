@@ -1,0 +1,30 @@
+{
+  "id": "str-ld-garage-column",
+  "domain": "structural",
+  "title": "Parking garage column: how much live load reduction is allowed (ASCE 7-22)",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "L_kN": "number"
+  },
+  "checks": [
+    {
+      "field": "L_kN",
+      "type": "number",
+      "expected": 373.2,
+      "tol_abs": 1.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should state that the general reduction formula may not be used in passenger vehicle garages and that members supporting two or more floors may be reduced by at most 20%, giving 0.8 x 1.92 x 243."
+    }
+  ],
+  "expert_notes": "ASCE 7-22 4.7.4: no reduction in passenger vehicle garages, except members supporting two or more floors may be reduced by up to 20%, not below the 4.7-1 value. 0.8 x 1.92 x 243 = 373.2 kN (unreduced 466.6). The office formula gives 0.40 x 1.92 x 243 = 186.6 kN, half the correct value.",
+  "mock_answer": {
+    "L_kN": 373.2
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 2: Loads and load combinations (docs/review-notebook/)"
+}

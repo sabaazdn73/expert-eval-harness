@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Restrained shortening of a long frame</title><desc>Elevation of a 60 m long concrete frame cooling by 25 degrees C. Free shortening is 15 mm, 7.5 mm at each end toward the middle. The end columns, fixed at both ends and cracked, resist with a stiffness of about 17.8 kN/mm, giving a shear of 133 kN and a moment of 250 kN·m in each end column.</desc><defs><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Frame 60 m long, ΔT = −25 °C</text>
+<line x1="40.0" y1="332.0" x2="640.0" y2="332.0" stroke="#2C2C2A" stroke-width="1.5" stroke-linecap="butt"/>
+<rect x="60.0" y="212.0" width="560.0" height="10.0" rx="0" stroke-width="0.8" class="c-purple"/>
+<line x1="60.0" y1="220.0" x2="60.0" y2="330.0" stroke="#B4B2A9" stroke-width="4" stroke-linecap="butt"/>
+<line x1="130.0" y1="220.0" x2="130.0" y2="330.0" stroke="#B4B2A9" stroke-width="4" stroke-linecap="butt"/>
+<line x1="200.0" y1="220.0" x2="200.0" y2="330.0" stroke="#B4B2A9" stroke-width="4" stroke-linecap="butt"/>
+<line x1="270.0" y1="220.0" x2="270.0" y2="330.0" stroke="#B4B2A9" stroke-width="4" stroke-linecap="butt"/>
+<line x1="340.0" y1="220.0" x2="340.0" y2="330.0" stroke="#B4B2A9" stroke-width="4" stroke-linecap="butt"/>
+<line x1="410.0" y1="220.0" x2="410.0" y2="330.0" stroke="#B4B2A9" stroke-width="4" stroke-linecap="butt"/>
+<line x1="480.0" y1="220.0" x2="480.0" y2="330.0" stroke="#B4B2A9" stroke-width="4" stroke-linecap="butt"/>
+<line x1="550.0" y1="220.0" x2="550.0" y2="330.0" stroke="#B4B2A9" stroke-width="4" stroke-linecap="butt"/>
+<line x1="620.0" y1="220.0" x2="620.0" y2="330.0" stroke="#B4B2A9" stroke-width="4" stroke-linecap="butt"/>
+<line x1="66.0" y1="194.0" x2="120.0" y2="194.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="614.0" y1="194.0" x2="560.0" y2="194.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="94.0" y="186.0" text-anchor="middle">7.5 mm</text>
+<text class="th" x="586.0" y="186.0" text-anchor="middle">7.5 mm</text>
+<text class="ts" x="340.0" y="186.0" text-anchor="middle">fixed point at the middle (symmetry)</text>
+<polyline points="60.0,330.0 60.1,324.5 60.5,319.0 61.1,313.5 61.9,308.0 62.8,302.5 63.9,297.0 65.1,291.5 66.3,286.0 67.7,280.5 69.0,275.0 70.3,269.5 71.7,264.0 72.9,258.5 74.1,253.0 75.2,247.5 76.1,242.0 76.9,236.5 77.5,231.0 77.9,225.5 78.0,220.0" stroke-width="2" fill="none" stroke="#993C1D" stroke-dasharray="5 3"/>
+<polyline points="620.0,330.0 619.9,324.5 619.5,319.0 618.9,313.5 618.1,308.0 617.2,302.5 616.1,297.0 614.9,291.5 613.7,286.0 612.3,280.5 611.0,275.0 609.7,269.5 608.3,264.0 607.1,258.5 605.9,253.0 604.8,247.5 603.9,242.0 603.1,236.5 602.5,231.0 602.1,225.5 602.0,220.0" stroke-width="2" fill="none" stroke="#993C1D" stroke-dasharray="5 3"/>
+<polygon points="340.0,206.0 333.0,194.0 347.0,194.0" stroke-width="1" fill="#2C2C2A" stroke="#2C2C2A"/>
+<text class="ts halo" x="86.0" y="275.0" text-anchor="start">end column bends</text>
+<line x1="62.0" y1="360.0" x2="618.0" y2="360.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="60.0" y1="355.0" x2="60.0" y2="365.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="620.0" y1="355.0" x2="620.0" y2="365.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="340.0" y="355.0" text-anchor="middle">60 m (8 bays of 7.5 m)</text>
+<rect x="40.0" y="380.0" width="628.0" height="78.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="52.0" y="402.0" text-anchor="start">ΔL = 10 × 10⁻⁶ × 25 × 60,000 = 15 mm; each end moves 7.5 mm toward the middle.</text>
+<text class="ts" x="52.0" y="420.0" text-anchor="start">k = 12EI/h³ = 35.6 kN/mm uncracked, 17.8 cracked (assumed);  V = 17.8 × 7.5 = 133 kN</text>
+<text class="ts" x="52.0" y="438.0" text-anchor="start">M = V h/2 = 250 kN·m per end column: an upper bound (fixed-fixed, rigid floor, no creep).</text></svg>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Effective seismic weight of the office building</title><desc>Elevation of the four-storey building with the seismic weight lumped at each level: 9,926.8 kN at levels 2, 3 and 4 and 8,632.9 kN at the roof, W = 38,413 kN. A box gives the make-up of a floor level and the trap of adding the full office live load, which would add 6,998 kN, 18%.</desc><defs></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Seismic weight lumped at the floors (kN)</text>
+<line x1="40.0" y1="410.0" x2="290.0" y2="410.0" stroke="#2C2C2A" stroke-width="1.5" stroke-linecap="butt"/>
+<line x1="70.0" y1="410.0" x2="70.0" y2="110.0" stroke="#B4B2A9" stroke-width="3" stroke-linecap="butt"/>
+<line x1="115.0" y1="410.0" x2="115.0" y2="110.0" stroke="#B4B2A9" stroke-width="3" stroke-linecap="butt"/>
+<line x1="160.0" y1="410.0" x2="160.0" y2="110.0" stroke="#B4B2A9" stroke-width="3" stroke-linecap="butt"/>
+<line x1="205.0" y1="410.0" x2="205.0" y2="110.0" stroke="#B4B2A9" stroke-width="3" stroke-linecap="butt"/>
+<line x1="250.0" y1="410.0" x2="250.0" y2="110.0" stroke="#B4B2A9" stroke-width="3" stroke-linecap="butt"/>
+<rect x="64.0" y="330.0" width="192.0" height="10.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<circle cx="274.0" cy="335.0" r="9" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text class="th halo" x="290.0" y="340.0" text-anchor="start">9,926.8 kN</text>
+<text class="ts" x="56.0" y="339.0" text-anchor="end">3.75 m</text>
+<rect x="64.0" y="255.0" width="192.0" height="10.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<circle cx="274.0" cy="260.0" r="9" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text class="th halo" x="290.0" y="265.0" text-anchor="start">9,926.8 kN</text>
+<text class="ts" x="56.0" y="264.0" text-anchor="end">7.5 m</text>
+<rect x="64.0" y="180.0" width="192.0" height="10.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<circle cx="274.0" cy="185.0" r="9" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text class="th halo" x="290.0" y="190.0" text-anchor="start">9,926.8 kN</text>
+<text class="ts" x="56.0" y="189.0" text-anchor="end">11.25 m</text>
+<rect x="64.0" y="105.0" width="192.0" height="10.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<circle cx="274.0" cy="110.0" r="9" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.5"/>
+<text class="th halo" x="290.0" y="115.0" text-anchor="start">8,632.9 kN</text>
+<text class="ts" x="56.0" y="114.0" text-anchor="end">15 m</text>
+<rect x="410.0" y="60.0" width="258.0" height="330.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="422.0" y="84.0" text-anchor="start">Each floor level (972 m²)</text>
+<text class="ts" x="422.0" y="101.0" text-anchor="start">  slab + beams  972 × 8.862</text>
+<text class="ts" x="422.0" y="118.0" text-anchor="start">                = 8,613.5</text>
+<text class="ts" x="422.0" y="135.0" text-anchor="start">  partitions  0.48 × 972 = 466.6</text>
+<text class="ts" x="422.0" y="152.0" text-anchor="start">  columns  20 × 23.44 = 468.8</text>
+<text class="ts" x="422.0" y="169.0" text-anchor="start">  facade  126 m × 3.75 × 0.8</text>
+<text class="ts" x="422.0" y="186.0" text-anchor="start">                = 378.0</text>
+<text class="ts" x="422.0" y="203.0" text-anchor="start">  total 9,926.8</text>
+<text class="ts" x="422.0" y="220.0" text-anchor="start"></text>
+<text class="ts" x="422.0" y="237.0" text-anchor="start">Roof: 972 × 8.292 + 234.4</text>
+<text class="ts" x="422.0" y="254.0" text-anchor="start">  + 189.0 + 150 = 8,632.9</text>
+<text class="ts" x="422.0" y="271.0" text-anchor="start"></text>
+<text class="ts" x="422.0" y="288.0" text-anchor="start">W = 3 × 9,926.8 + 8,632.9</text>
+<text class="ts" x="422.0" y="305.0" text-anchor="start">  = 38,413 kN</text>
+<text class="ts" x="422.0" y="322.0" text-anchor="start"></text>
+<text class="ts" x="422.0" y="339.0" text-anchor="start">Trap: + full office live load</text>
+<text class="ts" x="422.0" y="356.0" text-anchor="start">  2.40 × 972 × 3 = 6,998 (+18%)</text></svg>

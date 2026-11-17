@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Dead load that helps: uplift at a roof column</title><desc>Bars of net axial force at a roof column base with D = 300 kN and wind uplift. ASCE 7-22: 0.9D + 1.0W = -80 kN (uplift), ASD 0.6D + 0.6W = -30 kN, a wrong 1.2D gives +10 kN. EN 1990 with characteristic wind uplift 220 kN: STR (1.0 Gk) -30 kN, EQU (0.9 Gk) -60 kN, a wrong 1.35 Gk gives +75 kN.</desc><defs></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Net axial force at the base (kN, minus = uplift)</text>
+<text class="tl" x="240.0" y="83.0" text-anchor="end">ASCE 5a  0.9D + 1.0W</text>
+<rect x="250.0" y="66.0" width="146.7" height="26.0" rx="2" stroke-width="1" fill="#F5C4B3" stroke="#993C1D"/>
+<text class="th" x="402.7" y="83.0" text-anchor="start">-80.0</text>
+<text class="tl" x="240.0" y="123.0" text-anchor="end">ASCE ASD 7a  0.6D + 0.6W</text>
+<rect x="341.7" y="106.0" width="55.0" height="26.0" rx="2" stroke-width="1" fill="#F5C4B3" stroke="#993C1D"/>
+<text class="th" x="402.7" y="123.0" text-anchor="start">-30.0</text>
+<text class="tl" x="240.0" y="163.0" text-anchor="end">wrong: 1.2D + 1.0W</text>
+<rect x="396.7" y="146.0" width="18.3" height="26.0" rx="2" stroke-width="1" fill="#F1EFE8" stroke="#888780" stroke-dasharray="5 3"/>
+<text class="th" x="421.0" y="163.0" text-anchor="start">10.0</text>
+<text class="tl" x="240.0" y="203.0" text-anchor="end">EN STR  1.0Gk + 1.5Qw</text>
+<rect x="341.7" y="186.0" width="55.0" height="26.0" rx="2" stroke-width="1" fill="#F5C4B3" stroke="#993C1D"/>
+<text class="th" x="402.7" y="203.0" text-anchor="start">-30.0</text>
+<text class="tl" x="240.0" y="243.0" text-anchor="end">EN EQU  0.9Gk + 1.5Qw</text>
+<rect x="286.7" y="226.0" width="110.0" height="26.0" rx="2" stroke-width="1" fill="#F5C4B3" stroke="#993C1D"/>
+<text class="th" x="402.7" y="243.0" text-anchor="start">-60.0</text>
+<text class="tl" x="240.0" y="283.0" text-anchor="end">wrong: 1.35Gk + 1.5Qw</text>
+<rect x="396.7" y="266.0" width="137.5" height="26.0" rx="2" stroke-width="1" fill="#F1EFE8" stroke="#888780" stroke-dasharray="5 3"/>
+<text class="th" x="540.2" y="283.0" text-anchor="start">75.0</text>
+<line x1="396.7" y1="60.0" x2="396.7" y2="298.0" stroke="#2C2C2A" stroke-width="1" stroke-linecap="butt"/>
+<rect x="40.0" y="320.0" width="628.0" height="138.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="52.0" y="342.0" text-anchor="start">ASCE: D = 300 kN, W = −350 kN (strength level).  EN: Gk = 300, Qk,w = −220 kN (charact.).</text>
+<text class="ts" x="52.0" y="362.0" text-anchor="start">Resisting dead load takes its lowest factor: 0.9 (LRFD), 0.6 (ASD), 1.0 (EN STR), 0.9 (EN EQU).</text>
+<text class="ts" x="52.0" y="382.0" text-anchor="start">Hold-down for 80 kN (LRFD). 1.2D or 1.35Gk turns the uplift into false compression.</text>
+<text class="ts" x="52.0" y="402.0" text-anchor="start">Use the lightest dead load that can exist: dry green roof, empty tank, no finishes yet.</text></svg>

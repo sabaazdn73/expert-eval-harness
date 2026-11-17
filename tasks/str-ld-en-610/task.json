@@ -1,0 +1,38 @@
+{
+  "id": "str-ld-en-610",
+  "domain": "structural",
+  "title": "EN 1990: design axial force by 6.10 and by 6.10a/6.10b",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "NEd_610_kN": "number",
+    "NEd_610ab_kN": "number"
+  },
+  "checks": [
+    {
+      "field": "NEd_610_kN",
+      "type": "number",
+      "expected": 5325.5,
+      "tol_abs": 6.0
+    },
+    {
+      "field": "NEd_610ab_kN",
+      "type": "number",
+      "expected": 4951.5,
+      "tol_abs": 6.0
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should apply psi0 to every variable action in 6.10a, apply xi = 0.85 to the permanent action only in 6.10b with the leading action at 1.5, take the larger of 6.10a and 6.10b, and identify the imposed load as the leading action that governs."
+    }
+  ],
+  "expert_notes": "6.10, imposed leading: 1.35 x 2,918.8 + 1.5 x 831.1 + 1.5(0.5 x 64.8 + 0.6 x 100) = 3,940.3 + 1,246.7 + 138.6 = 5,325.5. 6.10a: 3,940.3 + 1.5 x 0.7 x 831.1 + 138.6 = 4,951.5 (same for any leading action). 6.10b imposed leading: 0.85 x 3,940.3 + 1,246.7 + 138.6 = 4,734.5; wind leading 4,420.5; snow leading lower. Governing 6.10a/b: 4,951.5, 7% below 6.10.",
+  "mock_answer": {
+    "NEd_610_kN": 5325.5,
+    "NEd_610ab_kN": 4951.5
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 2: Loads and load combinations (docs/review-notebook/)"
+}

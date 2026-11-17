@@ -1,0 +1,46 @@
+{
+  "id": "str-ld-snow-drift",
+  "domain": "structural",
+  "title": "Leeward snow drift at a roof step (ASCE 7-22)",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "hd_ft": "number",
+    "w_ft": "number",
+    "peak_psf": "number (balanced plus drift at the wall)"
+  },
+  "checks": [
+    {
+      "field": "hd_ft",
+      "type": "number",
+      "expected": 3.17,
+      "tol_abs": 0.05
+    },
+    {
+      "field": "w_ft",
+      "type": "number",
+      "expected": 12.69,
+      "tol_abs": 0.2
+    },
+    {
+      "field": "peak_psf",
+      "type": "number",
+      "expected": 77.8,
+      "tol_abs": 1.0
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should use the ASCE 7-22 drift equation with W2, compare leeward and windward drifts, check hd against the clear height hc above the balanced snow, and add the drift surcharge to the balanced flat roof snow load."
+    }
+  ],
+  "expert_notes": "gamma = 0.13 x 30 + 14 = 17.9 pcf. Leeward hd = 1.5 sqrt(30^0.74 x 100^0.70 x 0.45^1.7 / 17.9) = 3.17 ft; windward 0.75 x 2.65 = 1.99 ft. pf = 0.7 x 30 = 21 psf, hb = 1.17 ft, hc = 6.83 ft > hd, w = 4hd = 12.7 ft. pd = 3.17 x 17.9 = 56.8 psf; peak 21 + 56.8 = 77.8 psf. The ASCE 7-16 equation, 0.43 lu^(1/3) (pg + 10)^(1/4) - 1.5, gives 3.52 ft and must not be used with 7-22.",
+  "mock_answer": {
+    "hd_ft": 3.17,
+    "w_ft": 12.69,
+    "peak_psf": 77.8
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 2: Loads and load combinations (docs/review-notebook/)"
+}

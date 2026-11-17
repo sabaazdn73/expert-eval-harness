@@ -1,0 +1,54 @@
+{
+  "id": "str-ld-elf-base-shear",
+  "domain": "structural",
+  "title": "Equivalent lateral force: base shear and roof force (ASCE 7-22)",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "Ta_s": "number",
+    "Cs": "number",
+    "V_kN": "number",
+    "F_roof_kN": "number"
+  },
+  "checks": [
+    {
+      "field": "Ta_s",
+      "type": "number",
+      "expected": 0.533,
+      "tol_abs": 0.005
+    },
+    {
+      "field": "Cs",
+      "type": "number",
+      "expected": 0.0938,
+      "tol_abs": 0.0008
+    },
+    {
+      "field": "V_kN",
+      "type": "number",
+      "expected": 3602.0,
+      "tol_abs": 25.0
+    },
+    {
+      "field": "F_roof_kN",
+      "type": "number",
+      "expected": 1330.4,
+      "tol_abs": 12.0
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should use Ct = 0.0466 and x = 0.9 for a concrete moment frame, apply the SD1/(T R/Ie) limit to SDS/(R/Ie), check the minimum, and distribute the force with k interpolated for T just above 0.5 s."
+    }
+  ],
+  "expert_notes": "Ta = 0.0466 x 15^0.9 = 0.533 s. Cs = 0.8/8 = 0.100, capped at 0.4/(0.533 x 8) = 0.0938, minimum 0.044 x 0.8 = 0.035. W = 38,413 kN, V = 3,602 kN. k = 1 + (0.533 - 0.5)/2 = 1.017; forces 373.8, 756.2, 1,141.9, 1,330.4 kN. Without the cap V = 3,841 kN; with k = 1 the roof force is 1,322 kN (inside the tolerance).",
+  "mock_answer": {
+    "Ta_s": 0.533,
+    "Cs": 0.0938,
+    "V_kN": 3602,
+    "F_roof_kN": 1330.4
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 2: Loads and load combinations (docs/review-notebook/)"
+}

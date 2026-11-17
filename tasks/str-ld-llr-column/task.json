@@ -1,0 +1,54 @@
+{
+  "id": "str-ld-llr-column",
+  "domain": "structural",
+  "title": "Office column: live load reduction over three floors (ASCE 7-22)",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "reduction_factor": "number (L/Lo applied to the office load)",
+    "office_L_kN": "number",
+    "partition_L_kN": "number",
+    "total_L_kN": "number"
+  },
+  "checks": [
+    {
+      "field": "reduction_factor",
+      "type": "number",
+      "expected": 0.4,
+      "tol_abs": 0.005
+    },
+    {
+      "field": "office_L_kN",
+      "type": "number",
+      "expected": 233.3,
+      "tol_abs": 1.0
+    },
+    {
+      "field": "partition_L_kN",
+      "type": "number",
+      "expected": 175.0,
+      "tol_abs": 0.6
+    },
+    {
+      "field": "total_L_kN",
+      "type": "number",
+      "expected": 408.2,
+      "tol_abs": 1.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should use KLL = 4 and KLL AT = 972 m², find 0.25 + 4.57/sqrt(972) = 0.397, apply the 0.40 minimum for members supporting two or more floors, and leave the partition allowance unreduced."
+    }
+  ],
+  "expert_notes": "KLL AT = 4 x 243 = 972 m2; 0.25 + 4.57/31.18 = 0.397 < 0.40 floor (ASCE 7-22 4.7.2, two or more floors). Office: 0.40 x 2.40 x 243 = 233.3 kN. Partitions 0.72 x 243 = 175.0 kN, never reduced (4.3.2). Total 408.2 kN. Errors: 0.397 used (231.3), partitions reduced (70.0), one-floor minimum 0.50 (291.6), no reduction (583.2).",
+  "mock_answer": {
+    "reduction_factor": 0.4,
+    "office_L_kN": 233.3,
+    "partition_L_kN": 175.0,
+    "total_L_kN": 408.2
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 2: Loads and load combinations (docs/review-notebook/)"
+}

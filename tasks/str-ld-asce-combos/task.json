@@ -1,0 +1,38 @@
+{
+  "id": "str-ld-asce-combos",
+  "domain": "structural",
+  "title": "Column axial force: ASCE 7-22 strength combinations with roof and snow loads",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "P_max_kN": "number",
+    "P_min_kN": "number"
+  },
+  "checks": [
+    {
+      "field": "P_max_kN",
+      "type": "number",
+      "expected": 4179.2,
+      "tol_abs": 5.0
+    },
+    {
+      "field": "P_min_kN",
+      "type": "number",
+      "expected": 2476.9,
+      "tol_abs": 5.0
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should use the ASCE 7-22 snow factors (1.0S where snow is the principal load, 0.3S as a companion, with pf as the companion value), find that 1.2D + 1.6L + 0.5Lr governs the maximum and 0.9D - 1.0W the minimum."
+    }
+  ],
+  "expert_notes": "1a 4,086.3; 2a 1.2D + 1.6L + 0.5Lr = 3,502.6 + 653.1 + 23.5 = 4,179.2 (0.5Lr = 23.5 > 0.3pf = 20.4); 3a 1.2D + 1.0pm + 0.5L = 3,803.8; 4a 1.2D + W + 0.5L + 0.5Lr = 3,880.1; 5a 0.9D - W = 2,476.9. ASCE 7-16 factors (0.5S companion with pm) give 4,204.3, outside the tolerance.",
+  "mock_answer": {
+    "P_max_kN": 4179.2,
+    "P_min_kN": 2476.9
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 2: Loads and load combinations (docs/review-notebook/)"
+}

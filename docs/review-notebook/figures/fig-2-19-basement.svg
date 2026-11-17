@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Basement wall: soil, water and surcharge pressure</title><desc>Section of a 3.5 m basement wall propped by the ground floor slab, with the water table 2.0 m below the top. At-rest soil pressure (K0 = 0.5) rises to 18.0 kPa at the water table and 25.6 kPa at the base using the submerged unit weight; water adds 14.7 kPa at the base; a 10 kPa surcharge adds 5.0 kPa throughout. Total 45.4 kPa at the base, 79.3 kN per m of wall.</desc><defs><marker id="m185FA5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#185FA5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Pressure on the wall, per metre run</text>
+<rect x="136.0" y="90.0" width="14.0" height="245.0" rx="0" stroke-width="0.8" class="c-gray"/>
+<rect x="20.0" y="80.0" width="130.0" height="12.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<text class="ts" x="80.0" y="74.0" text-anchor="middle">ground floor slab</text>
+<rect x="20.0" y="335.0" width="144.0" height="14.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<text class="ts" x="60.0" y="365.0" text-anchor="middle">basement slab</text>
+<line x1="150.0" y1="230.0" x2="440.0" y2="230.0" stroke="#185FA5" stroke-width="1" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<text class="ts" x="440.0" y="224.0" text-anchor="end">water table</text>
+<line x1="170.0" y1="56.0" x2="350.0" y2="56.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt"/>
+<line x1="170.0" y1="56.0" x2="170.0" y2="86.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="200.0" y1="56.0" x2="200.0" y2="86.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="230.0" y1="56.0" x2="230.0" y2="86.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="260.0" y1="56.0" x2="260.0" y2="86.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="290.0" y1="56.0" x2="290.0" y2="86.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="320.0" y1="56.0" x2="320.0" y2="86.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="350.0" y1="56.0" x2="350.0" y2="86.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="ts" x="260.0" y="50.0" text-anchor="middle">surcharge 10 kPa</text>
+<polygon points="150.0,90.0 170.0,90.0 170.0,335.0 150.0,335.0" stroke-width="1" fill="#FAEEDA" stroke="#854F0B"/>
+<polygon points="170.0,90.0 242.0,230.0 272.6,335.0 170.0,335.0" stroke-width="1" fill="#F1EFE8" stroke="#5F5E5A"/>
+<polygon points="242.0,230.0 331.4,335.0 272.6,335.0" stroke-width="1" fill="#B5D4F4" stroke="#185FA5"/>
+<text class="ts halo" x="252.0" y="252.0" text-anchor="start">23.0 = 18.0 + 5.0</text>
+<text class="th halo" x="339.4" y="339.0" text-anchor="start">45.4 kPa</text>
+<text class="ts halo" x="154.0" y="120.0" text-anchor="start">q</text>
+<line x1="130.0" y1="415.0" x2="130.0" y2="357.0" stroke="#185FA5" stroke-width="2" stroke-linecap="butt" marker-end="url(#m185FA5)"/>
+<text class="ts" x="124.0" y="409.0" text-anchor="end">uplift 14.7 kPa</text>
+<rect x="450.0" y="60.0" width="218.0" height="380.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="462.0" y="84.0" text-anchor="start">K0 = 1 − sin 30° = 0.5 (soil</text>
+<text class="ts" x="462.0" y="101.0" text-anchor="start">report values, assumed; propped)</text>
+<text class="ts" x="462.0" y="118.0" text-anchor="start"></text>
+<text class="ts" x="462.0" y="135.0" text-anchor="start">Above water: 0.5 × 18 × 2.0</text>
+<text class="ts" x="462.0" y="152.0" text-anchor="start">  = 18.0 kPa</text>
+<text class="ts" x="462.0" y="169.0" text-anchor="start">Below: γ&#x27; = 20 − 9.81 = 10.19</text>
+<text class="ts" x="462.0" y="186.0" text-anchor="start">  18.0 + 0.5 × 10.19 × 1.5</text>
+<text class="ts" x="462.0" y="203.0" text-anchor="start">  = 25.6 kPa</text>
+<text class="ts" x="462.0" y="220.0" text-anchor="start">Water: 9.81 × 1.5 = 14.7</text>
+<text class="ts" x="462.0" y="237.0" text-anchor="start">Surcharge: 0.5 × 10 = 5.0</text>
+<text class="ts" x="462.0" y="254.0" text-anchor="start">Base: 25.6 + 14.7 + 5.0 = 45.4</text>
+<text class="ts" x="462.0" y="271.0" text-anchor="start"></text>
+<text class="ts" x="462.0" y="288.0" text-anchor="start">Force per m: 50.7 + 11.0 + 17.5</text>
+<text class="ts" x="462.0" y="305.0" text-anchor="start">  = 79.3 kN  (H, factor 1.6)</text>
+<text class="ts" x="462.0" y="322.0" text-anchor="start"></text>
+<text class="ts" x="462.0" y="339.0" text-anchor="start">Slab, factored: 1.6 × 14.7 = 23.5</text>
+<text class="ts" x="462.0" y="356.0" text-anchor="start">  against 0.9 × 7.5 = 6.75 kPa</text>
+<text class="ts" x="462.0" y="373.0" text-anchor="start">  → slab spans 16.8 kPa upward</text></svg>

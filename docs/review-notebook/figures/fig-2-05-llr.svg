@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>ASCE 7 live load reduction factor</title><desc>Chart of L/Lo = 0.25 + 4.57/sqrt(KLL AT) against KLL AT from 37 to 1,500 m2, with the floors at 0.50 (one floor) and 0.40 (two or more floors). The interior column supporting one floor (KLL AT = 324) gets 0.504; supporting three floors (972) the formula gives 0.397 and the 0.40 floor governs.</desc><defs></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">L / Lo against KLL·AT  (no reduction below 37.16 m²)</text>
+<line x1="90.0" y1="390.0" x2="440.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="394.0" text-anchor="end">0.3</text>
+<line x1="90.0" y1="342.9" x2="440.0" y2="342.9" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="346.9" text-anchor="end">0.4</text>
+<line x1="90.0" y1="295.7" x2="440.0" y2="295.7" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="299.7" text-anchor="end">0.5</text>
+<line x1="90.0" y1="248.6" x2="440.0" y2="248.6" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="252.6" text-anchor="end">0.6</text>
+<line x1="90.0" y1="201.4" x2="440.0" y2="201.4" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="205.4" text-anchor="end">0.7</text>
+<line x1="90.0" y1="154.3" x2="440.0" y2="154.3" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="158.3" text-anchor="end">0.8</text>
+<line x1="90.0" y1="107.1" x2="440.0" y2="107.1" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="111.1" text-anchor="end">0.9</text>
+<line x1="90.0" y1="60.0" x2="440.0" y2="60.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="64.0" text-anchor="end">1.0</text>
+<line x1="90.0" y1="60.0" x2="90.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="90.0" y="406.0" text-anchor="middle">0</text>
+<line x1="160.0" y1="60.0" x2="160.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="160.0" y="406.0" text-anchor="middle">300</text>
+<line x1="230.0" y1="60.0" x2="230.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="230.0" y="406.0" text-anchor="middle">600</text>
+<line x1="300.0" y1="60.0" x2="300.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="300.0" y="406.0" text-anchor="middle">900</text>
+<line x1="370.0" y1="60.0" x2="370.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="370.0" y="406.0" text-anchor="middle">1200</text>
+<line x1="440.0" y1="60.0" x2="440.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="440.0" y="406.0" text-anchor="middle">1500</text>
+<line x1="90.0" y1="390.0" x2="440.0" y2="390.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="90.0" y1="60.0" x2="90.0" y2="390.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<text class="ts" x="265.0" y="424.0" text-anchor="middle">KLL · AT  (m²)</text>
+<text class="ts" x="46.0" y="225.0" text-anchor="middle" transform="rotate(-90 46.0 225.0)">L / Lo</text>
+<polyline points="98.9,64.1 100.3,88.8 101.7,108.9 103.1,125.7 104.5,140.0 105.9,152.3 107.3,163.1 108.7,172.7 110.1,181.3 111.5,189.0 112.9,195.9 114.3,202.3 115.7,208.2 117.1,213.5 118.5,218.5 119.9,223.1 121.3,227.5 122.7,231.5 124.1,235.3 125.5,238.8 126.9,242.2 128.3,245.3 129.7,248.3 131.1,251.2 132.5,253.9 133.9,256.4 135.3,258.9 136.7,261.2 138.1,263.5 139.5,265.6 140.9,267.7 142.3,269.6 143.7,271.5 145.1,273.3 146.5,275.1 147.9,276.8 149.3,278.4 150.7,280.0 152.1,281.5 153.5,282.9 154.9,284.4 156.3,285.7 157.7,287.1 159.1,288.3 160.5,289.6 161.9,290.8 163.3,292.0 164.7,293.1 166.1,294.2 167.5,295.3 168.9,296.4 170.3,297.4 171.7,298.4 173.1,299.4 174.5,300.3 175.9,301.3 177.3,302.2 178.7,303.1 180.1,303.9 181.5,304.8 182.9,305.6 184.3,306.4 185.7,307.2 187.1,307.9 188.5,308.7 189.9,309.4 191.3,310.2 192.7,310.9 194.1,311.6 195.5,312.2 196.9,312.9 198.3,313.6 199.7,314.2 201.1,314.8 202.5,315.4 203.9,316.0 205.3,316.6 206.7,317.2 208.1,317.8 209.5,318.4 210.9,318.9 212.3,319.5 213.7,320.0 215.1,320.5 216.5,321.0 217.9,321.5 219.3,322.0 220.7,322.5 222.1,323.0 223.5,323.5 224.9,324.0 226.3,324.4 227.7,324.9 229.1,325.3 230.5,325.8 231.9,326.2 233.3,326.6 234.7,327.0 236.1,327.5 237.5,327.9 238.9,328.3 240.3,328.7 241.7,329.1 243.1,329.5 244.5,329.8 245.9,330.2 247.3,330.6 248.7,331.0 250.1,331.3 251.5,331.7 252.9,332.0 254.3,332.4 255.7,332.7 257.1,333.1 258.5,333.4 259.9,333.7 261.3,334.1 262.7,334.4 264.1,334.7 265.5,335.0 266.9,335.3 268.3,335.6 269.7,335.9 271.1,336.2 272.5,336.5 273.9,336.8 275.3,337.1 276.7,337.4 278.1,337.7 279.5,338.0 280.9,338.2 282.3,338.5 283.7,338.8 285.1,339.1 286.5,339.3 287.9,339.6 289.3,339.8 290.7,340.1 292.1,340.4 293.5,340.6 294.9,340.9 296.3,341.1 297.7,341.4 299.1,341.6 300.5,341.8 301.9,342.1 303.3,342.3 304.7,342.5 306.1,342.8 307.5,343.0 308.9,343.2 310.3,343.5 311.7,343.7 313.1,343.9 314.5,344.1 315.9,344.3 317.3,344.5 318.7,344.8 320.1,345.0 321.5,345.2 322.9,345.4 324.3,345.6 325.7,345.8 327.1,346.0 328.5,346.2 329.9,346.4 331.3,346.6 332.7,346.8 334.1,347.0 335.5,347.1 336.9,347.3 338.3,347.5 339.7,347.7 341.1,347.9 342.5,348.1 343.9,348.3 345.3,348.4 346.7,348.6 348.1,348.8 349.5,349.0 350.9,349.1 352.3,349.3 353.7,349.5 355.1,349.7 356.5,349.8 357.9,350.0 359.3,350.2 360.7,350.3 362.1,350.5 363.5,350.6 364.9,350.8 366.3,351.0 367.7,351.1 369.1,351.3 370.5,351.4 371.9,351.6 373.3,351.7 374.7,351.9 376.1,352.0 377.5,352.2 378.9,352.3 380.3,352.5 381.7,352.6 383.1,352.8 384.5,352.9 385.9,353.1 387.3,353.2 388.7,353.4 390.1,353.5 391.5,353.6 392.9,353.8 394.3,353.9 395.7,354.0 397.1,354.2 398.5,354.3 399.9,354.5 401.3,354.6 402.7,354.7 404.1,354.8 405.5,355.0 406.9,355.1 408.3,355.2 409.7,355.4 411.1,355.5 412.5,355.6 413.9,355.7 415.3,355.9 416.7,356.0 418.1,356.1 419.5,356.2 420.9,356.4 422.3,356.5 423.7,356.6 425.1,356.7 426.5,356.8 427.9,357.0 429.3,357.1 430.7,357.2 432.1,357.3 433.5,357.4 434.9,357.5 436.3,357.6 437.7,357.8 439.1,357.9" stroke-width="2" fill="none" stroke="#534AB7"/>
+<line x1="90.0" y1="295.7" x2="440.0" y2="295.7" stroke="#993C1D" stroke-width="1.2" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<text class="ts halo" x="436.0" y="289.7" text-anchor="end">one floor: 0.50</text>
+<line x1="90.0" y1="342.9" x2="440.0" y2="342.9" stroke="#993C1D" stroke-width="1.2" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<text class="ts halo" x="436.0" y="336.9" text-anchor="end">2 or more floors: 0.40</text>
+<circle cx="165.6" cy="293.9" r="5" fill="#D85A30" stroke="#FFFFFF" stroke-width="1.5"/>
+<text class="th halo" x="175.6" y="281.9" text-anchor="start">1 floor: 0.504</text>
+<circle cx="316.8" cy="342.9" r="5" fill="#D85A30" stroke="#FFFFFF" stroke-width="1.5"/>
+<line x1="318.8" y1="337.9" x2="322.2" y2="318.3" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="th halo" x="323.3" y="314.6" text-anchor="end">3 floors: 0.40</text>
+<rect x="458.0" y="60.0" width="210.0" height="290.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="470.0" y="84.0" text-anchor="start">Interior column, office</text>
+<text class="ts" x="470.0" y="101.0" text-anchor="start">Lo 2.40, KLL 4, AT 81 per floor</text>
+<text class="ts" x="470.0" y="118.0" text-anchor="start"></text>
+<text class="ts" x="470.0" y="135.0" text-anchor="start">1 floor: L = 0.504 × 2.40 × 81</text>
+<text class="ts" x="470.0" y="152.0" text-anchor="start">  = 98.0 kN (not 194.4)</text>
+<text class="ts" x="470.0" y="169.0" text-anchor="start">3 floors: L = 0.40 × 2.40 × 243</text>
+<text class="ts" x="470.0" y="186.0" text-anchor="start">  = 233.3 kN (not 583.2)</text>
+<text class="ts" x="470.0" y="203.0" text-anchor="start">Partitions 0.72 × 243 = 175.0</text>
+<text class="ts" x="470.0" y="220.0" text-anchor="start">  never reduced</text>
+<text class="ts" x="470.0" y="237.0" text-anchor="start"></text>
+<text class="ts" x="470.0" y="254.0" text-anchor="start">EN 1991-1-1, same column:</text>
+<text class="ts" x="470.0" y="271.0" text-anchor="start">  αn = (2 + 1 × 0.7)/3 = 0.90</text>
+<text class="ts" x="470.0" y="288.0" text-anchor="start">  αA = 5/7 × 0.7 + 10/81 = 0.62</text>
+<text class="ts" x="470.0" y="305.0" text-anchor="start">  (αA for floors and beams)</text></svg>

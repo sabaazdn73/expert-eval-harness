@@ -304,7 +304,7 @@ Each level takes the strip half a storey above and below it, with the windward p
 
 **Practice.** Wind on the 27 m face (B = 27 m, L/B = 1.33).
 
-*Answer:* Leeward Cp = −0.5 + 0.33 × 0.2 = −0.433 (interpolated between L/B = 1 and 2) → 0.44 kPa; base shear 411.1 kN.
+*Answer:* Leeward Cp = −0.5 + 0.33 × 0.2 = −0.433 (interpolated between L/B = 1 and 2) → 0.44 kPa; ground-storey shear 411.1 kN.
 
 **Trap to test.** Using qz instead of qh on the leeward wall, or taking leeward Cp = −0.5 for every L/B.
 

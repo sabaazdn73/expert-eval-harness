@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="410" viewBox="0 0 680 410" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Indirect support and torsion in an edge beam</title><desc>Left: section through an edge beam. The slab reaction 8.25 kN/m acts 0.15 m from the beam centreline, a torque of 1.24 kN m per metre; a canopy hung from the beam adds 6 kN/m at 1.15 m, 6.9 kN m per metre. Right: torque along a 9 m span fixed against twist at both ends, from plus T to minus T, T = tL/2.</desc><defs><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="410" fill="#FFFFFF"/><text class="tt" x="20.0" y="30.0" text-anchor="start">Section through the edge beam</text>
+<rect x="125.0" y="110.0" width="50.0" height="120.0" rx="0" stroke-width="1" class="c-purple"/>
+<rect x="175.0" y="110.0" width="140.0" height="20.0" rx="0" stroke-width="1" class="c-gray"/>
+<line x1="150.0" y1="90.0" x2="150.0" y2="250.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" stroke-dasharray="4 3"/>
+<line x1="175.0" y1="70.0" x2="175.0" y2="108.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="180.0" y="66.0" text-anchor="start">slab 8.25 kN/m</text>
+<line x1="152.0" y1="260.0" x2="173.0" y2="260.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="150.0" y1="255.0" x2="150.0" y2="265.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="175.0" y1="255.0" x2="175.0" y2="265.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="162.5" y="255.0" text-anchor="middle">e = 0.15 m</text>
+<path d="M136 170 A 16 16 0 0 1 164 170" fill="none" stroke="#993C1D" stroke-width="1.5"/>
+<text class="tl" x="150.0" y="158.0" text-anchor="middle">opposite twists</text>
+<rect x="35.0" y="120.0" width="90.0" height="8.0" rx="0" stroke-width="1" class="c-amber"/>
+<line x1="125.0" y1="124.0" x2="125.0" y2="124.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="80.0" y1="92.0" x2="80.0" y2="118.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="80.0" y="88.0" text-anchor="middle">canopy 6 kN/m</text>
+<line x1="82.0" y1="285.0" x2="148.0" y2="285.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="80.0" y1="280.0" x2="80.0" y2="290.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="150.0" y1="280.0" x2="150.0" y2="290.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="115.0" y="280.0" text-anchor="middle">1.15 m</text>
+<rect x="20.0" y="290.0" width="315.0" height="104.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="32.0" y="310.0" text-anchor="start">Slab shear at the face: 1.24 kN·m/m</text>
+<text class="ts" x="32.0" y="327.0" text-anchor="start">Canopy: 6 × 1.15 = 6.9 kN·m/m, opposite</text>
+<text class="ts" x="32.0" y="344.0" text-anchor="start">Slab edge moment twisting the beam is</text>
+<text class="ts" x="32.0" y="361.0" text-anchor="start">compatibility torsion; the canopy is</text>
+<text class="ts" x="32.0" y="378.0" text-anchor="start">equilibrium torsion and must be designed.</text>
+<text class="tt" x="360.0" y="30.0" text-anchor="start">Torque along the span</text>
+<rect x="380.0" y="110.0" width="270.0" height="10.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<line x1="380.0" y1="102.0" x2="380.0" y2="128.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="380.0" y1="104.0" x2="371.0" y2="113.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="380.0" y1="111.0" x2="371.0" y2="120.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="380.0" y1="118.0" x2="371.0" y2="127.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="380.0" y1="125.0" x2="371.0" y2="134.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="650.0" y1="102.0" x2="650.0" y2="128.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="650.0" y1="104.0" x2="659.0" y2="113.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="650.0" y1="111.0" x2="659.0" y2="120.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="650.0" y1="118.0" x2="659.0" y2="127.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="650.0" y1="125.0" x2="659.0" y2="134.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<polygon points="380.0,170.0 380.0,125.0 384.5,126.5 389.0,128.0 393.5,129.5 398.0,131.0 402.5,132.5 407.0,134.0 411.5,135.5 416.0,137.0 420.5,138.5 425.0,140.0 429.5,141.5 434.0,143.0 438.5,144.5 443.0,146.0 447.5,147.5 452.0,149.0 456.5,150.5 461.0,152.0 465.5,153.5 470.0,155.0 474.5,156.5 479.0,158.0 483.5,159.5 488.0,161.0 492.5,162.5 497.0,164.0 501.5,165.5 506.0,167.0 510.5,168.5 515.0,170.0 519.5,171.5 524.0,173.0 528.5,174.5 533.0,176.0 537.5,177.5 542.0,179.0 546.5,180.5 551.0,182.0 555.5,183.5 560.0,185.0 564.5,186.5 569.0,188.0 573.5,189.5 578.0,191.0 582.5,192.5 587.0,194.0 591.5,195.5 596.0,197.0 600.5,198.5 605.0,200.0 609.5,201.5 614.0,203.0 618.5,204.5 623.0,206.0 627.5,207.5 632.0,209.0 636.5,210.5 641.0,212.0 645.5,213.5 650.0,215.0 650.0,170.0" stroke-width="1" fill="#FAEEDA" stroke="#854F0B"/>
+<line x1="380.0" y1="170.0" x2="650.0" y2="170.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="tl" x="401.6" y="126.2" text-anchor="middle">+T</text>
+<text class="tl" x="628.4" y="225.8" text-anchor="middle">−T</text>
+<line x1="382.0" y1="250.0" x2="648.0" y2="250.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="380.0" y1="245.0" x2="380.0" y2="255.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="650.0" y1="245.0" x2="650.0" y2="255.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="515.0" y="245.0" text-anchor="middle">L = 9 m, ends fixed against twist</text>
+<rect x="355.0" y="290.0" width="315.0" height="104.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="367.0" y="310.0" text-anchor="start">T end = t L / 2</text>
+<text class="ts" x="367.0" y="328.0" text-anchor="start">Slab:   1.24 × 9 / 2 = 5.57 kN·m</text>
+<text class="ts" x="367.0" y="346.0" text-anchor="start">Canopy: 6.9 × 9 / 2 = 31.05 kN·m</text>
+<text class="ts" x="367.0" y="364.0" text-anchor="start">Net if both act: 25.48 kN·m</text>
+<text class="ts" x="367.0" y="382.0" text-anchor="start">Beam on beam: hanger bars (89.44 kN).</text></svg>

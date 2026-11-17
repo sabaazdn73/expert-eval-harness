@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" viewBox="0 0 680 400" role="img"><style>
+:root{--t:#73726c}
+text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:500;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.leader{stroke:#888780;stroke-width:0.5;stroke-dasharray:3 3;fill:none}
+.c-gray,.c-gray>rect{fill:#F1EFE8;stroke:#5F5E5A}
+.c-purple,.c-purple>rect{fill:#EEEDFE;stroke:#534AB7}
+.c-coral,.c-coral>rect{fill:#FAECE7;stroke:#993C1D}
+.c-amber,.c-amber>rect{fill:#FAEEDA;stroke:#854F0B}
+.c-teal,.c-teal>rect{fill:#E1F5EE;stroke:#0F6E56}
+.c-teal>text.th{fill:#085041}.c-teal>text.ts{fill:#0F6E56}
+</style><title>Free-body diagram of the interior girder</title><desc>A 9 m simply supported girder with two point loads of 178.88 kN at 3 m and 6 m from secondary beams on both sides, self-weight 6 kN/m, and reactions of 205.88 kN at each end.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text class="th" x="267" y="36" text-anchor="middle">P = 178.88 kN</text>
+<text class="th" x="413" y="36" text-anchor="middle">P = 178.88 kN</text>
+<line x1="267" y1="48" x2="267" y2="120" stroke="#D85A30" stroke-width="2.5" marker-end="url(#arrow)" fill="none"/>
+<line x1="413" y1="48" x2="413" y2="120" stroke="#D85A30" stroke-width="2.5" marker-end="url(#arrow)" fill="none"/>
+<line x1="120" y1="98" x2="560" y2="98" stroke="#D85A30" stroke-width="0.5" opacity="0.8"/>
+<g stroke="#D85A30" stroke-width="0.8" fill="none" opacity="0.8">
+<line x1="120" y1="98" x2="120" y2="120" marker-end="url(#arrow)"/><line x1="160" y1="98" x2="160" y2="120" marker-end="url(#arrow)"/><line x1="200" y1="98" x2="200" y2="120" marker-end="url(#arrow)"/><line x1="320" y1="98" x2="320" y2="120" marker-end="url(#arrow)"/><line x1="360" y1="98" x2="360" y2="120" marker-end="url(#arrow)"/><line x1="480" y1="98" x2="480" y2="120" marker-end="url(#arrow)"/><line x1="520" y1="98" x2="520" y2="120" marker-end="url(#arrow)"/><line x1="560" y1="98" x2="560" y2="120" marker-end="url(#arrow)"/>
+</g>
+<text class="ts" x="578" y="102">self-weight</text>
+<text class="ts" x="578" y="118">6 kN/m</text>
+<rect class="c-coral" x="120" y="124" width="440" height="12" rx="1" stroke-width="0.5"/>
+<path d="M120 136 L108 158 L132 158 Z" fill="none" stroke="var(--t)" stroke-width="1"/>
+<path d="M560 136 L548 152 L572 152 Z" fill="none" stroke="var(--t)" stroke-width="1"/>
+<circle cx="553" cy="156" r="3.5" fill="none" stroke="var(--t)" stroke-width="1"/><circle cx="567" cy="156" r="3.5" fill="none" stroke="var(--t)" stroke-width="1"/>
+<line x1="98" y1="162" x2="142" y2="162" stroke="var(--t)" stroke-width="1"/><line x1="538" y1="162" x2="582" y2="162" stroke="var(--t)" stroke-width="1"/>
+<line x1="120" y1="216" x2="120" y2="168" stroke="#1D9E75" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
+<line x1="560" y1="216" x2="560" y2="168" stroke="#1D9E75" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
+<text class="th" x="120" y="234" text-anchor="middle">R = 205.88 kN</text>
+<text class="th" x="560" y="234" text-anchor="middle">R = 205.88 kN</text>
+<g stroke="var(--t)" stroke-width="0.5"><line x1="120" y1="252" x2="560" y2="252"/><line x1="120" y1="246" x2="120" y2="258"/><line x1="267" y1="246" x2="267" y2="258"/><line x1="413" y1="246" x2="413" y2="258"/><line x1="560" y1="246" x2="560" y2="258"/></g>
+<text class="ts" x="193" y="272" text-anchor="middle">3 m</text><text class="ts" x="340" y="272" text-anchor="middle">3 m</text><text class="ts" x="487" y="272" text-anchor="middle">3 m</text>
+<rect class="box" x="70" y="290" width="540" height="98" rx="8" stroke-width="0.5"/>
+<text class="ts" x="90" y="312">Each P = 2 secondary beams (one on each side) × 89.44 = 178.88 kN</text>
+<text class="ts" x="90" y="334">Total on girder = 178.88 + 178.88 + 6 × 9 = 411.75 kN</text>
+<text class="ts" x="90" y="356">Symmetric, so each end takes half:  R = 411.75 / 2 = 205.88 kN</text>
+<text class="ts" x="90" y="378">Live load, same steps: P = 2 × 27 = 54 kN, so R = 54 kN</text>
+</svg>

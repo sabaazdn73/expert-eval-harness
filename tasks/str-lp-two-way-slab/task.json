@@ -1,0 +1,70 @@
+{
+  "id": "str-lp-two-way-slab",
+  "domain": "structural",
+  "title": "Two-way slab panel: loads, reactions and moments of the edge beams",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "short_total_kN": "number",
+    "short_reaction_kN": "number",
+    "short_moment_kNm": "number",
+    "long_total_kN": "number",
+    "long_reaction_kN": "number",
+    "long_moment_kNm": "number"
+  },
+  "checks": [
+    {
+      "field": "short_total_kN",
+      "type": "number",
+      "expected": 63.0,
+      "tol_abs": 0.5
+    },
+    {
+      "field": "short_reaction_kN",
+      "type": "number",
+      "expected": 31.5,
+      "tol_abs": 0.3
+    },
+    {
+      "field": "short_moment_kNm",
+      "type": "number",
+      "expected": 63.0,
+      "tol_abs": 0.6
+    },
+    {
+      "field": "long_total_kN",
+      "type": "number",
+      "expected": 126.0,
+      "tol_abs": 0.8
+    },
+    {
+      "field": "long_reaction_kN",
+      "type": "number",
+      "expected": 63.0,
+      "tol_abs": 0.4
+    },
+    {
+      "field": "long_moment_kNm",
+      "type": "number",
+      "expected": 181.1,
+      "tol_abs": 1.2
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should split the panel with 45 degree lines from the corners (triangles to the short beams, trapezoids to the long beams) and should not treat the slab as one-way."
+    }
+  ],
+  "expert_notes": "q = 7 x 6/2 = 21 kN/m peak on every edge beam. Short beam: triangle, W = 63, R = 31.5, M = qL^2/12 = 63. Long beam: trapezoid with 3 m ramps, W = 21 x 6 = 126, R = 63, M = qL^2/8 - qa^2/6 = 212.6 - 31.5 = 181.1. Check 2 x 63 + 2 x 126 = 378 = 7 x 54. One-way by mistake gives 189 kN per long beam and nothing to the short beams.",
+  "mock_answer": {
+    "short_total_kN": 63,
+    "short_reaction_kN": 31.5,
+    "short_moment_kNm": 63,
+    "long_total_kN": 126,
+    "long_reaction_kN": 63,
+    "long_moment_kNm": 181.1
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 1: Load path and static equilibrium (docs/review-notebook/)"
+}

@@ -1,0 +1,46 @@
+{
+  "id": "str-lp-pile-cap",
+  "domain": "structural",
+  "title": "Pile loads under a four-pile cap with biaxial moment, and a tension case",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "case1_max_pile_kN": "number",
+    "case1_min_pile_kN": "number",
+    "case2_min_pile_kN": "number (negative = tension)"
+  },
+  "checks": [
+    {
+      "field": "case1_max_pile_kN",
+      "type": "number",
+      "expected": 950.0,
+      "tol_abs": 1.0
+    },
+    {
+      "field": "case1_min_pile_kN",
+      "type": "number",
+      "expected": 550.0,
+      "tol_abs": 1.0
+    },
+    {
+      "field": "case2_min_pile_kN",
+      "type": "number",
+      "expected": -166.7,
+      "tol_abs": 0.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should use P/n plus M times the pile coordinate over the sum of squared coordinates, and should flag the tension pile in the second case."
+    }
+  ],
+  "expert_notes": "P/n = 750; sum x^2 = sum y^2 = 4 x 0.81 = 3.24. My term 450 x 0.9/3.24 = 125; Mx term 270 x 0.9/3.24 = 75. Piles 950, 800, 700, 550. Case 2: 250 +/- 1500 x 0.9/3.24 = 250 +/- 416.7, min -166.7 kN (tension).",
+  "mock_answer": {
+    "case1_max_pile_kN": 950,
+    "case1_min_pile_kN": 550,
+    "case2_min_pile_kN": -166.7
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 1: Load path and static equilibrium (docs/review-notebook/)"
+}

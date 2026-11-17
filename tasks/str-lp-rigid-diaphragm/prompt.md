@@ -1,0 +1,3 @@
+A one-storey building is 24 m long (x) and 12 m wide (y), with a concrete roof slab that acts as a rigid diaphragm. Three shear walls resist load in the y direction: wall A at x = 0, wall B at x = 12 m and wall C at x = 24 m. Their relative stiffnesses are 1, 1 and 2. The lateral force in the y direction is 600 kN, spread uniformly along the length, so the centre of mass is at x = 12 m. Ignore the walls in the x direction.
+
+Please find the force in each wall including the torsion from the offset between the centre of mass and the centre of rigidity. Then add an accidental eccentricity of 5% of the 24 m length in either direction and give, for each wall, the larger of the two results.

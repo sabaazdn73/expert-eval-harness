@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="380" viewBox="0 0 680 380" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Hand estimate against model base reactions</title><desc>Bar chart: hand estimate of total dead load 11,500 kN and model sum of base reactions 9,200 kN, 20 percent lower, outside the plus or minus 10 percent band; with the likely causes listed.</desc><defs></defs><rect x="0" y="0" width="680" height="380" fill="#FFFFFF"/><rect x="90.0" y="47.0" width="300.0" height="46.0" rx="0" stroke-width="0" fill="#E1F5EE" opacity="0.8"/>
+<text class="tl" x="386.0" y="60.0" text-anchor="end">±10% band</text>
+<rect x="120.0" y="70.0" width="90.0" height="230.0" rx="0" stroke-width="0" fill="#7F77DD" opacity="0.85"/>
+<text class="th" x="165.0" y="62.0" text-anchor="middle">11,500 kN</text>
+<text class="ts" x="165.0" y="318.0" text-anchor="middle">Hand estimate</text>
+<rect x="270.0" y="116.0" width="90.0" height="184.0" rx="0" stroke-width="0" fill="#D85A30" opacity="0.85"/>
+<text class="th" x="315.0" y="108.0" text-anchor="middle">9,200 kN</text>
+<text class="ts" x="315.0" y="318.0" text-anchor="middle">Model, Σ base reactions</text>
+<line x1="90.0" y1="300.0" x2="400.0" y2="300.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<text class="th" x="240.0" y="356.0" text-anchor="middle">Ratio 0.80: the completeness check fails</text>
+<rect x="430.0" y="60.0" width="235.0" height="250.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="444.0" y="84.0" text-anchor="start">Likely causes, in order</text>
+<text class="ts" x="444.0" y="101.0" text-anchor="start">1. self-weight off in case D</text>
+<text class="ts" x="444.0" y="118.0" text-anchor="start">2. finishes missing on</text>
+<text class="ts" x="444.0" y="135.0" text-anchor="start">    some floors or ramps</text>
+<text class="ts" x="444.0" y="152.0" text-anchor="start">3. slabs with no weight</text>
+<text class="ts" x="444.0" y="169.0" text-anchor="start">4. a load in a separate case</text>
+<text class="ts" x="444.0" y="186.0" text-anchor="start">    not added to D</text>
+<text class="ts" x="444.0" y="203.0" text-anchor="start">5. psf against kN/m² mix-up</text>
+<text class="ts" x="444.0" y="220.0" text-anchor="start">6. a floor area missing</text>
+<text class="ts" x="444.0" y="237.0" text-anchor="start"></text>
+<text class="ts" x="444.0" y="254.0" text-anchor="start">Agent: report both totals,</text>
+<text class="ts" x="444.0" y="271.0" text-anchor="start">stop design checks, ask for</text>
+<text class="ts" x="444.0" y="288.0" text-anchor="start">the load-case assignments.</text></svg>

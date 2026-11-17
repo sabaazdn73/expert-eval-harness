@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Two-way slab panel: 45 degree load distribution</title><desc>Plan of a 6 by 9 m two-way panel with 45 degree lines from each corner. The short beams take triangles, the long beams take trapezoids. Short beam: triangular load peaking at 21 kN/m, reactions 31.5 kN, moment 63 kN m. Long beam: trapezoidal load peaking at 21 kN/m, reactions 63 kN, moment 181.1 kN m.</desc><defs><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="32.0" text-anchor="start">Plan, w = 7 kN/m² (service, for the example)</text>
+<polygon points="66.0,70.0 156.0,160.0 66.0,250.0" stroke-width="0.8" class="c-amber"/>
+<polygon points="336.0,70.0 246.0,160.0 336.0,250.0" stroke-width="0.8" class="c-amber"/>
+<polygon points="66.0,70.0 336.0,70.0 246.0,160.0 156.0,160.0" stroke-width="0.8" class="c-teal"/>
+<polygon points="66.0,250.0 336.0,250.0 246.0,160.0 156.0,160.0" stroke-width="0.8" class="c-teal"/>
+<line x1="66.0" y1="70.0" x2="66.0" y2="250.0" stroke="#7F77DD" stroke-width="4" stroke-linecap="butt"/>
+<line x1="336.0" y1="70.0" x2="336.0" y2="250.0" stroke="#7F77DD" stroke-width="4" stroke-linecap="butt"/>
+<line x1="66.0" y1="70.0" x2="336.0" y2="70.0" stroke="#7F77DD" stroke-width="4" stroke-linecap="butt"/>
+<line x1="66.0" y1="250.0" x2="336.0" y2="250.0" stroke="#7F77DD" stroke-width="4" stroke-linecap="butt"/>
+<rect x="59.5" y="63.5" width="13.0" height="13.0" rx="0" stroke-width="0" fill="#5F5E5A"/>
+<rect x="59.5" y="243.5" width="13.0" height="13.0" rx="0" stroke-width="0" fill="#5F5E5A"/>
+<rect x="329.5" y="63.5" width="13.0" height="13.0" rx="0" stroke-width="0" fill="#5F5E5A"/>
+<rect x="329.5" y="243.5" width="13.0" height="13.0" rx="0" stroke-width="0" fill="#5F5E5A"/>
+<text class="ts" x="99.0" y="165.0" text-anchor="middle">45°</text>
+<text class="tl" x="201.0" y="112.0" text-anchor="middle">trapezoid → long beam</text>
+<text class="tl" x="97.5" y="217.0" text-anchor="middle">triangle</text>
+<line x1="68.0" y1="276.0" x2="334.0" y2="276.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="66.0" y1="271.0" x2="66.0" y2="281.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="336.0" y1="271.0" x2="336.0" y2="281.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="201.0" y="271.0" text-anchor="middle">ly = 9 m</text>
+<line x1="48.0" y1="72.0" x2="48.0" y2="248.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="43.0" y1="70.0" x2="53.0" y2="70.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="43.0" y1="250.0" x2="53.0" y2="250.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="41.0" y="164.0" text-anchor="end">6 m</text>
+<text class="th" x="356.0" y="90.0" text-anchor="start">Short beam, span 6 m</text>
+<line x1="380.2" y1="159.0" x2="380.2" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="394.3" y1="150.0" x2="394.3" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="408.5" y1="141.0" x2="408.5" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="422.7" y1="132.0" x2="422.7" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="436.8" y1="123.0" x2="436.8" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="451.0" y1="114.0" x2="451.0" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="465.2" y1="123.0" x2="465.2" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="479.3" y1="132.0" x2="479.3" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="493.5" y1="141.0" x2="493.5" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="507.7" y1="150.0" x2="507.7" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="521.8" y1="159.0" x2="521.8" y2="167.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<polyline points="366.0,168.0 380.2,159.0 394.3,150.0 408.5,141.0 422.7,132.0 436.8,123.0 451.0,114.0 465.2,123.0 479.3,132.0 493.5,141.0 507.7,150.0 521.8,159.0 536.0,168.0" stroke-width="1" fill="none" stroke="#D85A30"/>
+<text class="ts" x="451.0" y="108.0" text-anchor="middle">peak q = 7 × 3 = 21 kN/m</text>
+<rect x="366.0" y="170.0" width="170.0" height="8.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<polygon points="366.0,178.0 354.0,198.0 378.0,198.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<line x1="346.0" y1="202.0" x2="386.0" y2="202.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="536.0,178.0 524.0,193.0 548.0,193.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="530.0" cy="197.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="542.0" cy="197.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="516.0" y1="202.0" x2="556.0" y2="202.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<text class="ts" x="546.0" y="128.0" text-anchor="start">W = 63 kN</text>
+<text class="ts" x="546.0" y="145.0" text-anchor="start">R = 31.5 kN</text>
+<text class="ts" x="546.0" y="162.0" text-anchor="start">M = qL²/12</text>
+<text class="ts" x="546.0" y="179.0" text-anchor="start">   = 63 kN·m</text>
+<text class="th" x="356.0" y="250.0" text-anchor="start">Long beam, span 9 m</text>
+<line x1="377.3" y1="317.2" x2="377.3" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="388.7" y1="306.4" x2="388.7" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="400.0" y1="295.6" x2="400.0" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="411.3" y1="284.8" x2="411.3" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="422.7" y1="274.0" x2="422.7" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="434.0" y1="274.0" x2="434.0" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="445.3" y1="274.0" x2="445.3" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="456.7" y1="274.0" x2="456.7" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="468.0" y1="274.0" x2="468.0" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="479.3" y1="274.0" x2="479.3" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="490.7" y1="284.8" x2="490.7" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="502.0" y1="295.6" x2="502.0" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="513.3" y1="306.4" x2="513.3" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="524.7" y1="317.2" x2="524.7" y2="327.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<polyline points="366.0,328.0 377.3,317.2 388.7,306.4 400.0,295.6 411.3,284.8 422.7,274.0 434.0,274.0 445.3,274.0 456.7,274.0 468.0,274.0 479.3,274.0 490.7,284.8 502.0,295.6 513.3,306.4 524.7,317.2 536.0,328.0" stroke-width="1" fill="none" stroke="#D85A30"/>
+<text class="ts" x="451.0" y="268.0" text-anchor="middle">peak 21 kN/m, ramps 3 m</text>
+<rect x="366.0" y="330.0" width="170.0" height="8.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<polygon points="366.0,338.0 354.0,358.0 378.0,358.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<line x1="346.0" y1="362.0" x2="386.0" y2="362.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="536.0,338.0 524.0,353.0 548.0,353.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="530.0" cy="357.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="542.0" cy="357.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="516.0" y1="362.0" x2="556.0" y2="362.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<text class="ts" x="546.0" y="288.0" text-anchor="start">W = 126 kN</text>
+<text class="ts" x="546.0" y="305.0" text-anchor="start">R = 63 kN</text>
+<text class="ts" x="546.0" y="322.0" text-anchor="start">M = qL²/8 − qa²/6</text>
+<text class="ts" x="546.0" y="339.0" text-anchor="start">   = 181.1 kN·m</text>
+<rect x="372.0" y="380.0" width="300.0" height="76.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="384.0" y="400.0" text-anchor="start">Check: 2 × 63 + 2 × 126 = 378 = 7 × 54 kN</text>
+<text class="ts" x="384.0" y="418.0" text-anchor="start">One-way by mistake: each long beam 189 kN</text>
+<text class="ts" x="384.0" y="436.0" text-anchor="start">(+50%) and the short beams nothing.</text></svg>

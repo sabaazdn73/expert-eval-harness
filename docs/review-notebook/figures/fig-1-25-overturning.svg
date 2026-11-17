@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="540" viewBox="0 0 680 540" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Shear wall overturning, uplift and sliding</title><desc>Elevation of a 6 m long, 14 m tall shear wall with storey forces 48.2, 96.4, 144.6 and 160.7 kN. Base shear 450 kN, overturning moment 4612.5 kN m. With 0.9 times 1200 kN dead load and boundary elements 5.4 m apart, the heel needs a 314.2 kN hold-down; friction 540 kN resists the 450 kN base shear.</desc><defs><marker id="m1D9E75" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="m534AB7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="m993C1D" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#993C1D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="540" fill="#FFFFFF"/><rect x="240.0" y="70.0" width="180.0" height="340.0" rx="0" stroke-width="1" class="c-purple"/>
+<line x1="185.9" y1="325.0" x2="236.0" y2="325.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="179.9" y="329.0" text-anchor="end">48.2</text>
+<text class="ts" x="428.0" y="329.0" text-anchor="start">3.5 m</text>
+<line x1="161.8" y1="240.0" x2="236.0" y2="240.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="155.8" y="244.0" text-anchor="end">96.4</text>
+<text class="ts" x="428.0" y="244.0" text-anchor="start">7 m</text>
+<line x1="137.7" y1="155.0" x2="236.0" y2="155.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="131.7" y="159.0" text-anchor="end">144.6</text>
+<text class="ts" x="428.0" y="159.0" text-anchor="start">10.5 m</text>
+<line x1="129.6" y1="70.0" x2="236.0" y2="70.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="123.6" y="74.0" text-anchor="end">160.7</text>
+<text class="ts" x="428.0" y="74.0" text-anchor="start">14 m</text>
+<line x1="150.0" y1="410.0" x2="520.0" y2="410.0" stroke="#5F5E5A" stroke-width="3" stroke-linecap="butt"/>
+<line x1="330.0" y1="200.0" x2="330.0" y2="240.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="330.0" y="258.0" text-anchor="middle">0.7D = 840 kN</text>
+<line x1="249.0" y1="412.0" x2="249.0" y2="456.0" stroke="#993C1D" stroke-width="2.5" stroke-linecap="butt" marker-end="url(#m993C1D)"/>
+<text class="th" x="249.0" y="470.0" text-anchor="middle" style="fill:#993C1D">T = 434.2 kN</text>
+<line x1="411.0" y1="456.0" x2="411.0" y2="412.0" stroke="#534AB7" stroke-width="2.5" stroke-linecap="butt" marker-end="url(#m534AB7)"/>
+<line x1="460.0" y1="402.0" x2="300.0" y2="402.0" stroke="#1D9E75" stroke-width="2" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="ts" x="466.0" y="406.0" text-anchor="start">friction 0.5 × 840 = 420 &lt; 450</text>
+<line x1="251.0" y1="502.0" x2="409.0" y2="502.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="249.0" y1="497.0" x2="249.0" y2="507.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="411.0" y1="497.0" x2="411.0" y2="507.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="330.0" y="497.0" text-anchor="middle">lever 5.4 m between boundary elements</text>
+<rect x="500.0" y="50.0" width="170.0" height="186.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="510.0" y="72.0" text-anchor="start">V = Σ F = 450 kN</text>
+<text class="ts" x="510.0" y="89.0" text-anchor="start">M = Σ F·h = 4612.5</text>
+<text class="ts" x="510.0" y="106.0" text-anchor="start">Seismic, ASCE 7:</text>
+<text class="ts" x="510.0" y="123.0" text-anchor="start">(0.9 − 0.2SDS)D</text>
+<text class="ts" x="510.0" y="140.0" text-anchor="start">= 0.7D (SDS = 1.0)</text>
+<text class="ts" x="510.0" y="157.0" text-anchor="start">T = 854.2 − 420</text>
+<text class="ts" x="510.0" y="174.0" text-anchor="start">  = 434.2 kN uplift</text>
+<text class="ts" x="510.0" y="191.0" text-anchor="start">Sliding: 420 &lt; 450</text>
+<text class="ts" x="510.0" y="208.0" text-anchor="start">fails: shear key</text>
+<text class="ts" x="510.0" y="225.0" text-anchor="start">(μ = 0.5 assumed)</text></svg>

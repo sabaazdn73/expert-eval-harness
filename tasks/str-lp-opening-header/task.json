@@ -1,0 +1,46 @@
+{
+  "id": "str-lp-opening-header",
+  "domain": "structural",
+  "title": "Floor opening: tail beams, headers and the extra load on the supporting beam",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "tail_reaction_kN": "number",
+    "header_reaction_kN": "number",
+    "beam_y6_midspan_moment_kNm": "number"
+  },
+  "checks": [
+    {
+      "field": "tail_reaction_kN",
+      "type": "number",
+      "expected": 29.81,
+      "tol_abs": 0.2
+    },
+    {
+      "field": "header_reaction_kN",
+      "type": "number",
+      "expected": 25.03,
+      "tol_abs": 0.2
+    },
+    {
+      "field": "beam_y6_midspan_moment_kNm",
+      "type": "number",
+      "expected": 276.3,
+      "tol_abs": 1.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should apply the two header reactions as point loads at x = 3 m and x = 6 m on the beam at y = 6 m, in addition to its uniform load."
+    }
+  ],
+  "expert_notes": "Tail beam w = 5.5 x 3 + 3.375 = 19.875 kN/m, R = 19.875 x 3/2 = 29.81. Header R = (29.81 + 3.375 x 6)/2 = 25.03. Beam y = 6: M = 19.875 x 81/8 + 25.03 x 3 = 201.2 + 75.1 = 276.3 kN m (+37%).",
+  "mock_answer": {
+    "tail_reaction_kN": 29.81,
+    "header_reaction_kN": 25.03,
+    "beam_y6_midspan_moment_kNm": 276.3
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 1: Load path and static equilibrium (docs/review-notebook/)"
+}

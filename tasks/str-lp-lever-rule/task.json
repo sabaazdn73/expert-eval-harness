@@ -1,0 +1,30 @@
+{
+  "id": "str-lp-lever-rule",
+  "domain": "structural",
+  "title": "Exterior girder live load share by the lever rule (AASHTO LRFD)",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "DF_lanes": "number (lanes per girder, strength limit state)"
+  },
+  "checks": [
+    {
+      "field": "DF_lanes",
+      "type": "number",
+      "expected": 0.816,
+      "tol_abs": 0.015
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should put the first wheel 0.6 m (2 ft) from the barrier face with 1.8 m (6 ft) to the second wheel, take moments about the first interior girder, and apply the one-lane multiple presence factor of 1.2."
+    }
+  ],
+  "expert_notes": "Wheels at -0.1 m and 1.7 m from the exterior girder (0.7 - 0.6). Share = [(2.5 + 0.1) + (2.5 - 1.7)]/2.5/2 = 0.68 lane; x 1.2 = 0.816. With exact feet (0.6096 m, 1.8288 m) the result is 0.804, inside the tolerance.",
+  "mock_answer": {
+    "DF_lanes": 0.816
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 1: Load path and static equilibrium (docs/review-notebook/)"
+}

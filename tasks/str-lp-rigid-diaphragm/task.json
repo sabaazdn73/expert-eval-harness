@@ -1,0 +1,70 @@
+{
+  "id": "str-lp-rigid-diaphragm",
+  "domain": "structural",
+  "title": "Rigid diaphragm: wall forces with inherent and accidental torsion",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "A_kN": "number",
+    "B_kN": "number",
+    "C_kN": "number",
+    "A_env_kN": "number",
+    "B_env_kN": "number",
+    "C_env_kN": "number"
+  },
+  "checks": [
+    {
+      "field": "A_kN",
+      "type": "number",
+      "expected": 218.2,
+      "tol_abs": 1.0
+    },
+    {
+      "field": "B_kN",
+      "type": "number",
+      "expected": 163.6,
+      "tol_abs": 1.0
+    },
+    {
+      "field": "C_kN",
+      "type": "number",
+      "expected": 218.2,
+      "tol_abs": 1.0
+    },
+    {
+      "field": "A_env_kN",
+      "type": "number",
+      "expected": 245.5,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "B_env_kN",
+      "type": "number",
+      "expected": 169.1,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "C_env_kN",
+      "type": "number",
+      "expected": 250.9,
+      "tol_abs": 1.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should locate the centre of rigidity at x = 15 m, apply the torsion about it, and should not split the force by tributary length (150, 300, 150 kN)."
+    }
+  ],
+  "expert_notes": "CR = (0 + 12 + 48)/4 = 15 m; e = 3 m; T = 1800 kN m; J = 1 x 15^2 + 1 x 3^2 + 2 x 9^2 = 396. Direct 150, 150, 300; torsion T k d/J = +68.2, +13.6, -81.8; result 218.2, 163.6, 218.2. Accidental +/-1.2 m: e = 4.2 gives 245.5, 169.1, 185.5; e = 1.8 gives 190.9, 158.2, 250.9. Envelope 245.5, 169.1, 250.9.",
+  "mock_answer": {
+    "A_kN": 218.2,
+    "B_kN": 163.6,
+    "C_kN": 218.2,
+    "A_env_kN": 245.5,
+    "B_env_kN": 169.1,
+    "C_env_kN": 250.9
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 1: Load path and static equilibrium (docs/review-notebook/)"
+}

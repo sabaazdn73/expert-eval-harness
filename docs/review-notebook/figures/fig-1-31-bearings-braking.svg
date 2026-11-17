@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="480" viewBox="0 0 680 480" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Longitudinal forces go only where the bearings are fixed</title><desc>Elevation of a two-span bridge, 2 by 30 m: expansion bearings at both abutments, a fixed (pinned) bearing on the pier. The braking force, 97.5 kN for one lane with m = 1.2, acts 1.8 m above the deck and goes to the pier as a horizontal force at the bearing. The pier base moment is 97.5 times 8 = 780 kN m; the force height above the bearing becomes a vertical couple on the supports.</desc><defs><marker id="m1D9E75" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="m854F0B" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#854F0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="480" fill="#FFFFFF"/><text class="th" x="20.0" y="30.0" text-anchor="start">Braking BR = 1.2 × 0.25 × 325 = 97.5 kN, 1.8 m above the deck</text>
+<rect x="40.0" y="120.0" width="600.0" height="22.0" rx="0" stroke-width="1" class="c-purple"/>
+<rect x="30.0" y="142.0" width="40.0" height="110.0" rx="0" stroke-width="1" class="c-gray"/>
+<rect x="610.0" y="142.0" width="40.0" height="110.0" rx="0" stroke-width="1" class="c-gray"/>
+<text class="ts" x="50.0" y="270.0" text-anchor="middle">abutment</text>
+<text class="ts" x="630.0" y="270.0" text-anchor="middle">abutment</text>
+<rect x="325.0" y="150.0" width="30.0" height="180.0" rx="0" stroke-width="1" class="c-gray"/>
+<text class="ts" x="365.0" y="310.0" text-anchor="start">pier, 8 m</text>
+<circle cx="55.0" cy="146.0" r="5" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.5"/>
+<circle cx="340.0" cy="146.0" r="5" fill="#1D9E75" stroke="#0F6E56" stroke-width="1.5"/>
+<circle cx="625.0" cy="146.0" r="5" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.5"/>
+<text class="tl" x="70.0" y="164.0" text-anchor="start">expansion</text>
+<text class="tl" x="354.0" y="164.0" text-anchor="start">fixed (pin)</text>
+<text class="tl" x="610.0" y="164.0" text-anchor="end">expansion</text>
+<line x1="40.0" y1="84.0" x2="640.0" y2="84.0" stroke="#73726c" stroke-width="0.5" stroke-linecap="butt" stroke-dasharray="4 3"/>
+<line x1="420.0" y1="84.0" x2="300.0" y2="84.0" stroke="#D85A30" stroke-width="2.5" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="620.0" y1="86.0" x2="620.0" y2="118.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="615.0" y1="84.0" x2="625.0" y2="84.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="615.0" y1="120.0" x2="625.0" y2="120.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="613.0" y="106.0" text-anchor="end">1.8 m</text>
+<line x1="380.0" y1="146.0" x2="352.0" y2="146.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt" marker-end="url(#m854F0B)"/>
+<text class="tl" x="384.0" y="150.0" text-anchor="start">97.5 kN at the bearing</text>
+<line x1="290.0" y1="332.0" x2="390.0" y2="332.0" stroke="#5F5E5A" stroke-width="3" stroke-linecap="butt"/>
+<line x1="282.0" y1="320.0" x2="322.0" y2="320.0" stroke="#1D9E75" stroke-width="2" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="tl" x="278.0" y="324.0" text-anchor="end">base 97.5 kN</text>
+<rect x="30.0" y="350.0" width="300.0" height="112.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="42.0" y="372.0" text-anchor="start">Pin: no moment passes the bearing.</text>
+<text class="ts" x="42.0" y="390.0" text-anchor="start">M pier base = 97.5 × 8 = 780 kN·m</text>
+<text class="ts" x="42.0" y="408.0" text-anchor="start">Height above the bearing (3.8 m) gives</text>
+<text class="ts" x="42.0" y="426.0" text-anchor="start">a vertical couple on the supports.</text>
+<text class="ts" x="42.0" y="444.0" text-anchor="start">Expansion bearings: friction or pad shear.</text>
+<rect x="370.0" y="350.0" width="300.0" height="112.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="382.0" y="372.0" text-anchor="start">25% truck case governs here:</text>
+<text class="ts" x="382.0" y="390.0" text-anchor="start">5% × (325 + 9.3 × 60) = 44 kN.</text>
+<text class="ts" x="382.0" y="408.0" text-anchor="start">Trap: splitting BR equally</text>
+<text class="ts" x="382.0" y="426.0" text-anchor="start">between all supports.</text>
+<text class="ts" x="382.0" y="444.0" text-anchor="start">Check AASHTO LRFD 3.6.4.</text></svg>

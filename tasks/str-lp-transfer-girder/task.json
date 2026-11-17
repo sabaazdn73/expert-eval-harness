@@ -1,0 +1,46 @@
+{
+  "id": "str-lp-transfer-girder",
+  "domain": "structural",
+  "title": "Transfer girder under a discontinued column",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "R_left_kN": "number",
+    "R_right_kN": "number",
+    "M_max_kNm": "number"
+  },
+  "checks": [
+    {
+      "field": "R_left_kN",
+      "type": "number",
+      "expected": 1816.0,
+      "tol_abs": 3.0
+    },
+    {
+      "field": "R_right_kN",
+      "type": "number",
+      "expected": 1016.0,
+      "tol_abs": 3.0
+    },
+    {
+      "field": "M_max_kNm",
+      "type": "number",
+      "expected": 6976.0,
+      "tol_abs": 15.0
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should send the stopped column load into the girder and then to the two end columns, not straight down to a column below the landing point."
+    }
+  ],
+  "expert_notes": "Self-weight 0.8 x 1.8 x 25 = 36 kN/m. R left = 2400 x 8/12 + 36 x 6 = 1816; R right = 800 + 216 = 1016. Shear changes sign under the column, so M max = 2400 x 4 x 8/12 + 36 x 4 x 8/2 = 6400 + 576 = 6976 kN m.",
+  "mock_answer": {
+    "R_left_kN": 1816,
+    "R_right_kN": 1016,
+    "M_max_kNm": 6976
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 1: Load path and static equilibrium (docs/review-notebook/)"
+}

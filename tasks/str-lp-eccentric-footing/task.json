@@ -1,0 +1,38 @@
+{
+  "id": "str-lp-eccentric-footing",
+  "domain": "structural",
+  "title": "Strip footing with a large eccentricity: maximum soil pressure",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "q_max_kPa": "number",
+    "contact_width_m": "number"
+  },
+  "checks": [
+    {
+      "field": "q_max_kPa",
+      "type": "number",
+      "expected": 333.3,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "contact_width_m",
+      "type": "number",
+      "expected": 1.8,
+      "tol_abs": 0.02
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should notice that the eccentricity of 0.4 m is larger than B/6 = 0.333 m, so the trapezoidal formula does not apply and part of the footing lifts off."
+    }
+  ],
+  "expert_notes": "e = 120/300 = 0.4 m > B/6. Contact 3(B/2 - e) = 1.8 m; q max = 2P/(3(B/2 - e)) = 600/1.8 = 333.3 kPa. The trapezoid formula would give 375 and -75 kPa, which is wrong.",
+  "mock_answer": {
+    "q_max_kPa": 333.3,
+    "contact_width_m": 1.8
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 1: Load path and static equilibrium (docs/review-notebook/)"
+}

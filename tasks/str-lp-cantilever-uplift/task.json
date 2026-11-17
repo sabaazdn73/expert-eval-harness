@@ -1,0 +1,45 @@
+{
+  "id": "str-lp-cantilever-uplift",
+  "domain": "structural",
+  "title": "Beam with a cantilever: reactions and uplift at the back support",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "RA_kN": "number (upward positive)",
+    "RB_kN": "number (upward positive)",
+    "holddown_needed_at_A": "true or false"
+  },
+  "checks": [
+    {
+      "field": "RA_kN",
+      "type": "number",
+      "expected": -5.0,
+      "tol_abs": 0.2
+    },
+    {
+      "field": "RB_kN",
+      "type": "number",
+      "expected": 75.0,
+      "tol_abs": 0.3
+    },
+    {
+      "field": "holddown_needed_at_A",
+      "type": "bool",
+      "expected": true
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should take moments about B and recognise that support A is pulled upward (uplift), so it needs a hold-down or tension connection."
+    }
+  ],
+  "expert_notes": "Moments about B: RA x 4 = 5 x 4 x 2 - 20 x 2 x 1 - 10 x 2 = 40 - 40 - 20 = -20, RA = -5 kN (uplift). RB = 20 + 40 + 10 + 5 = 75 kN, more than the 70 kN total. Tributary thinking gives RA = +10 kN downward and misses the uplift.",
+  "mock_answer": {
+    "RA_kN": -5,
+    "RB_kN": 75,
+    "holddown_needed_at_A": true
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 1: Load path and static equilibrium (docs/review-notebook/)"
+}

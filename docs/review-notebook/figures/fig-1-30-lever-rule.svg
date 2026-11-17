@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="380" viewBox="0 0 680 380" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Bridge deck to girders: lever rule for the exterior girder</title><desc>Cross-section of a girder bridge with girders at 2.5 m. The barrier face is 0.7 m outside the exterior girder; the first wheel is 0.6 m from the barrier face, the second 1.8 m further. Treating the deck as simply supported between the exterior and first interior girder, the exterior girder takes 0.68 of a lane, 0.816 with the one-lane multiple presence factor of 1.2.</desc><defs><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="380" fill="#FFFFFF"/><rect x="80.0" y="150.0" width="570.0" height="18.0" rx="0" stroke-width="1" class="c-gray"/>
+<rect x="80.0" y="100.0" width="18.0" height="50.0" rx="0" stroke-width="1" class="c-gray"/>
+<text class="ts" x="76.0" y="94.0" text-anchor="end">barrier</text>
+<rect x="131.0" y="168.0" width="18.0" height="70.0" rx="0" stroke-width="1" class="c-purple"/>
+<rect x="281.0" y="168.0" width="18.0" height="70.0" rx="0" stroke-width="1" class="c-purple"/>
+<rect x="431.0" y="168.0" width="18.0" height="70.0" rx="0" stroke-width="1" class="c-purple"/>
+<rect x="581.0" y="168.0" width="18.0" height="70.0" rx="0" stroke-width="1" class="c-purple"/>
+<text class="tl" x="140.0" y="256.0" text-anchor="middle">G1 (exterior)</text>
+<text class="tl" x="290.0" y="256.0" text-anchor="middle">G2</text>
+<circle cx="290.0" cy="159.0" r="5" fill="#FFFFFF" stroke="#993C1D" stroke-width="2"/>
+<text class="ts" x="298.0" y="144.0" text-anchor="start">hinge</text>
+<line x1="134.0" y1="90.0" x2="134.0" y2="148.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="134.0" y="84.0" text-anchor="middle">P/2</text>
+<line x1="242.0" y1="90.0" x2="242.0" y2="148.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="242.0" y="84.0" text-anchor="middle">P/2</text>
+<line x1="100.0" y1="70.0" x2="132.0" y2="70.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="98.0" y1="65.0" x2="98.0" y2="75.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="134.0" y1="65.0" x2="134.0" y2="75.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="116.0" y="65.0" text-anchor="middle">0.6</text>
+<line x1="136.0" y1="70.0" x2="240.0" y2="70.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="134.0" y1="65.0" x2="134.0" y2="75.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="242.0" y1="65.0" x2="242.0" y2="75.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="188.0" y="65.0" text-anchor="middle">1.8 m</text>
+<line x1="142.0" y1="280.0" x2="288.0" y2="280.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="140.0" y1="275.0" x2="140.0" y2="285.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="290.0" y1="275.0" x2="290.0" y2="285.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="215.0" y="275.0" text-anchor="middle">2.5 m</text>
+<line x1="98.0" y1="146.0" x2="98.0" y2="60.0" stroke="#73726c" stroke-width="0.5" stroke-linecap="butt" stroke-dasharray="3 3"/>
+<rect x="140.0" y="300.0" width="525.0" height="66.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="152.0" y="322.0" text-anchor="start">G1 share = [(2.5 + 0.1) + (2.5 − 1.7)] / 2.5 / 2 = (1.04 + 0.32) / 2 = 0.68 lane</text>
+<text class="ts" x="152.0" y="340.0" text-anchor="start">Strength and service: × m = 1.2 (one lane) → 0.816 lane (check AASHTO LRFD).</text></svg>

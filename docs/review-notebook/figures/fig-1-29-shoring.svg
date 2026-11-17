@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="400" viewBox="0 0 680 400" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Construction stage: new slab carried by slabs below</title><desc>Section: a new slab with formwork and construction live load, 7.0 kN/m², is carried by shores and reshores to two slabs below. Shared equally, each supporting slab carries its own 5.0 kN/m² plus 3.5 kN/m², 8.5 kN/m², 1.7 times its self-weight and above its 7.5 kN/m² service design load.</desc><defs></defs><rect x="0" y="0" width="680" height="400" fill="#FFFFFF"/><rect x="50.0" y="80.0" width="350.0" height="14.0" rx="0" stroke-width="1" class="c-gray"/>
+<text class="tl" x="410.0" y="91.0" text-anchor="start">new: 7.0</text>
+<rect x="50.0" y="180.0" width="350.0" height="14.0" rx="0" stroke-width="1" class="c-gray"/>
+<text class="tl" x="410.0" y="191.0" text-anchor="start">slab 2: 8.5</text>
+<rect x="50.0" y="280.0" width="350.0" height="14.0" rx="0" stroke-width="1" class="c-gray"/>
+<text class="tl" x="410.0" y="291.0" text-anchor="start">slab 1: 8.5</text>
+<line x1="80.0" y1="94.0" x2="80.0" y2="180.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt"/>
+<line x1="105.0" y1="194.0" x2="105.0" y2="280.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt" stroke-dasharray="5 3"/>
+<line x1="130.0" y1="94.0" x2="130.0" y2="180.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt"/>
+<line x1="155.0" y1="194.0" x2="155.0" y2="280.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt" stroke-dasharray="5 3"/>
+<line x1="180.0" y1="94.0" x2="180.0" y2="180.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt"/>
+<line x1="205.0" y1="194.0" x2="205.0" y2="280.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt" stroke-dasharray="5 3"/>
+<line x1="230.0" y1="94.0" x2="230.0" y2="180.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt"/>
+<line x1="255.0" y1="194.0" x2="255.0" y2="280.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt" stroke-dasharray="5 3"/>
+<line x1="280.0" y1="94.0" x2="280.0" y2="180.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt"/>
+<line x1="305.0" y1="194.0" x2="305.0" y2="280.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt" stroke-dasharray="5 3"/>
+<line x1="330.0" y1="94.0" x2="330.0" y2="180.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt"/>
+<line x1="355.0" y1="194.0" x2="355.0" y2="280.0" stroke="#854F0B" stroke-width="2" stroke-linecap="butt" stroke-dasharray="5 3"/>
+<text class="ts" x="410.0" y="140.0" text-anchor="start">shores</text>
+<text class="ts" x="410.0" y="240.0" text-anchor="start">reshores</text>
+<line x1="50.0" y1="360.0" x2="400.0" y2="360.0" stroke="#5F5E5A" stroke-width="3" stroke-linecap="butt"/>
+<text class="ts" x="50.0" y="380.0" text-anchor="start">ground (kN/m²)</text>
+<rect x="50.0" y="94.0" width="14.0" height="266.0" rx="0" stroke-width="0.8" class="c-gray"/>
+<rect x="386.0" y="94.0" width="14.0" height="266.0" rx="0" stroke-width="0.8" class="c-gray"/>
+<text class="th" x="20.0" y="40.0" text-anchor="start">Wet slab 5.0 + formwork 0.5 + construction 1.5 = 7.0 kN/m²</text>
+<rect x="540.0" y="80.0" width="132.0" height="200.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="548.0" y="102.0" text-anchor="start">One stage,</text>
+<text class="ts" x="548.0" y="119.0" text-anchor="start">shores stiff,</text>
+<text class="ts" x="548.0" y="136.0" text-anchor="start">slabs share</text>
+<text class="ts" x="548.0" y="153.0" text-anchor="start">equally:</text>
+<text class="ts" x="548.0" y="170.0" text-anchor="start">7.0 / 2 = 3.5</text>
+<text class="ts" x="548.0" y="187.0" text-anchor="start">per slab</text>
+<text class="ts" x="548.0" y="204.0" text-anchor="start">5.0 + 3.5 = 8.5</text>
+<text class="ts" x="548.0" y="221.0" text-anchor="start">= 1.7 × self-wt</text>
+<text class="ts" x="548.0" y="238.0" text-anchor="start">&gt; 7.5 design</text>
+<text class="ts" x="548.0" y="255.0" text-anchor="start">Cycles: ~2×</text></svg>

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="360" viewBox="0 0 680 360" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Partition wall on a one-way slab and equipment on a beam</title><desc>Left: a 1 m strip of one-way slab spanning 3 m with 5.5 kN/m and a 6 kN line load from a wall at midspan; moment 6.19 plus 4.5 kN m per metre. Right: a 9 m beam with a 30 kN unit 2 m from the left support; reactions 23.33 and 6.67 kN, moment under the load 46.67 kN m.</desc><defs><marker id="m1D9E75" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="360" fill="#FFFFFF"/><text class="tt" x="20.0" y="30.0" text-anchor="start">Wall across the slab span</text>
+<line x1="50.0" y1="120.0" x2="290.0" y2="120.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt"/>
+<line x1="50.0" y1="120.0" x2="50.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="74.0" y1="120.0" x2="74.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="98.0" y1="120.0" x2="98.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="122.0" y1="120.0" x2="122.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="146.0" y1="120.0" x2="146.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="170.0" y1="120.0" x2="170.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="194.0" y1="120.0" x2="194.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="218.0" y1="120.0" x2="218.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="242.0" y1="120.0" x2="242.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="266.0" y1="120.0" x2="266.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="290.0" y1="120.0" x2="290.0" y2="149.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="ts" x="50.0" y="112.0" text-anchor="start">5.5 kN/m</text>
+<line x1="170.0" y1="60.0" x2="170.0" y2="118.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="170.0" y="54.0" text-anchor="middle">wall: 6 kN per 1 m strip</text>
+<rect x="50.0" y="150.0" width="240.0" height="8.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<polygon points="50.0,158.0 38.0,178.0 62.0,178.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<line x1="30.0" y1="182.0" x2="70.0" y2="182.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="290.0,158.0 278.0,173.0 302.0,173.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="284.0" cy="177.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="296.0" cy="177.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="270.0" y1="182.0" x2="310.0" y2="182.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="52.0" y1="200.0" x2="288.0" y2="200.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="50.0" y1="195.0" x2="50.0" y2="205.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="290.0" y1="195.0" x2="290.0" y2="205.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="170.0" y="195.0" text-anchor="middle">slab span 3 m (1 m strip)</text>
+<rect x="30.0" y="230.0" width="280.0" height="110.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="42.0" y="252.0" text-anchor="start">M from slab = 5.5 × 3² / 8 = 6.19</text>
+<text class="ts" x="42.0" y="270.0" text-anchor="start">M from wall = 6 × 3 / 4 = 4.50</text>
+<text class="ts" x="42.0" y="288.0" text-anchor="start">Total 10.69 kN·m per m (+73%)</text>
+<text class="ts" x="42.0" y="306.0" text-anchor="start">Wall along the span: a beam under</text>
+<text class="ts" x="42.0" y="324.0" text-anchor="start">it, or an effective width by code.</text>
+<text class="tt" x="360.0" y="30.0" text-anchor="start">Equipment on a secondary beam</text>
+<line x1="433.3" y1="80.0" x2="433.3" y2="148.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="433.3" y="74.0" text-anchor="middle">30 kN unit</text>
+<rect x="380.0" y="150.0" width="240.0" height="8.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<polygon points="380.0,158.0 368.0,178.0 392.0,178.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<line x1="360.0" y1="182.0" x2="400.0" y2="182.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="620.0,158.0 608.0,173.0 632.0,173.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="614.0" cy="177.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="626.0" cy="177.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="600.0" y1="182.0" x2="640.0" y2="182.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="380.0" y1="230.0" x2="380.0" y2="186.0" stroke="#1D9E75" stroke-width="2" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="th" x="380.0" y="246.0" text-anchor="middle">23.33 kN</text>
+<line x1="620.0" y1="230.0" x2="620.0" y2="186.0" stroke="#1D9E75" stroke-width="2" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="th" x="620.0" y="246.0" text-anchor="middle">6.67 kN</text>
+<line x1="382.0" y1="50.0" x2="431.3" y2="50.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="380.0" y1="45.0" x2="380.0" y2="55.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="433.3" y1="45.0" x2="433.3" y2="55.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="406.7" y="45.0" text-anchor="middle">2 m</text>
+<line x1="435.3" y1="50.0" x2="618.0" y2="50.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="433.3" y1="45.0" x2="433.3" y2="55.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="620.0" y1="45.0" x2="620.0" y2="55.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="526.7" y="45.0" text-anchor="middle">7 m</text>
+<rect x="360.0" y="270.0" width="305.0" height="72.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="372.0" y="292.0" text-anchor="start">R near = 30 × 7 / 9 = 23.33 kN</text>
+<text class="ts" x="372.0" y="310.0" text-anchor="start">M under load = 30 × 2 × 7 / 9 = 46.67 kN·m</text>
+<text class="ts" x="372.0" y="328.0" text-anchor="start">Added to the beam&#x27;s own uniform load.</text></svg>

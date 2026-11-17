@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Equilibrium and determinacy of single beams</title><desc>Panel a: a 6 m beam on a pin and a roller with a 50 kN load inclined 30 degrees, 2 m from A; reactions Ax 43.3 kN, Ay 16.67 kN, By 8.33 kN. Panel b: a propped cantilever with four reactions, indeterminate to degree one. Panel c: a beam on three rollers, three parallel reactions, unstable sideways.</desc><defs><marker id="m1D9E75" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="m993C1D" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#993C1D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="26.0" text-anchor="start">a.  Pin + roller: r = 3, determinate</text>
+<rect x="160.0" y="120.0" width="310.0" height="10.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<line x1="211.3" y1="90.0" x2="261.3" y2="119.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="205.3" y="84.0" text-anchor="end">P = 50 kN at 30°</text>
+<polygon points="160.0,130.0 148.0,150.0 172.0,150.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<line x1="140.0" y1="154.0" x2="180.0" y2="154.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="470.0,130.0 458.0,145.0 482.0,145.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="464.0" cy="149.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="476.0" cy="149.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="450.0" y1="154.0" x2="490.0" y2="154.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="152.0" y1="125.0" x2="100.0" y2="125.0" stroke="#1D9E75" stroke-width="2" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="th" x="96.0" y="129.0" text-anchor="end">Ax = 43.3</text>
+<line x1="160.0" y1="210.0" x2="160.0" y2="158.0" stroke="#1D9E75" stroke-width="2" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="th" x="160.0" y="226.0" text-anchor="middle">Ay = 16.67 kN</text>
+<line x1="470.0" y1="210.0" x2="470.0" y2="158.0" stroke="#1D9E75" stroke-width="2" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="th" x="470.0" y="226.0" text-anchor="middle">By = 8.33 kN</text>
+<line x1="162.0" y1="58.0" x2="261.3" y2="58.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="160.0" y1="53.0" x2="160.0" y2="63.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="263.3" y1="53.0" x2="263.3" y2="63.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="211.7" y="53.0" text-anchor="middle">2 m</text>
+<line x1="265.3" y1="58.0" x2="468.0" y2="58.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="263.3" y1="53.0" x2="263.3" y2="63.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="470.0" y1="53.0" x2="470.0" y2="63.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="366.7" y="53.0" text-anchor="middle">4 m</text>
+<rect x="490.0" y="52.0" width="175.0" height="120.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="502.0" y="74.0" text-anchor="start">ΣFx = 0: Ax = 50 cos30</text>
+<text class="ts" x="502.0" y="91.0" text-anchor="start">          = 43.3 kN</text>
+<text class="ts" x="502.0" y="108.0" text-anchor="start">ΣMA = 0: By·6 = 25·2</text>
+<text class="ts" x="502.0" y="125.0" text-anchor="start">          By = 8.33 kN</text>
+<text class="ts" x="502.0" y="142.0" text-anchor="start">ΣFy = 0: Ay = 25 − 8.33</text>
+<text class="ts" x="502.0" y="159.0" text-anchor="start">          = 16.67 kN</text>
+<text class="tt" x="20.0" y="262.0" text-anchor="start">b.  Fixed + roller: r = 4, degree 1</text>
+<rect x="60.0" y="330.0" width="240.0" height="10.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<line x1="60.0" y1="322.0" x2="60.0" y2="348.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="60.0" y1="324.0" x2="51.0" y2="333.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="60.0" y1="331.0" x2="51.0" y2="340.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="60.0" y1="338.0" x2="51.0" y2="347.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="60.0" y1="345.0" x2="51.0" y2="354.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<polygon points="300.0,340.0 288.0,355.0 312.0,355.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="294.0" cy="359.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="306.0" cy="359.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="280.0" y1="364.0" x2="320.0" y2="364.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<text class="ts" x="180.0" y="396.0" text-anchor="middle">One reaction more than equilibrium gives:</text>
+<text class="ts" x="180.0" y="413.0" text-anchor="middle">needs a deflection condition (Module 3).</text>
+<text class="tt" x="370.0" y="262.0" text-anchor="start">c.  Three rollers: r = 3, unstable</text>
+<rect x="400.0" y="330.0" width="240.0" height="10.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<polygon points="400.0,340.0 388.0,355.0 412.0,355.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="394.0" cy="359.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="406.0" cy="359.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="380.0" y1="364.0" x2="420.0" y2="364.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="520.0,340.0 508.0,355.0 532.0,355.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="514.0" cy="359.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="526.0" cy="359.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="500.0" y1="364.0" x2="540.0" y2="364.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="640.0,340.0 628.0,355.0 652.0,355.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="634.0" cy="359.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="646.0" cy="359.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="620.0" y1="364.0" x2="660.0" y2="364.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="560.0" y1="312.0" x2="640.0" y2="312.0" stroke="#993C1D" stroke-width="2" stroke-linecap="butt" marker-end="url(#m993C1D)"/>
+<text class="ts" x="600.0" y="304.0" text-anchor="middle">any sideways push</text>
+<text class="ts" x="520.0" y="396.0" text-anchor="middle">All reactions parallel: nothing resists</text>
+<text class="ts" x="520.0" y="413.0" text-anchor="middle">ΣFx. Counting r alone is not enough.</text></svg>

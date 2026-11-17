@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" viewBox="0 0 680 380" role="img"><style>
+:root{--t:#73726c}
+text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:500;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.leader{stroke:#888780;stroke-width:0.5;stroke-dasharray:3 3;fill:none}
+.c-gray,.c-gray>rect{fill:#F1EFE8;stroke:#5F5E5A}
+.c-purple,.c-purple>rect{fill:#EEEDFE;stroke:#534AB7}
+.c-coral,.c-coral>rect{fill:#FAECE7;stroke:#993C1D}
+.c-amber,.c-amber>rect{fill:#FAEEDA;stroke:#854F0B}
+.c-teal,.c-teal>rect{fill:#E1F5EE;stroke:#0F6E56}
+.c-teal>text.th{fill:#085041}.c-teal>text.ts{fill:#0F6E56}
+</style><title>Free-body diagram of the secondary beam</title><desc>A 9 m simply supported beam with a uniform load of 19.875 kN/m and two reactions of 89.44 kN each, with the equilibrium equations.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text class="th" x="340" y="36" text-anchor="middle">w = 5.5 × 3 + 3.375 = 19.875 kN/m</text>
+<line x1="120" y1="58" x2="560" y2="58" stroke="#D85A30" stroke-width="1"/>
+<g stroke="#D85A30" stroke-width="1" fill="none">
+<line x1="120" y1="58" x2="120" y2="120" marker-end="url(#arrow)"/><line x1="160" y1="58" x2="160" y2="120" marker-end="url(#arrow)"/><line x1="200" y1="58" x2="200" y2="120" marker-end="url(#arrow)"/><line x1="240" y1="58" x2="240" y2="120" marker-end="url(#arrow)"/><line x1="280" y1="58" x2="280" y2="120" marker-end="url(#arrow)"/><line x1="320" y1="58" x2="320" y2="120" marker-end="url(#arrow)"/><line x1="360" y1="58" x2="360" y2="120" marker-end="url(#arrow)"/><line x1="400" y1="58" x2="400" y2="120" marker-end="url(#arrow)"/><line x1="440" y1="58" x2="440" y2="120" marker-end="url(#arrow)"/><line x1="480" y1="58" x2="480" y2="120" marker-end="url(#arrow)"/><line x1="520" y1="58" x2="520" y2="120" marker-end="url(#arrow)"/><line x1="560" y1="58" x2="560" y2="120" marker-end="url(#arrow)"/>
+</g>
+<rect class="c-purple" x="120" y="124" width="440" height="10" rx="1" stroke-width="0.5"/>
+<path d="M120 134 L108 156 L132 156 Z" fill="none" stroke="var(--t)" stroke-width="1"/>
+<path d="M560 134 L548 150 L572 150 Z" fill="none" stroke="var(--t)" stroke-width="1"/>
+<circle cx="553" cy="154" r="3.5" fill="none" stroke="var(--t)" stroke-width="1"/><circle cx="567" cy="154" r="3.5" fill="none" stroke="var(--t)" stroke-width="1"/>
+<line x1="98" y1="160" x2="142" y2="160" stroke="var(--t)" stroke-width="1"/><line x1="538" y1="160" x2="582" y2="160" stroke="var(--t)" stroke-width="1"/>
+<line x1="120" y1="214" x2="120" y2="166" stroke="#1D9E75" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
+<line x1="560" y1="214" x2="560" y2="166" stroke="#1D9E75" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
+<text class="th" x="120" y="232" text-anchor="middle">R_A = 89.44 kN</text>
+<text class="th" x="560" y="232" text-anchor="middle">R_B = 89.44 kN</text>
+<line x1="124" y1="256" x2="556" y2="256" stroke="var(--t)" stroke-width="0.5" marker-start="url(#arrow)" marker-end="url(#arrow)" fill="none"/>
+<text class="ts" x="340" y="274" text-anchor="middle">L = 9 m</text>
+<rect class="box" x="90" y="290" width="500" height="76" rx="8" stroke-width="0.5"/>
+<text class="ts" x="110" y="310">Total load: W = w × L = 19.875 × 9 = 178.9 kN</text>
+<text class="ts" x="110" y="332">ΣM about A = 0:  R_B × 9 = 178.875 × 4.5  →  R_B = 89.44 kN</text>
+<text class="ts" x="110" y="354">ΣFy = 0:  R_A = 178.875 − 89.44 = 89.44 kN   (that is wL/2)</text>
+</svg>

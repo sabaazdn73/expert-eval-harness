@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Moment distribution on three spans</title><desc>Continuous beam of 8, 10 and 8 m on pinned supports with 40 kN/m. Distribution factors at B: 0.484 to the end span and 0.516 to the middle span; with symmetry, 0.652. Final moments: 328.7 kN·m over B and C, 176.8 kN·m in the end spans and 171.3 kN·m at the middle of the 10 m span.</desc><defs><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Spans 8, 10, 8 m, 40 kN/m, pinned ends, constant EI</text>
+<rect x="50.0" y="96.0" width="572.0" height="8.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<polygon points="50.0,104.0 38.0,124.0 62.0,124.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<line x1="30.0" y1="128.0" x2="70.0" y2="128.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="226.0,104.0 214.0,119.0 238.0,119.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="220.0" cy="123.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="232.0" cy="123.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="206.0" y1="128.0" x2="246.0" y2="128.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="446.0,104.0 434.0,119.0 458.0,119.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="440.0" cy="123.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="452.0" cy="123.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="426.0" y1="128.0" x2="466.0" y2="128.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="622.0,104.0 610.0,119.0 634.0,119.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="616.0" cy="123.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="628.0" cy="123.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="602.0" y1="128.0" x2="642.0" y2="128.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="50.0" y1="66.0" x2="622.0" y2="66.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt"/>
+<line x1="50.0" y1="66.0" x2="50.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="76.0" y1="66.0" x2="76.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="102.0" y1="66.0" x2="102.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="128.0" y1="66.0" x2="128.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="154.0" y1="66.0" x2="154.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="180.0" y1="66.0" x2="180.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="206.0" y1="66.0" x2="206.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="232.0" y1="66.0" x2="232.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="258.0" y1="66.0" x2="258.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="284.0" y1="66.0" x2="284.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="310.0" y1="66.0" x2="310.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="336.0" y1="66.0" x2="336.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="362.0" y1="66.0" x2="362.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="388.0" y1="66.0" x2="388.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="414.0" y1="66.0" x2="414.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="440.0" y1="66.0" x2="440.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="466.0" y1="66.0" x2="466.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="492.0" y1="66.0" x2="492.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="518.0" y1="66.0" x2="518.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="544.0" y1="66.0" x2="544.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="570.0" y1="66.0" x2="570.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="596.0" y1="66.0" x2="596.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="622.0" y1="66.0" x2="622.0" y2="94.0" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="336.0" y="60.0" text-anchor="middle">40 kN/m</text>
+<text class="th" x="50.0" y="146.0" text-anchor="middle">A</text>
+<text class="th" x="226.0" y="146.0" text-anchor="middle">B</text>
+<text class="th" x="446.0" y="146.0" text-anchor="middle">C</text>
+<text class="th" x="622.0" y="146.0" text-anchor="middle">D</text>
+<polygon points="50.0,230.0 50.0,230.0 57.1,236.2 64.3,241.7 71.5,246.5 78.6,250.5 85.8,253.9 92.9,256.5 100.0,258.4 107.2,259.6 114.4,260.0 121.5,259.8 128.7,258.8 135.8,257.1 142.9,254.7 150.1,251.6 157.2,247.7 164.4,243.2 171.6,237.9 178.7,231.9 185.8,225.2 193.0,217.7 200.2,209.6 207.3,200.7 214.4,191.1 221.6,180.8 228.8,178.3 235.9,188.7 243.1,198.4 250.2,207.4 257.4,215.7 264.5,223.2 271.6,230.0 278.8,236.1 285.9,241.5 293.1,246.2 300.2,250.1 307.4,253.4 314.6,255.9 321.7,257.7 328.8,258.8 336.0,259.1 343.1,258.8 350.3,257.7 357.4,255.9 364.6,253.4 371.8,250.1 378.9,246.2 386.1,241.5 393.2,236.1 400.4,230.0 407.5,223.2 414.6,215.7 421.8,207.4 428.9,198.4 436.1,188.7 443.2,178.3 450.4,180.8 457.6,191.1 464.7,200.7 471.9,209.6 479.0,217.7 486.1,225.2 493.3,231.9 500.4,237.9 507.6,243.2 514.8,247.7 521.9,251.6 529.0,254.7 536.2,257.1 543.4,258.8 550.5,259.8 557.6,260.0 564.8,259.6 571.9,258.4 579.1,256.5 586.2,253.9 593.4,250.5 600.6,246.5 607.7,241.7 614.9,236.2 622.0,230.0 622.0,230.0" stroke-width="1" fill="#EEEDFE" stroke="#534AB7"/>
+<line x1="50.0" y1="230.0" x2="622.0" y2="230.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="tl" x="226.0" y="168.1" text-anchor="middle">−328.7</text>
+<text class="tl" x="446.0" y="168.1" text-anchor="middle">−328.7</text>
+<text class="tl" x="115.3" y="276.0" text-anchor="middle">176.8</text>
+<text class="tl" x="336.0" y="275.1" text-anchor="middle">171.3</text>
+<rect x="30.0" y="300.0" width="400.0" height="150.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="th" x="42.0" y="322.0" text-anchor="start">Hardy Cross at B (kN·m, clockwise +)</text>
+<text class="ts" x="42.0" y="344.0" text-anchor="start">Step</text>
+<text class="ts" x="180.0" y="344.0" text-anchor="end">BA</text>
+<text class="ts" x="260.0" y="344.0" text-anchor="end">BC</text>
+<text class="ts" x="340.0" y="344.0" text-anchor="end">CB</text>
+<text class="ts" x="42.0" y="364.0" text-anchor="start">FEM</text>
+<text class="ts" x="180.0" y="364.0" text-anchor="end">320.00</text>
+<text class="ts" x="260.0" y="364.0" text-anchor="end">-333.33</text>
+<text class="ts" x="340.0" y="364.0" text-anchor="end">333.33</text>
+<text class="ts" x="42.0" y="382.0" text-anchor="start">cycle 1</text>
+<text class="ts" x="180.0" y="382.0" text-anchor="end">326.45</text>
+<text class="ts" x="260.0" y="382.0" text-anchor="end">-330.78</text>
+<text class="ts" x="340.0" y="382.0" text-anchor="end">328.12</text>
+<text class="ts" x="42.0" y="400.0" text-anchor="start">cycle 2</text>
+<text class="ts" x="180.0" y="400.0" text-anchor="end">328.55</text>
+<text class="ts" x="260.0" y="400.0" text-anchor="end">-328.83</text>
+<text class="ts" x="340.0" y="400.0" text-anchor="end">328.66</text>
+<text class="ts" x="42.0" y="418.0" text-anchor="start">cycle 3</text>
+<text class="ts" x="180.0" y="418.0" text-anchor="end">328.69</text>
+<text class="ts" x="260.0" y="418.0" text-anchor="end">-328.70</text>
+<text class="ts" x="340.0" y="418.0" text-anchor="end">328.69</text>
+<rect x="450.0" y="300.0" width="220.0" height="150.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="462.0" y="322.0" text-anchor="start">FEM BA (far end pinned):</text>
+<text class="ts" x="462.0" y="340.0" text-anchor="start">  wL²/8 = 320.0</text>
+<text class="ts" x="462.0" y="358.0" text-anchor="start">FEM BC: wL²/12 = 333.3</text>
+<text class="ts" x="462.0" y="376.0" text-anchor="start">DF: 3/8 ÷ (3/8 + 4/10) = 0.484</text>
+<text class="ts" x="462.0" y="394.0" text-anchor="start">Symmetry: 3/8 ÷ (3/8 + 2/10)</text>
+<text class="ts" x="462.0" y="412.0" text-anchor="start">  = 0.652 → MB = 328.7</text>
+<text class="ts" x="462.0" y="430.0" text-anchor="start">Model: 328.7</text></svg>

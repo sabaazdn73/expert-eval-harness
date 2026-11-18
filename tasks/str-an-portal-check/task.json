@@ -1,0 +1,62 @@
+{
+  "id": "str-an-portal-check",
+  "domain": "structural",
+  "title": "Checking frame reactions and a portal-method estimate",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "sum_base_shear_kN": "number",
+    "overturning_kNm": "number",
+    "axial_couple_kNm": "number",
+    "portal_exterior_base_M_kNm": "number",
+    "portal_interior_base_M_kNm": "number"
+  },
+  "checks": [
+    {
+      "field": "sum_base_shear_kN",
+      "type": "number",
+      "expected": 160.0,
+      "tol_abs": 0.5
+    },
+    {
+      "field": "overturning_kNm",
+      "type": "number",
+      "expected": 975.0,
+      "tol_abs": 2.0
+    },
+    {
+      "field": "axial_couple_kNm",
+      "type": "number",
+      "expected": 547.3,
+      "tol_abs": 3.0
+    },
+    {
+      "field": "portal_exterior_base_M_kNm",
+      "type": "number",
+      "expected": 50.0,
+      "tol_abs": 0.5
+    },
+    {
+      "field": "portal_interior_base_M_kNm",
+      "type": "number",
+      "expected": 100.0,
+      "tol_abs": 0.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should show that the axial couple plus the sum of the base moments equals the overturning moment (about 975 kN.m), and state that the portal method, with inflection at mid-height and a 1:2 shear split, underestimates the exterior base moment by about half in this fixed-base frame, so it is a check of equilibrium and magnitude, not a design value."
+    }
+  ],
+  "expert_notes": "Sum V = 160.0 kN. Overturning = 100 x 7.5 + 60 x 3.75 = 975 kN.m. Axial couple about x = 0: 2.13 x 9 - 1.83 x 18 + 20.78 x 27 = 547.3 kN.m; base moments 427.8; total 975.1. Portal: storey shear 160, exterior 160/6 = 26.7, interior 53.3; base moments V x h/2 = 50.0 and 100.0 kN.m against 104.1 and 112.1 in the model (inflection at 0.68 to 0.75 h with fixed bases and cracked, flexible beams).",
+  "mock_answer": {
+    "sum_base_shear_kN": 160.0,
+    "overturning_kNm": 975.0,
+    "axial_couple_kNm": 547.3,
+    "portal_exterior_base_M_kNm": 50.0,
+    "portal_interior_base_M_kNm": 100.0
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 3: Structural analysis (docs/review-notebook/)"
+}

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="440" viewBox="0 0 680 440" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Deflection by virtual work: column flexibility</title><desc>Canopy frame: 500 by 500 column 4 m high fixed at the base, 400 by 600 cantilever beam 3 m long, 50 kN at the tip, gross sections. Tip deflection 15.85 mm: 2.43 mm from bending of the beam and 13.43 mm from rotation of the column top, 85% of the total.</desc><defs><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="440" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Canopy: where the tip deflection comes from</text>
+<rect x="82.0" y="130.0" width="16.0" height="200.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<line x1="68.0" y1="330.0" x2="112.0" y2="330.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<rect x="82.0" y="123.0" width="158.0" height="14.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<line x1="240.0" y1="68.0" x2="240.0" y2="122.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="240.0" y="62.0" text-anchor="middle">50 kN</text>
+<line x1="92.0" y1="104.0" x2="238.0" y2="104.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="90.0" y1="99.0" x2="90.0" y2="109.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="240.0" y1="99.0" x2="240.0" y2="109.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="165.0" y="99.0" text-anchor="middle">3 m</text>
+<line x1="60.0" y1="132.0" x2="60.0" y2="328.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="55.0" y1="130.0" x2="65.0" y2="130.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="55.0" y1="330.0" x2="65.0" y2="330.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="53.0" y="234.0" text-anchor="end">4 m</text>
+<path d="M90 330 Q90 190 104 130" fill="none" stroke="#534AB7" stroke-width="1.4" stroke-dasharray="5 4"/>
+<path d="M104 137 L248 190" fill="none" stroke="#534AB7" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text class="ts" x="120.0" y="240.0" text-anchor="start">deflected shape</text>
+<text class="ts" x="120.0" y="256.0" text-anchor="start">(exaggerated)</text>
+<text class="th" x="440.0" y="80.0" text-anchor="middle">Tip deflection (mm)</text>
+<text class="tl" x="462.0" y="110.0" text-anchor="end">Beam bending  Pa³/3EIb</text>
+<rect x="470.0" y="96.0" width="17.5" height="20.0" rx="2" stroke-width="0.8" fill="#EEEDFE" stroke="#534AB7"/>
+<text class="th" x="493.5" y="110.0" text-anchor="start">2.43</text>
+<text class="tl" x="462.0" y="140.0" text-anchor="end">Column rotation  Pa²h/EIc</text>
+<rect x="470.0" y="126.0" width="97.0" height="20.0" rx="2" stroke-width="0.8" fill="#FAECE7" stroke="#993C1D"/>
+<text class="th" x="573.0" y="140.0" text-anchor="start">13.43</text>
+<text class="tl" x="462.0" y="170.0" text-anchor="end">Total</text>
+<rect x="470.0" y="156.0" width="114.5" height="20.0" rx="2" stroke-width="0.8" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text class="th" x="590.5" y="170.0" text-anchor="start">15.85</text>
+<rect x="300.0" y="200.0" width="370.0" height="220.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="312.0" y="222.0" text-anchor="start">Virtual work: δ = Σ ∫ M·m / EI dx</text>
+<text class="ts" x="312.0" y="239.0" text-anchor="start">  beam: M = −Px, m = −x over a = 3 m</text>
+<text class="ts" x="312.0" y="256.0" text-anchor="start">  column: M = Pa, m = a over h = 4 m</text>
+<text class="ts" x="312.0" y="273.0" text-anchor="start">  δ = Pa³/3EIb + Pa²h/EIc</text>
+<text class="ts" x="312.0" y="290.0" text-anchor="start">  = 2.43 + 13.43 = 15.85 mm</text>
+<text class="ts" x="312.0" y="307.0" text-anchor="start">Model: 15.88 mm (adds column shortening)</text>
+<text class="ts" x="312.0" y="324.0" text-anchor="start">Sway of the column top: 8.95 mm</text>
+<text class="ts" x="312.0" y="341.0" text-anchor="start"></text>
+<text class="ts" x="312.0" y="358.0" text-anchor="start">Column 6 m: 22.57 mm, 89% from the column</text>
+<text class="ts" x="312.0" y="375.0" text-anchor="start">Gross sections for illustration; deflection</text>
+<text class="ts" x="312.0" y="392.0" text-anchor="start">  checks use effective stiffness</text></svg>

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="560" viewBox="0 0 680 560" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Pinned, fixed and the real joint</title><desc>A 9 m girder carrying 41.0 kN/m shown three ways. Pinned ends: 415.3 kN·m at midspan. Fixed ends: 276.9 kN·m at the ends and 138.4 kN·m at midspan. With the real columns above and below (cracked stiffness, far ends fixed): 258.3 kN·m at the ends and 157.0 kN·m at midspan, 93% of full fixity.</desc><defs></defs><rect x="0" y="0" width="680" height="560" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Same girder, three support models (wu = 41.0 kN/m, 9 m)</text>
+<text class="th" x="70.0" y="56.0" text-anchor="start">Pinned ends</text>
+<rect x="70.0" y="86.0" width="360.0" height="8.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<polygon points="70.0,94.0 58.0,114.0 82.0,114.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<line x1="50.0" y1="118.0" x2="90.0" y2="118.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="430.0,94.0 418.0,109.0 442.0,109.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="424.0" cy="113.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="436.0" cy="113.0" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="410.0" y1="118.0" x2="450.0" y2="118.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="70.0,130.0 70.0,130.0 74.5,132.3 79.0,134.5 83.5,136.6 88.0,138.7 92.5,140.7 97.0,142.7 101.5,144.6 106.0,146.4 110.5,148.2 115.0,150.0 119.5,151.7 124.0,153.3 128.5,154.9 133.0,156.4 137.5,157.8 142.0,159.2 146.5,160.6 151.0,161.9 155.5,163.1 160.0,164.3 164.5,165.4 169.0,166.4 173.5,167.4 178.0,168.4 182.5,169.3 187.0,170.1 191.5,170.9 196.0,171.6 200.5,172.2 205.0,172.8 209.5,173.4 214.0,173.9 218.5,174.3 223.0,174.7 227.5,175.0 232.0,175.2 236.5,175.4 241.0,175.6 245.5,175.7 250.0,175.7 254.5,175.7 259.0,175.6 263.5,175.4 268.0,175.2 272.5,175.0 277.0,174.7 281.5,174.3 286.0,173.9 290.5,173.4 295.0,172.8 299.5,172.2 304.0,171.6 308.5,170.9 313.0,170.1 317.5,169.3 322.0,168.4 326.5,167.4 331.0,166.4 335.5,165.4 340.0,164.3 344.5,163.1 349.0,161.9 353.5,160.6 358.0,159.2 362.5,157.8 367.0,156.4 371.5,154.9 376.0,153.3 380.5,151.7 385.0,150.0 389.5,148.2 394.0,146.4 398.5,144.6 403.0,142.7 407.5,140.7 412.0,138.7 416.5,136.6 421.0,134.5 425.5,132.3 430.0,130.0 430.0,130.0" stroke-width="1" fill="#EEEDFE" stroke="#534AB7"/>
+<line x1="70.0" y1="130.0" x2="430.0" y2="130.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="tl" x="250.0" y="191.7" text-anchor="middle">415.3</text>
+<text class="th" x="70.0" y="196.0" text-anchor="start">Fixed ends</text>
+<rect x="70.0" y="226.0" width="360.0" height="8.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<line x1="70.0" y1="210.0" x2="70.0" y2="250.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="70.0" y1="212.0" x2="61.0" y2="221.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="70.0" y1="219.0" x2="61.0" y2="228.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="70.0" y1="226.0" x2="61.0" y2="235.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="70.0" y1="233.0" x2="61.0" y2="242.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="70.0" y1="240.0" x2="61.0" y2="249.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="70.0" y1="247.0" x2="61.0" y2="256.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="430.0" y1="210.0" x2="430.0" y2="250.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="430.0" y1="212.0" x2="439.0" y2="221.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="430.0" y1="219.0" x2="439.0" y2="228.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="430.0" y1="226.0" x2="439.0" y2="235.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="430.0" y1="233.0" x2="439.0" y2="242.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="430.0" y1="240.0" x2="439.0" y2="249.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="430.0" y1="247.0" x2="439.0" y2="256.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<polygon points="70.0,270.0 70.0,239.5 74.5,241.8 79.0,244.0 83.5,246.1 88.0,248.2 92.5,250.3 97.0,252.2 101.5,254.1 106.0,256.0 110.5,257.8 115.0,259.5 119.5,261.2 124.0,262.8 128.5,264.4 133.0,265.9 137.5,267.4 142.0,268.8 146.5,270.1 151.0,271.4 155.5,272.6 160.0,273.8 164.5,274.9 169.0,276.0 173.5,277.0 178.0,277.9 182.5,278.8 187.0,279.6 191.5,280.4 196.0,281.1 200.5,281.8 205.0,282.4 209.5,282.9 214.0,283.4 218.5,283.8 223.0,284.2 227.5,284.5 232.0,284.8 236.5,285.0 241.0,285.1 245.5,285.2 250.0,285.2 254.5,285.2 259.0,285.1 263.5,285.0 268.0,284.8 272.5,284.5 277.0,284.2 281.5,283.8 286.0,283.4 290.5,282.9 295.0,282.4 299.5,281.8 304.0,281.1 308.5,280.4 313.0,279.6 317.5,278.8 322.0,277.9 326.5,277.0 331.0,276.0 335.5,274.9 340.0,273.8 344.5,272.6 349.0,271.4 353.5,270.1 358.0,268.8 362.5,267.4 367.0,265.9 371.5,264.4 376.0,262.8 380.5,261.2 385.0,259.5 389.5,257.8 394.0,256.0 398.5,254.1 403.0,252.2 407.5,250.3 412.0,248.2 416.5,246.1 421.0,244.0 425.5,241.8 430.0,239.5 430.0,270.0" stroke-width="1" fill="#EEEDFE" stroke="#534AB7"/>
+<line x1="70.0" y1="270.0" x2="430.0" y2="270.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="tl" x="250.0" y="301.2" text-anchor="middle">138.4</text>
+<text class="tl halo" x="76.0" y="286.0" text-anchor="start">ends −276.9</text>
+<text class="th" x="110.0" y="338.0" text-anchor="start">Columns above and below</text>
+<rect x="70.0" y="396.0" width="360.0" height="8.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<rect x="63.0" y="356.0" width="14.0" height="40.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<rect x="63.0" y="404.0" width="14.0" height="40.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<line x1="56.0" y1="356.0" x2="84.0" y2="356.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="56.0" y1="444.0" x2="84.0" y2="444.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<rect x="423.0" y="356.0" width="14.0" height="40.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<rect x="423.0" y="404.0" width="14.0" height="40.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<line x1="416.0" y1="356.0" x2="444.0" y2="356.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="416.0" y1="444.0" x2="444.0" y2="444.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<polygon points="70.0,480.0 70.0,451.6 74.5,453.8 79.0,456.0 83.5,458.2 88.0,460.3 92.5,462.3 97.0,464.3 101.5,466.2 106.0,468.0 110.5,469.8 115.0,471.6 119.5,473.3 124.0,474.9 128.5,476.5 133.0,478.0 137.5,479.4 142.0,480.8 146.5,482.2 151.0,483.5 155.5,484.7 160.0,485.9 164.5,487.0 169.0,488.0 173.5,489.0 178.0,490.0 182.5,490.8 187.0,491.7 191.5,492.4 196.0,493.2 200.5,493.8 205.0,494.4 209.5,495.0 214.0,495.4 218.5,495.9 223.0,496.2 227.5,496.6 232.0,496.8 236.5,497.0 241.0,497.2 245.5,497.2 250.0,497.3 254.5,497.2 259.0,497.2 263.5,497.0 268.0,496.8 272.5,496.6 277.0,496.2 281.5,495.9 286.0,495.4 290.5,495.0 295.0,494.4 299.5,493.8 304.0,493.2 308.5,492.4 313.0,491.7 317.5,490.8 322.0,490.0 326.5,489.0 331.0,488.0 335.5,487.0 340.0,485.9 344.5,484.7 349.0,483.5 353.5,482.2 358.0,480.8 362.5,479.4 367.0,478.0 371.5,476.5 376.0,474.9 380.5,473.3 385.0,471.6 389.5,469.8 394.0,468.0 398.5,466.2 403.0,464.3 407.5,462.3 412.0,460.3 416.5,458.2 421.0,456.0 425.5,453.8 430.0,451.6 430.0,480.0" stroke-width="1" fill="#EEEDFE" stroke="#534AB7"/>
+<line x1="70.0" y1="480.0" x2="430.0" y2="480.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="tl" x="250.0" y="513.3" text-anchor="middle">157.0</text>
+<text class="tl halo" x="76.0" y="496.0" text-anchor="start">ends −258.3</text>
+<rect x="458.0" y="70.0" width="212.0" height="250.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="470.0" y="94.0" text-anchor="start">Joint restraint</text>
+<text class="ts" x="470.0" y="111.0" text-anchor="start">  Σ kcol / (Σ kcol + 2EIb/L)</text>
+<text class="ts" x="470.0" y="128.0" text-anchor="start">  = 0.93</text>
+<text class="ts" x="470.0" y="145.0" text-anchor="start"></text>
+<text class="ts" x="470.0" y="162.0" text-anchor="start">Stiffness (ACI 318-19</text>
+<text class="ts" x="470.0" y="179.0" text-anchor="start">  Table 6.6.3.1.1(a)):</text>
+<text class="ts" x="470.0" y="196.0" text-anchor="start">  columns 0.70 Ig, beam 0.35 Ig</text>
+<text class="ts" x="470.0" y="213.0" text-anchor="start"></text>
+<text class="ts" x="470.0" y="230.0" text-anchor="start">Far ends of columns fixed</text>
+<text class="ts" x="470.0" y="247.0" text-anchor="start">  (ACI 318-19 6.3.1.2)</text>
+<text class="ts" x="470.0" y="264.0" text-anchor="start"></text>
+<text class="ts" x="470.0" y="281.0" text-anchor="start">Moments in kN·m;</text>
+<text class="ts" x="470.0" y="298.0" text-anchor="start">  sagging drawn below</text>
+<rect x="458.0" y="334.0" width="212.0" height="130.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="470.0" y="356.0" text-anchor="start">Roof (column below only):</text>
+<text class="ts" x="470.0" y="373.0" text-anchor="start">  end 242.0, midspan 173.3</text>
+<text class="ts" x="470.0" y="390.0" text-anchor="start"></text>
+<text class="ts" x="470.0" y="407.0" text-anchor="start">Pinned: the column gets no</text>
+<text class="ts" x="470.0" y="424.0" text-anchor="start">  moment; fixed: midspan 12%</text>
+<text class="ts" x="470.0" y="441.0" text-anchor="start">  below the real 157.0</text></svg>

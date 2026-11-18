@@ -16,7 +16,7 @@ How the tasks are designed, and where the human expert belongs in the process: [
 
 ## Review notebook
 
-[A Review Notebook for Civil Engineers to Evaluate Frontier Models](docs/review-notebook/README.md): structural fundamentals module by module, each section with a worked example and figure, a practice problem, a trap to test on AI models and the check a review agent should run. Module 1 (load path and static equilibrium) and Module 2 (loads and load combinations, ASCE 7-22 and Eurocodes) are written; their tasks are `tasks/str-lp-*` and `tasks/str-ld-*`, eight each.
+[A Review Notebook for Civil Engineers to Evaluate Frontier Models](docs/review-notebook/README.md): structural fundamentals module by module, each section with a worked example and figure, a practice problem, a trap to test on AI models and the check a review agent should run. Module 1 (load path and static equilibrium), Module 2 (loads and load combinations, ASCE 7-22 and Eurocodes) and Module 3 (structural analysis, ACI 318-19 and Eurocodes) are written; their tasks are `tasks/str-lp-*`, `tasks/str-ld-*` and `tasks/str-an-*`, eight each.
 
 ## Task pipeline dashboard
 

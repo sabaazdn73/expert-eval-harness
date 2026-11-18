@@ -1,0 +1,38 @@
+{
+  "id": "str-an-joint-restraint",
+  "domain": "structural",
+  "title": "Girder end moments with the real columns above and below",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "end_moment_kNm": "number (hogging at the column centreline, magnitude)",
+    "midspan_moment_kNm": "number"
+  },
+  "checks": [
+    {
+      "field": "end_moment_kNm",
+      "type": "number",
+      "expected": 258.3,
+      "tol_abs": 2.0
+    },
+    {
+      "field": "midspan_moment_kNm",
+      "type": "number",
+      "expected": 157.0,
+      "tol_abs": 2.0
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should use 0.70 Ig for the columns and 0.35 Ig for the girder, share the fixed-end moment at each joint between the two columns and the girder by stiffness (the girder at 2EI/L for the symmetric case), and not treat the ends as pinned or fully fixed."
+    }
+  ],
+  "expert_notes": "FEM = 41.02 x 81/12 = 276.9 kN.m. Columns: 2 x 4E(0.70 x 0.005208)/3.75 = 7.778e-3 E; girder (symmetric) 2E(0.35 x 0.0072)/9 = 0.560e-3 E. End moment 276.9 x 7.778/8.338 = 258.3; midspan 415.3 - 258.3 = 157.0. Pinned ends give 415.3 at midspan and no column moment; fixed ends 276.9 and 138.4 (midspan 12% low). Gross stiffness for all members gives 242.0 / 173.3, outside the tolerance: the cracked factors matter here. The face moment (not asked) would be 258.3 - 184.6 x 0.25 + 41.02 x 0.25^2/2 = 213.4.",
+  "mock_answer": {
+    "end_moment_kNm": 258.3,
+    "midspan_moment_kNm": 157.0
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 3: Structural analysis (docs/review-notebook/)"
+}

@@ -20,7 +20,7 @@ Code clauses are pointers to check in the edition in force. No code text is repr
 |---|---|---|---|
 | 1 | [Load path and static equilibrium](module-01-load-path.md) | Written, 31 sections with 34 figures | [`str-lp-*`](../../tasks/) (8) |
 | 2 | [Loads and load combinations](module-02-loads.md) | Written, 28 sections with 28 figures (ASCE 7-22 and Eurocodes) | [`str-ld-*`](../../tasks/) (8) |
-| 3 | Structural analysis | Planned | |
+| 3 | [Structural analysis](module-03-analysis.md) | Written, 23 sections with 23 figures (ACI 318-19 and Eurocodes) | [`str-an-*`](../../tasks/) (8) |
 | 4 | Section behaviour | Planned | |
 | 5 | Reinforced concrete design | Planned | |
 | 6 | Stability | Planned | |

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" viewBox="0 0 680 520" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Influence lines for a two-span runway girder</title><desc>Influence lines for the middle reaction RB and the moment over B of two 9 m spans. Two wheels of 112.5 kN at 3.6 m: RB is largest, 212.4 kN, with the wheels at 7.2 and 10.8 m, against 180.0 kN if the spans are treated as simple. The hogging moment over B is largest, 160.9 kN·m, with both wheels in one span near 0.58L.</desc><defs><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="520" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Unit load moving across two 9 m spans (Müller-Breslau)</text>
+<line x1="80.0" y1="200.0" x2="640.0" y2="200.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="74.0" y="204.0" text-anchor="end">0.0</text>
+<line x1="80.0" y1="130.0" x2="640.0" y2="130.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="74.0" y="134.0" text-anchor="end">0.5</text>
+<line x1="80.0" y1="60.0" x2="640.0" y2="60.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="74.0" y="64.0" text-anchor="end">1.0</text>
+<line x1="80.0" y1="60.0" x2="80.0" y2="200.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="80.0" y="216.0" text-anchor="middle">0</text>
+<line x1="173.3" y1="60.0" x2="173.3" y2="200.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="173.3" y="216.0" text-anchor="middle">3</text>
+<line x1="266.7" y1="60.0" x2="266.7" y2="200.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="266.7" y="216.0" text-anchor="middle">6</text>
+<line x1="360.0" y1="60.0" x2="360.0" y2="200.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="360.0" y="216.0" text-anchor="middle">9</text>
+<line x1="453.3" y1="60.0" x2="453.3" y2="200.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="453.3" y="216.0" text-anchor="middle">12</text>
+<line x1="546.7" y1="60.0" x2="546.7" y2="200.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="546.7" y="216.0" text-anchor="middle">15</text>
+<line x1="640.0" y1="60.0" x2="640.0" y2="200.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="640.0" y="216.0" text-anchor="middle">18</text>
+<line x1="80.0" y1="200.0" x2="640.0" y2="200.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="80.0" y1="60.0" x2="80.0" y2="200.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<text class="ts" x="34.0" y="130.0" text-anchor="middle" transform="rotate(-90 34.0 130.0)">RB per unit load</text>
+<polyline points="80.0,200.0 89.3,193.0 98.7,186.0 108.0,179.1 117.3,172.2 126.7,165.3 136.0,158.6 145.3,151.9 154.7,145.3 164.0,138.9 173.3,132.6 182.7,126.4 192.0,120.5 201.3,114.7 210.7,109.1 220.0,103.8 229.3,98.6 238.7,93.7 248.0,89.1 257.3,84.8 266.7,80.7 276.0,77.0 285.3,73.6 294.7,70.5 304.0,67.8 313.3,65.5 322.7,63.6 332.0,62.0 341.3,60.9 350.7,60.2 360.0,60.0 369.3,60.2 378.7,60.9 388.0,62.0 397.3,63.6 406.7,65.5 416.0,67.8 425.3,70.5 434.7,73.6 444.0,77.0 453.3,80.7 462.7,84.8 472.0,89.1 481.3,93.7 490.7,98.6 500.0,103.8 509.3,109.1 518.7,114.7 528.0,120.5 537.3,126.4 546.7,132.6 556.0,138.9 565.3,145.3 574.7,151.9 584.0,158.6 593.3,165.3 602.7,172.2 612.0,179.1 621.3,186.0 630.7,193.0 640.0,200.0" stroke-width="1.8" fill="none" stroke="#0F6E56"/>
+<line x1="304.0" y1="46.0" x2="304.0" y2="62.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="416.0" y1="46.0" x2="416.0" y2="62.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="tl halo" x="440.9" y="52.0" text-anchor="start">RB max 212.4 kN</text>
+<text class="ts halo" x="440.9" y="68.0" text-anchor="start">wheels at 7.2 and 10.8 m</text>
+<line x1="80.0" y1="390.0" x2="640.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="74.0" y="394.0" text-anchor="end">−0.90</text>
+<line x1="80.0" y1="320.0" x2="640.0" y2="320.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="74.0" y="324.0" text-anchor="end">−0.45</text>
+<line x1="80.0" y1="250.0" x2="640.0" y2="250.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="74.0" y="254.0" text-anchor="end">0.00</text>
+<line x1="80.0" y1="250.0" x2="80.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="80.0" y="406.0" text-anchor="middle">0</text>
+<line x1="173.3" y1="250.0" x2="173.3" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="173.3" y="406.0" text-anchor="middle">3</text>
+<line x1="266.7" y1="250.0" x2="266.7" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="266.7" y="406.0" text-anchor="middle">6</text>
+<line x1="360.0" y1="250.0" x2="360.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="360.0" y="406.0" text-anchor="middle">9</text>
+<line x1="453.3" y1="250.0" x2="453.3" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="453.3" y="406.0" text-anchor="middle">12</text>
+<line x1="546.7" y1="250.0" x2="546.7" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="546.7" y="406.0" text-anchor="middle">15</text>
+<line x1="640.0" y1="250.0" x2="640.0" y2="390.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="640.0" y="406.0" text-anchor="middle">18</text>
+<line x1="80.0" y1="390.0" x2="640.0" y2="390.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="80.0" y1="250.0" x2="80.0" y2="390.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<text class="ts" x="360.0" y="424.0" text-anchor="middle">Position of the unit load (m)</text>
+<text class="ts" x="34.0" y="320.0" text-anchor="middle" transform="rotate(-90 34.0 320.0)">MB per unit load (m)</text>
+<polyline points="80.0,250.0 89.3,261.7 98.7,273.2 108.0,284.6 117.3,295.8 126.7,306.7 136.0,317.2 145.3,327.2 154.7,336.7 164.0,345.5 173.3,353.7 182.7,361.1 192.0,367.6 201.3,373.2 210.7,377.8 220.0,381.3 229.3,383.6 238.7,384.6 248.0,384.4 257.3,382.8 266.7,379.6 276.0,374.9 285.3,368.6 294.7,360.6 304.0,350.8 313.3,339.1 322.7,325.5 332.0,309.9 341.3,292.1 350.7,272.2 360.0,250.0 369.3,272.2 378.7,292.1 388.0,309.9 397.3,325.5 406.7,339.1 416.0,350.8 425.3,360.6 434.7,368.6 444.0,374.9 453.3,379.6 462.7,382.8 472.0,384.4 481.3,384.6 490.7,383.6 500.0,381.2 509.3,377.8 518.7,373.2 528.0,367.6 537.3,361.1 546.7,353.7 556.0,345.5 565.3,336.7 574.7,327.2 584.0,317.2 593.3,306.7 602.7,295.8 612.0,284.6 621.3,273.2 630.7,261.7 640.0,250.0" stroke-width="1.8" fill="none" stroke="#534AB7"/>
+<circle cx="241.8" cy="384.7" r="3.5" fill="#534AB7" stroke="#534AB7" stroke-width="1"/>
+<line x1="241.8" y1="384.7" x2="148.4" y2="285.1" stroke="#534AB7" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="tl halo" x="92.4" y="281.1" text-anchor="start">−0.866 m at L/√3 = 5.20 m</text>
+<rect x="80.0" y="452.0" width="590.0" height="50.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="92.0" y="472.0" text-anchor="start">Two wheels of 112.5 kN at 3.6 m: RB 212.4 kN (simple spans would give 180.0 kN),</text>
+<text class="ts" x="92.0" y="490.0" text-anchor="start">hogging over B 160.9 kN·m, span moment at 0.4L 260.8 kN·m</text></svg>

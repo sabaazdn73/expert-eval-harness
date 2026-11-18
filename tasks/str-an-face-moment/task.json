@@ -1,0 +1,46 @@
+{
+  "id": "str-an-face-moment",
+  "domain": "structural",
+  "title": "Support moment at the centreline, at the face, and with the EN reduction",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "M_centreline_kNm": "number (magnitude)",
+    "M_face_kNm": "number (magnitude)",
+    "M_EN_reduced_kNm": "number (magnitude)"
+  },
+  "checks": [
+    {
+      "field": "M_centreline_kNm",
+      "type": "number",
+      "expected": 415.3,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "M_face_kNm",
+      "type": "number",
+      "expected": 358.9,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "M_EN_reduced_kNm",
+      "type": "number",
+      "expected": 386.5,
+      "tol_abs": 1.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should find the face moment from the centreline moment, the shear at the support and the load over the half-width, and use dM = FEd,sup x t/8 with the full support reaction for the EN case."
+    }
+  ],
+  "expert_notes": "MB = wL^2/8 = 415.3; VB = 0.625wL = 230.7 kN each side. Face: 415.3 - 230.7 x 0.25 + 41.02 x 0.25^2/2 = 358.9 (ACI 318-19 9.4.2.1). EN 5.3.2.2(4): F = 461.5 kN, dM = 461.5 x 0.5/8 = 28.8, M = 386.5. Using V x c/2 without the load term gives 357.6 (inside the tolerance); using half the reaction in the EN formula gives 400.9.",
+  "mock_answer": {
+    "M_centreline_kNm": 415.3,
+    "M_face_kNm": 358.9,
+    "M_EN_reduced_kNm": 386.5
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 3: Structural analysis (docs/review-notebook/)"
+}

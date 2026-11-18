@@ -1,0 +1,3 @@
+A reinforced concrete beam is continuous over three spans of 8, 10 and 8 m with pinned end supports and carries a factored load of 40 kN/m on all spans. A linear elastic analysis gives a hogging moment of 328.7 kN·m at each interior support.
+
+At the interior supports the section is 400 mm wide with an effective depth of 540 mm, f'c = 30 MPa, fy = 420 MPa, and four 25 mm bars in tension (As = 1,963 mm²). Using ACI 318-19, please find the net tensile strain εt in the support section, the largest redistribution permitted, the redistributed support moment, and the resulting sagging moment at the middle of the 10 m span.

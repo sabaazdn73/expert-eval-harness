@@ -1,0 +1,54 @@
+{
+  "id": "str-an-redistribution",
+  "domain": "structural",
+  "title": "Moment redistribution at an interior support (ACI 318-19 6.6.5)",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "eps_t": "number",
+    "redistribution_pct": "number",
+    "M_support_kNm": "number (magnitude)",
+    "M_middle_span_kNm": "number"
+  },
+  "checks": [
+    {
+      "field": "eps_t",
+      "type": "number",
+      "expected": 0.01368,
+      "tol_abs": 0.0002
+    },
+    {
+      "field": "redistribution_pct",
+      "type": "number",
+      "expected": 13.68,
+      "tol_abs": 0.2
+    },
+    {
+      "field": "M_support_kNm",
+      "type": "number",
+      "expected": 283.7,
+      "tol_abs": 0.6
+    },
+    {
+      "field": "M_middle_span_kNm",
+      "type": "number",
+      "expected": 216.3,
+      "tol_abs": 0.6
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should find c from the equivalent stress block with beta1 for f'c = 30 MPa (about 0.83), check eps_t >= 0.0075, take the lesser of 1000 eps_t percent and 20%, and restore equilibrium in the spans after reducing the support moment."
+    }
+  ],
+  "expert_notes": "a = 1,963 x 420/(0.85 x 30 x 400) = 80.8 mm; beta1 = 0.832 (30 MPa = 4,351 psi); c = 97.1 mm; eps_t = 0.003(540 - 97.1)/97.1 = 0.0137 >= 0.0075. Limit min(13.7%, 20%) = 13.7%. MB = 328.7 x 0.863 = 283.7. Middle span 40 x 100/8 - 283.7 = 216.3 (from 171.3). Taking 20% gives 263.0 / 237.0. The SI expression for beta1 (0.836) gives 0.01375, 13.75%, 283.5 and 216.5 (accepted); beta1 = 0.85 gives 0.01403, 14.0%, 282.6 and 217.4 (rejected). EN 1992-1-1 with xu/d = 0.18 and class B steel would allow 30%.",
+  "mock_answer": {
+    "eps_t": 0.01368,
+    "redistribution_pct": 13.68,
+    "M_support_kNm": 283.7,
+    "M_middle_span_kNm": 216.3
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 3: Structural analysis (docs/review-notebook/)"
+}

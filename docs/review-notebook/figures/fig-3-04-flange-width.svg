@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="420" viewBox="0 0 680 420" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Effective flange width of a T-beam</title><desc>Floor section with 300 by 450 mm beams at 3 m and a 200 mm slab. ACI 318-19 Table 6.3.2.1 gives 1.075 m each side of the web, bf = 2.45 m. EN 1992-1-1 5.3.2.1 gives beff = 2.10 m in an interior span and 1.38 m over a support. The T-section is about 2.3 times as stiff as the web alone.</desc><defs><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="420" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Floor section: beams 300 × 450 at 3 m, slab 200 mm, span 9 m</text>
+<rect x="30.0" y="120.0" width="620.0" height="14.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<rect x="79.5" y="134.0" width="21.0" height="17.5" rx="0" stroke-width="0.6" class="c-gray"/>
+<rect x="289.5" y="134.0" width="21.0" height="17.5" rx="0" stroke-width="0.6" class="c-gray"/>
+<rect x="499.5" y="134.0" width="21.0" height="17.5" rx="0" stroke-width="0.6" class="c-gray"/>
+<line x1="214.2" y1="94.0" x2="385.8" y2="94.0" stroke="#534AB7" stroke-width="3" stroke-linecap="butt"/>
+<text class="th" x="300.0" y="86.0" text-anchor="middle" style="fill:#534AB7">ACI bf = 2.45 m</text>
+<line x1="226.5" y1="177.5" x2="373.5" y2="177.5" stroke="#0F6E56" stroke-width="3" stroke-linecap="butt"/>
+<text class="th" x="300.0" y="195.5" text-anchor="middle" style="fill:#0F6E56">EN beff = 2.10 m (span)</text>
+<line x1="251.7" y1="217.5" x2="348.3" y2="217.5" stroke="#854F0B" stroke-width="3" stroke-linecap="butt"/>
+<text class="th" x="300.0" y="235.5" text-anchor="middle" style="fill:#854F0B">1.38 m over a support</text>
+<line x1="92.0" y1="70.0" x2="298.0" y2="70.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="90.0" y1="65.0" x2="90.0" y2="75.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="300.0" y1="65.0" x2="300.0" y2="75.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="195.0" y="65.0" text-anchor="middle">3.0 m</text>
+<rect x="30.0" y="300.0" width="300.0" height="104.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="42.0" y="322.0" text-anchor="start">ACI 318-19 Table 6.3.2.1, each side:</text>
+<text class="ts" x="42.0" y="339.0" text-anchor="start">  least of 8h = 1.60, sw/2 = 1.35, ln/8 = 1.075</text>
+<text class="ts" x="42.0" y="356.0" text-anchor="start">EN 1992-1-1 5.3.2.1: beff,i = 0.2bi + 0.1l0</text>
+<text class="ts" x="42.0" y="373.0" text-anchor="start">  l0 = 0.7 × 9 = 6.3 m: 0.27 + 0.63 = 0.90 m</text>
+<text class="ts" x="42.0" y="390.0" text-anchor="start">  over support l0 = 0.15 × 18 = 2.7 m: 0.54 m</text>
+<rect x="350.0" y="300.0" width="320.0" height="104.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="362.0" y="322.0" text-anchor="start">I web alone 2278 × 10⁻⁶ m⁴</text>
+<text class="ts" x="362.0" y="340.0" text-anchor="start">I T-beam (ACI) 5317: ×2.33</text>
+<text class="ts" x="362.0" y="358.0" text-anchor="start">I T-beam (EN span) 5012: ×2.20</text>
+<text class="ts" x="362.0" y="376.0" text-anchor="start">Edge beam, one side: ACI 1.02 m, EN 1.20 m</text></svg>

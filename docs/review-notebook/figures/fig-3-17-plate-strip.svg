@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="440" viewBox="0 0 680 440" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Reading plate results: peak against strip average</title><desc>Simply supported square plate 7.5 m, 13.3 kN/m², Poisson ratio 0.2 (Navier series). Bending moment mx across the width at midspan: peak 33.07 kN·m/m at the centre, average 21.70 over the full width and 30.14 over the middle half. Designing the full width for the peak adds 52%. The integral is 23% of a one-way slab: load near each edge goes to that edge, and twisting carries much of the rest.</desc><defs></defs><rect x="0" y="0" width="680" height="440" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">mx across the width at midspan (kN·m per m)</text>
+<line x1="90.0" y1="340.0" x2="470.0" y2="340.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="344.0" text-anchor="end">0</text>
+<line x1="90.0" y1="262.2" x2="470.0" y2="262.2" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="266.2" text-anchor="end">10</text>
+<line x1="90.0" y1="184.4" x2="470.0" y2="184.4" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="188.4" text-anchor="end">20</text>
+<line x1="90.0" y1="106.7" x2="470.0" y2="106.7" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="110.7" text-anchor="end">30</text>
+<line x1="90.0" y1="60.0" x2="90.0" y2="340.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="90.0" y="356.0" text-anchor="middle">0</text>
+<line x1="185.0" y1="60.0" x2="185.0" y2="340.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="185.0" y="356.0" text-anchor="middle">1.875</text>
+<line x1="280.0" y1="60.0" x2="280.0" y2="340.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="280.0" y="356.0" text-anchor="middle">3.75</text>
+<line x1="375.0" y1="60.0" x2="375.0" y2="340.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="375.0" y="356.0" text-anchor="middle">5.625</text>
+<line x1="470.0" y1="60.0" x2="470.0" y2="340.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="470.0" y="356.0" text-anchor="middle">7.5</text>
+<line x1="90.0" y1="340.0" x2="470.0" y2="340.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="90.0" y1="60.0" x2="90.0" y2="340.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<text class="ts" x="280.0" y="374.0" text-anchor="middle">Position across the plate (m)</text>
+<text class="ts" x="44.0" y="200.0" text-anchor="middle" transform="rotate(-90 44.0 200.0)">mx (kN·m/m)</text>
+<polygon points="90.0,340.0 90.0,340.0 96.3,324.4 102.7,309.2 109.0,294.4 115.3,279.9 121.7,265.8 128.0,252.2 134.3,238.9 140.7,226.2 147.0,213.9 153.3,202.1 159.7,190.7 166.0,179.9 172.3,169.7 178.7,159.9 185.0,150.7 191.3,142.1 197.7,134.0 204.0,126.5 210.3,119.6 216.7,113.2 223.0,107.5 229.3,102.3 235.7,97.7 242.0,93.8 248.3,90.4 254.7,87.7 261.0,85.5 267.3,84.0 273.7,83.1 280.0,82.8 286.3,83.1 292.7,84.0 299.0,85.5 305.3,87.7 311.7,90.4 318.0,93.8 324.3,97.7 330.7,102.3 337.0,107.5 343.3,113.2 349.7,119.6 356.0,126.5 362.3,134.0 368.7,142.1 375.0,150.7 381.3,159.9 387.7,169.7 394.0,179.9 400.3,190.7 406.7,202.1 413.0,213.9 419.3,226.2 425.7,238.9 432.0,252.2 438.3,265.8 444.7,279.9 451.0,294.4 457.3,309.2 463.7,324.4 470.0,340.0 470.0,340.0" stroke-width="1.6" fill="#EEEDFE" stroke="#534AB7"/>
+<line x1="90.0" y1="171.2" x2="470.0" y2="171.2" stroke="#0F6E56" stroke-width="1.4" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<line x1="185.0" y1="105.6" x2="375.0" y2="105.6" stroke="#993C1D" stroke-width="1.4" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<line x1="90.0" y1="82.8" x2="470.0" y2="82.8" stroke="#5F5E5A" stroke-width="0.8" stroke-linecap="butt" stroke-dasharray="2 3"/>
+<text class="tl halo" x="95.1" y="76.8" text-anchor="start">peak 33.07</text>
+<text class="tl halo" x="95.1" y="165.2" text-anchor="start" style="fill:#0F6E56">full-width average 21.70</text>
+<text class="tl halo" x="280.0" y="121.6" text-anchor="middle" style="fill:#993C1D">middle-half average 30.14</text>
+<rect x="490.0" y="60.0" width="180.0" height="340.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="502.0" y="84.0" text-anchor="start">Peak = 0.0442 q a²</text>
+<text class="ts" x="502.0" y="101.0" text-anchor="start">  (ν = 0.2; 0.0479 for 0.3)</text>
+<text class="ts" x="502.0" y="118.0" text-anchor="start"></text>
+<text class="ts" x="502.0" y="135.0" text-anchor="start">Integrated across 7.5 m:</text>
+<text class="ts" x="502.0" y="152.0" text-anchor="start">  162.8 kN·m</text>
+<text class="ts" x="502.0" y="169.0" text-anchor="start">Peak × width: 248.0</text>
+<text class="ts" x="502.0" y="186.0" text-anchor="start">  (+52%)</text>
+<text class="ts" x="502.0" y="203.0" text-anchor="start"></text>
+<text class="ts" x="502.0" y="220.0" text-anchor="start">One-way slab wL²/8:</text>
+<text class="ts" x="502.0" y="237.0" text-anchor="start">  93.5 kN·m/m; the plate</text>
+<text class="ts" x="502.0" y="254.0" text-anchor="start">  integral is 23% of that:</text>
+<text class="ts" x="502.0" y="271.0" text-anchor="start">  edges, twisting and corner</text>
+<text class="ts" x="502.0" y="288.0" text-anchor="start">  forces carry the rest</text>
+<text class="ts" x="502.0" y="305.0" text-anchor="start"></text>
+<text class="ts" x="502.0" y="322.0" text-anchor="start">Design strips: integrate</text>
+<text class="ts" x="502.0" y="339.0" text-anchor="start">over the strip width;</text>
+<text class="ts" x="502.0" y="356.0" text-anchor="start">peaks over columns grow</text>
+<text class="ts" x="502.0" y="373.0" text-anchor="start">with mesh refinement</text></svg>

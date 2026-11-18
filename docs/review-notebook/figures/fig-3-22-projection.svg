@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="480" viewBox="0 0 680 480" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Load direction and projection on a sloping member</title><desc>Rafter spanning 10 m on plan at 30 degrees, frames at 6 m. Snow 0.84 kN/m² on plan gives 5.04 kN/m per metre on plan, 50.4 kN in total; applied per metre of the 11.55 m sloping length it becomes 58.2 kN (+15.5%). Self-weight 3 kN/m along the member is 34.6 kN; applied per metre on plan it becomes 30.0 kN (−13.4%).</desc><defs><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="480" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Rafter 10 m on plan at 30°, frames at 6 m</text>
+<line x1="60.0" y1="290.0" x2="360.0" y2="116.8" stroke="#534AB7" stroke-width="5" stroke-linecap="butt"/>
+<polygon points="60.0,292.0 48.0,312.0 72.0,312.0" stroke-width="1" fill="none" stroke="#73726c"/>
+<line x1="40.0" y1="316.0" x2="80.0" y2="316.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<polygon points="360.0,118.8 348.0,133.8 372.0,133.8" stroke-width="1" fill="none" stroke="#73726c"/>
+<circle cx="354.0" cy="137.8" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<circle cx="366.0" cy="137.8" r="3.5" fill="none" stroke="#73726c" stroke-width="1"/>
+<line x1="340.0" y1="142.8" x2="380.0" y2="142.8" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="62.0" y1="340.0" x2="358.0" y2="340.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="60.0" y1="335.0" x2="60.0" y2="345.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="360.0" y1="335.0" x2="360.0" y2="345.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="210.0" y="335.0" text-anchor="middle">10 m on plan</text>
+<text class="ts" x="130.0" y="274.0" text-anchor="start">30°</text>
+<line x1="76.7" y1="220.4" x2="76.7" y2="274.4" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="110.0" y1="201.1" x2="110.0" y2="255.1" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="143.3" y1="181.9" x2="143.3" y2="235.9" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="176.7" y1="162.6" x2="176.7" y2="216.6" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="210.0" y1="143.4" x2="210.0" y2="197.4" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="243.3" y1="124.2" x2="243.3" y2="178.2" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="276.7" y1="104.9" x2="276.7" y2="158.9" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="310.0" y1="85.7" x2="310.0" y2="139.7" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="343.3" y1="66.4" x2="343.3" y2="120.4" stroke="#D85A30" stroke-width="1" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<line x1="60.0" y1="230.0" x2="360.0" y2="56.8" stroke="#D85A30" stroke-width="1" stroke-linecap="butt"/>
+<text class="th" x="30.0" y="70.0" text-anchor="start" style="fill:#D85A30">snow: per metre on plan</text>
+<rect x="410.0" y="90.0" width="260.0" height="210.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="422.0" y="114.0" text-anchor="start">Sloping length 11.55 m</text>
+<text class="ts" x="422.0" y="131.0" text-anchor="start"></text>
+<text class="ts" x="422.0" y="148.0" text-anchor="start">Snow 0.84 × 6 = 5.04 kN/m on plan</text>
+<text class="ts" x="422.0" y="165.0" text-anchor="start">  total 50.4 kN</text>
+<text class="ts" x="422.0" y="182.0" text-anchor="start">  as 5.04 per sloping m: 58.2 kN</text>
+<text class="ts" x="422.0" y="199.0" text-anchor="start">  (+15.5%)</text>
+<text class="ts" x="422.0" y="216.0" text-anchor="start"></text>
+<text class="ts" x="422.0" y="233.0" text-anchor="start">Self-weight 3 kN/m along the</text>
+<text class="ts" x="422.0" y="250.0" text-anchor="start">  member: 34.6 kN</text>
+<text class="ts" x="422.0" y="267.0" text-anchor="start">  as 3 per m on plan: 30.0 kN</text>
+<text class="ts" x="422.0" y="284.0" text-anchor="start">  (−13.4%)</text>
+<rect x="30.0" y="360.0" width="640.0" height="104.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="42.0" y="382.0" text-anchor="start">Snow, roof live load and rain are per area on plan; self-weight and cladding per length</text>
+<text class="ts" x="42.0" y="401.0" text-anchor="start">  along the member. Programs offer global, projected and local directions.</text>
+<text class="ts" x="42.0" y="420.0" text-anchor="start">Check: total vertical reaction against the plan load. At 45° the error is 41.4%.</text>
+<text class="ts" x="42.0" y="439.0" text-anchor="start">Wind acts normal to the surface: local direction, per sloping length.</text></svg>

@@ -1,0 +1,54 @@
+{
+  "id": "str-an-ddm",
+  "domain": "structural",
+  "title": "Flat plate moments by the direct design method",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "Mo_kNm": "number",
+    "M_end_span_interior_negative_kNm": "number",
+    "M_end_span_exterior_negative_kNm": "number",
+    "M_column_strip_interior_span_negative_kNm": "number"
+  },
+  "checks": [
+    {
+      "field": "Mo_kNm",
+      "type": "number",
+      "expected": 611.0,
+      "tol_abs": 3.0
+    },
+    {
+      "field": "M_end_span_interior_negative_kNm",
+      "type": "number",
+      "expected": 427.7,
+      "tol_abs": 2.5
+    },
+    {
+      "field": "M_end_span_exterior_negative_kNm",
+      "type": "number",
+      "expected": 158.9,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "M_column_strip_interior_span_negative_kNm",
+      "type": "number",
+      "expected": 297.8,
+      "tol_abs": 2.0
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should check the limits of the method (including L/D <= 2), use the clear span ln = 7.0 m in Mo = qu l2 ln^2/8, use the flat-plate end-span coefficients 0.26, 0.52 and 0.70 without edge beams and 0.65 / 0.35 in interior spans, and give 75% of the interior negative moment to the column strip; it should not cite ACI 318-19 clauses for the coefficients."
+    }
+  ],
+  "expert_notes": "Limits met: >= 3 spans, equal spans, ratio 1, no offset, uniform load, L/D = 0.32. Mo = 13.3 x 7.5 x 7.0^2/8 = 611.0 kN.m. End span: 0.70Mo = 427.7 (interior negative), 0.26Mo = 158.9 (exterior negative), 0.52Mo = 317.7 positive. Interior span: 0.65Mo = 397.1; column strip 75% = 297.8 (3.75 m strip). Centre-to-centre span gives Mo = 701.4 (+14.8%), outside the tolerance.",
+  "mock_answer": {
+    "Mo_kNm": 611.0,
+    "M_end_span_interior_negative_kNm": 427.7,
+    "M_end_span_exterior_negative_kNm": 158.9,
+    "M_column_strip_interior_span_negative_kNm": 297.8
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 3: Structural analysis (docs/review-notebook/)"
+}

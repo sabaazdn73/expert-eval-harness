@@ -1,0 +1,53 @@
+{
+  "id": "str-an-aci-coefficients",
+  "domain": "structural",
+  "title": "ACI 318-19 approximate moments for a four-span girder",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "method_applies": "boolean",
+    "M_exterior_support_kNm": "number (magnitude)",
+    "M_end_span_kNm": "number",
+    "M_first_interior_kNm": "number (magnitude)"
+  },
+  "checks": [
+    {
+      "field": "method_applies",
+      "type": "bool",
+      "expected": true
+    },
+    {
+      "field": "M_exterior_support_kNm",
+      "type": "number",
+      "expected": 185.2,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "M_end_span_kNm",
+      "type": "number",
+      "expected": 211.7,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "M_first_interior_kNm",
+      "type": "number",
+      "expected": 296.4,
+      "tol_abs": 2.0
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should check all five conditions of 6.5.1 (including L <= 3D with unfactored loads), use the clear span ln = 8.5 m, and use wu ln^2/16 (built integrally with a column), /14 (end span, discontinuous end integral with support) and /10 (more than two spans)."
+    }
+  ],
+  "expert_notes": "L/D = 7.2/24.585 = 0.29 <= 3; spans equal; prismatic; uniform; four spans. wu ln^2 = 41.02 x 8.5^2 = 2,963.8. Exterior support /16 = 185.2; end span /14 = 211.7; first interior /10 = 296.4. Centre-to-centre span 9 m gives 207.7, 237.3 and 332.3 (outside the tolerance); /11 for the end span (unrestrained end) gives 269.4; /9 (two-span value) gives 329.3. A subframe analysis with patterns gives 203.2, 150.3 and 246.4 at the faces, so /16 is 9% below analysis at the exterior column here.",
+  "mock_answer": {
+    "method_applies": true,
+    "M_exterior_support_kNm": 185.2,
+    "M_end_span_kNm": 211.7,
+    "M_first_interior_kNm": 296.4
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 3: Structural analysis (docs/review-notebook/)"
+}

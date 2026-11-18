@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="460" viewBox="0 0 680 460" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Reactions under lateral load: the equilibrium check</title><desc>Base reactions of the 3 by 2 frame under 100 and 60 kN. Horizontal reactions add to 160 kN. Overturning about the base, 975 kN·m, is resisted 56% by the axial couple of the columns (547.2 kN·m) and 44% by the base moments (427.8 kN·m).</desc><defs><marker id="m1D9E75" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="460" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Base reactions of the 3 × 2 frame (kN, kN·m)</text>
+<line x1="80.0" y1="140.0" x2="350.0" y2="140.0" stroke="#534AB7" stroke-width="4" stroke-linecap="butt"/>
+<line x1="80.0" y1="50.0" x2="350.0" y2="50.0" stroke="#534AB7" stroke-width="4" stroke-linecap="butt"/>
+<line x1="80.0" y1="230.0" x2="80.0" y2="50.0" stroke="#5F5E5A" stroke-width="4" stroke-linecap="butt"/>
+<line x1="70.0" y1="230.0" x2="90.0" y2="230.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="71.0" y1="230.0" x2="66.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="77.0" y1="230.0" x2="72.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="83.0" y1="230.0" x2="78.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="89.0" y1="230.0" x2="84.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="170.0" y1="230.0" x2="170.0" y2="50.0" stroke="#5F5E5A" stroke-width="4" stroke-linecap="butt"/>
+<line x1="160.0" y1="230.0" x2="180.0" y2="230.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="161.0" y1="230.0" x2="156.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="167.0" y1="230.0" x2="162.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="173.0" y1="230.0" x2="168.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="179.0" y1="230.0" x2="174.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="260.0" y1="230.0" x2="260.0" y2="50.0" stroke="#5F5E5A" stroke-width="4" stroke-linecap="butt"/>
+<line x1="250.0" y1="230.0" x2="270.0" y2="230.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="251.0" y1="230.0" x2="246.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="257.0" y1="230.0" x2="252.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="263.0" y1="230.0" x2="258.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="269.0" y1="230.0" x2="264.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="350.0" y1="230.0" x2="350.0" y2="50.0" stroke="#5F5E5A" stroke-width="4" stroke-linecap="butt"/>
+<line x1="340.0" y1="230.0" x2="360.0" y2="230.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="341.0" y1="230.0" x2="336.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="347.0" y1="230.0" x2="342.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="353.0" y1="230.0" x2="348.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="359.0" y1="230.0" x2="354.0" y2="236.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="26.0" y1="50.0" x2="74.0" y2="50.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="26.0" y="43.0" text-anchor="start">100 kN</text>
+<line x1="26.0" y1="140.0" x2="74.0" y2="140.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="26.0" y="133.0" text-anchor="start">60 kN</text>
+<line x1="110.0" y1="252.0" x2="82.0" y2="252.0" stroke="#1D9E75" stroke-width="1.6" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="ts" x="80.0" y="274.0" text-anchor="middle">V 37.0</text>
+<text class="ts" x="80.0" y="290.0" text-anchor="middle" style="fill:#993C1D">T 21.1</text>
+<text class="ts" x="80.0" y="306.0" text-anchor="middle">M 104.1</text>
+<line x1="200.0" y1="252.0" x2="172.0" y2="252.0" stroke="#1D9E75" stroke-width="1.6" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="ts" x="170.0" y="274.0" text-anchor="middle">V 44.0</text>
+<text class="ts" x="170.0" y="290.0" text-anchor="middle" style="fill:#0F6E56">C 2.1</text>
+<text class="ts" x="170.0" y="306.0" text-anchor="middle">M 112.1</text>
+<line x1="290.0" y1="252.0" x2="262.0" y2="252.0" stroke="#1D9E75" stroke-width="1.6" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="ts" x="260.0" y="274.0" text-anchor="middle">V 43.4</text>
+<text class="ts" x="260.0" y="290.0" text-anchor="middle" style="fill:#993C1D">T 1.8</text>
+<text class="ts" x="260.0" y="306.0" text-anchor="middle">M 110.9</text>
+<line x1="380.0" y1="252.0" x2="352.0" y2="252.0" stroke="#1D9E75" stroke-width="1.6" stroke-linecap="butt" marker-end="url(#m1D9E75)"/>
+<text class="ts" x="350.0" y="274.0" text-anchor="middle">V 35.6</text>
+<text class="ts" x="350.0" y="290.0" text-anchor="middle" style="fill:#0F6E56">C 20.8</text>
+<text class="ts" x="350.0" y="306.0" text-anchor="middle">M 100.7</text>
+<rect x="30.0" y="330.0" width="640.0" height="112.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="42.0" y="352.0" text-anchor="start">ΣH: 37.0 + 44.0 + 43.4 + 35.6 = 160.0 kN = 100 + 60</text>
+<text class="ts" x="42.0" y="372.0" text-anchor="start">Overturning: 100 × 7.5 + 60 × 3.75 = 975 kN·m = axial couple 547.2 + base moments 427.8</text>
+<text class="ts" x="42.0" y="392.0" text-anchor="start">Axial couple share 56%: taking all 975 kN·m by axial forces would give 32.5 kN in the</text>
+<text class="ts" x="42.0" y="412.0" text-anchor="start">  exterior columns, against 21.1 kN in the model. ΣN = 0 under lateral load alone.</text>
+<rect x="410.0" y="60.0" width="260.0" height="150.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="422.0" y="84.0" text-anchor="start">Check before any member:</text>
+<text class="ts" x="422.0" y="104.0" text-anchor="start">  ΣH = applied lateral load</text>
+<text class="ts" x="422.0" y="124.0" text-anchor="start">  ΣV = applied gravity load</text>
+<text class="ts" x="422.0" y="144.0" text-anchor="start">  ΣM about a base point = 0</text>
+<text class="ts" x="422.0" y="164.0" text-anchor="start">A missing roof load would</text>
+<text class="ts" x="422.0" y="184.0" text-anchor="start">  show ΣH = 100, not 160</text></svg>

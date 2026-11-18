@@ -1,0 +1,46 @@
+{
+  "id": "str-an-moment-distribution",
+  "domain": "structural",
+  "title": "Three-span continuous beam by moment distribution",
+  "prompt": "prompt.md",
+  "files": [],
+  "answer_format": {
+    "M_support_kNm": "number (magnitude)",
+    "M_end_span_kNm": "number",
+    "M_middle_span_kNm": "number"
+  },
+  "checks": [
+    {
+      "field": "M_support_kNm",
+      "type": "number",
+      "expected": 328.7,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "M_end_span_kNm",
+      "type": "number",
+      "expected": 176.8,
+      "tol_abs": 1.5
+    },
+    {
+      "field": "M_middle_span_kNm",
+      "type": "number",
+      "expected": 171.3,
+      "tol_abs": 1.5
+    }
+  ],
+  "rubric": [
+    {
+      "id": "r1",
+      "text": "The response should treat the end supports as pinned (modified stiffness 3EI/L and the propped fixed-end moment wL^2/8, or an equivalent exact method), and find the end-span maximum where the shear is zero rather than at midspan."
+    }
+  ],
+  "expert_notes": "FEM BA = 40 x 64/8 = 320.0 (far end pinned), FEM BC = 40 x 100/12 = 333.3. Symmetric: DF = (3/8)/(3/8 + 2/10) = 0.652; MB = 320 + 0.652 x 13.33 = 328.7. RA = 160 - 328.7/8 = 118.9; end span maximum 118.9^2/80 = 176.8 at 2.97 m; middle 500 - 328.7 = 171.3. End supports treated as fixed: MB = 299.0, end span 88.5. Midspan of the end span instead of the maximum: 155.6 (outside the tolerance).",
+  "mock_answer": {
+    "M_support_kNm": 328.7,
+    "M_end_span_kNm": 176.8,
+    "M_middle_span_kNm": 171.3
+  },
+  "refs": [],
+  "source": "Review Notebook, Module 3: Structural analysis (docs/review-notebook/)"
+}

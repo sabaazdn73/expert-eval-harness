@@ -1,0 +1,3 @@
+A flat plate (no beams, no drop panels) is supported on a regular 7.5 m × 7.5 m grid of 500 × 500 mm columns, with at least three spans in each direction. The service loads are D = 7.75 kN/m² (slab self-weight and superimposed dead load) and L = 2.5 kN/m²; the factored load is qu = 1.2D + 1.6L = 13.3 kN/m². There are no edge beams.
+
+Using the direct design method (ACI 318-14 Section 8.10, still permitted by ACI 318-19 6.2.4.1), please find for a design strip along an interior column line: the total factored static moment Mo of a span, the interior negative moment at the first interior support of an end span, the exterior negative moment of the end span, and the column-strip negative moment at a support of an interior span.

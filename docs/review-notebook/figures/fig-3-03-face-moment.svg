@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Centreline moment, face moment and rigid zones</title><desc>Moment near the interior support of two 9 m spans with 41.0 kN/m. The centreline model gives 415.3 kN·m at the support centre and 358.9 kN·m at the face of a 500 mm column. EN 1992-1-1 5.3.2.2(4) reduction for a support without rotational restraint gives 386.5. A model with rigid zones over the column width gives 392.6 kN·m at the face.</desc><defs></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">Hogging moment near the interior support (kN·m)</text>
+<line x1="90.0" y1="380.0" x2="450.0" y2="380.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="384.0" text-anchor="end">0</text>
+<line x1="90.0" y1="310.4" x2="450.0" y2="310.4" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="314.4" text-anchor="end">100</text>
+<line x1="90.0" y1="240.9" x2="450.0" y2="240.9" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="244.9" text-anchor="end">200</text>
+<line x1="90.0" y1="171.3" x2="450.0" y2="171.3" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="175.3" text-anchor="end">300</text>
+<line x1="90.0" y1="101.7" x2="450.0" y2="101.7" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="84.0" y="105.7" text-anchor="end">400</text>
+<line x1="90.0" y1="60.0" x2="90.0" y2="380.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="90.0" y="396.0" text-anchor="middle">7</text>
+<line x1="180.0" y1="60.0" x2="180.0" y2="380.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="180.0" y="396.0" text-anchor="middle">8</text>
+<line x1="270.0" y1="60.0" x2="270.0" y2="380.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="270.0" y="396.0" text-anchor="middle">9</text>
+<line x1="360.0" y1="60.0" x2="360.0" y2="380.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="360.0" y="396.0" text-anchor="middle">10</text>
+<line x1="450.0" y1="60.0" x2="450.0" y2="380.0" stroke="#E8E6DF" stroke-width="0.8" stroke-linecap="butt"/>
+<text class="ts" x="450.0" y="396.0" text-anchor="middle">11</text>
+<line x1="90.0" y1="380.0" x2="450.0" y2="380.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<line x1="90.0" y1="60.0" x2="90.0" y2="380.0" stroke="#73726c" stroke-width="1" stroke-linecap="butt"/>
+<text class="ts" x="270.0" y="414.0" text-anchor="middle">Distance from the end support (m)</text>
+<text class="ts" x="44.0" y="220.0" text-anchor="middle" transform="rotate(-90 44.0 220.0)">Hogging moment (kN·m)</text>
+<rect x="247.5" y="60.0" width="45.0" height="320.0" rx="0" stroke-width="0" fill="#F1EFE8"/>
+<text class="ts" x="270.0" y="352.0" text-anchor="middle">column</text>
+<text class="ts" x="270.0" y="366.0" text-anchor="middle">500 mm</text>
+<polyline points="90.0,355.0 99.0,344.5 108.0,333.8 117.0,322.7 126.0,311.4 135.0,299.7 144.0,287.8 153.0,275.6 162.0,263.1 171.0,250.4 180.0,237.3 189.0,224.0 198.0,210.4 207.0,196.4 216.0,182.2 225.0,167.8 234.0,153.0 243.0,137.9 252.0,122.6 261.0,107.0 270.0,91.1 279.0,107.0 288.0,122.6 297.0,137.9 306.0,153.0 315.0,167.8 324.0,182.2 333.0,196.4 342.0,210.4 351.0,224.0 360.0,237.3 369.0,250.4 378.0,263.1 387.0,275.6 396.0,287.8 405.0,299.7 414.0,311.4 423.0,322.7 432.0,333.8 441.0,344.5 450.0,355.0" stroke-width="1.6" fill="none" stroke="#534AB7"/>
+<polyline points="90.0,336.3 90.9,335.3 91.8,334.2 92.7,333.1 93.6,332.1 94.5,331.0 95.4,329.9 96.3,328.8 97.2,327.7 98.1,326.7 99.0,325.6 99.9,324.5 100.8,323.4 101.7,322.3 102.6,321.2 103.5,320.1 104.4,319.0 105.3,317.9 106.2,316.8 107.1,315.6 108.0,314.5 108.9,313.4 109.8,312.3 110.7,311.2 111.6,310.0 112.5,308.9 113.4,307.8 114.3,306.6 115.2,305.5 116.1,304.3 117.0,303.2 117.9,302.1 118.8,300.9 119.7,299.7 120.6,298.6 121.5,297.4 122.4,296.3 123.3,295.1 124.2,293.9 125.1,292.8 126.0,291.6 126.9,290.4 127.8,289.2 128.7,288.1 129.6,286.9 130.5,285.7 131.4,284.5 132.3,283.3 133.2,282.1 134.1,280.9 135.0,279.7 135.9,278.5 136.8,277.3 137.7,276.1 138.6,274.9 139.5,273.6 140.4,272.4 141.3,271.2 142.2,270.0 143.1,268.7 144.0,267.5 144.9,266.3 145.8,265.0 146.7,263.8 147.6,262.6 148.5,261.3 149.4,260.1 150.3,258.8 151.2,257.6 152.1,256.3 153.0,255.0 153.9,253.8 154.8,252.5 155.7,251.3 156.6,250.0 157.5,248.7 158.4,247.4 159.3,246.2 160.2,244.9 161.1,243.6 162.0,242.3 162.9,241.0 163.8,239.7 164.7,238.4 165.6,237.1 166.5,235.8 167.4,234.5 168.3,233.2 169.2,231.9 170.1,230.6 171.0,229.3 171.9,227.9 172.8,226.6 173.7,225.3 174.6,224.0 175.5,222.6 176.4,221.3 177.3,220.0 178.2,218.6 179.1,217.3 180.0,215.9 180.9,214.6 181.8,213.2 182.7,211.9 183.6,210.5 184.5,209.2 185.4,207.8 186.3,206.4 187.2,205.1 188.1,203.7 189.0,202.3 189.9,201.0 190.8,199.6 191.7,198.2 192.6,196.8 193.5,195.4 194.4,194.0 195.3,192.6 196.2,191.2 197.1,189.8 198.0,188.4 198.9,187.0 199.8,185.6 200.7,184.2 201.6,182.8 202.5,181.4 203.4,180.0 204.3,178.5 205.2,177.1 206.1,175.7 207.0,174.3 207.9,172.8 208.8,171.4 209.7,169.9 210.6,168.5 211.5,167.1 212.4,165.6 213.3,164.2 214.2,162.7 215.1,161.3 216.0,159.8 216.9,158.3 217.8,156.9 218.7,155.4 219.6,153.9 220.5,152.5 221.4,151.0 222.3,149.5 223.2,148.0 224.1,146.5 225.0,145.0 225.9,143.6 226.8,142.1 227.7,140.6 228.6,139.1 229.5,137.6 230.4,136.1 231.3,134.6 232.2,133.0 233.1,131.5 234.0,130.0 234.9,128.5 235.8,127.0 236.7,125.4 237.6,123.9 238.5,122.4 239.4,120.9 240.3,119.3 241.2,117.8 242.1,116.2 243.0,114.7 243.9,113.1 244.8,111.6 245.7,110.0 246.6,108.5 247.5,106.9" stroke-width="1.6" fill="none" stroke="#993C1D" stroke-dasharray="6 4"/>
+<polyline points="450.0,336.3 449.1,335.3 448.2,334.2 447.3,333.1 446.4,332.1 445.5,331.0 444.6,329.9 443.7,328.8 442.8,327.7 441.9,326.7 441.0,325.6 440.1,324.5 439.2,323.4 438.3,322.3 437.4,321.2 436.5,320.1 435.6,319.0 434.7,317.9 433.8,316.8 432.9,315.6 432.0,314.5 431.1,313.4 430.2,312.3 429.3,311.2 428.4,310.0 427.5,308.9 426.6,307.8 425.7,306.6 424.8,305.5 423.9,304.3 423.0,303.2 422.1,302.1 421.2,300.9 420.3,299.7 419.4,298.6 418.5,297.4 417.6,296.3 416.7,295.1 415.8,293.9 414.9,292.8 414.0,291.6 413.1,290.4 412.2,289.2 411.3,288.1 410.4,286.9 409.5,285.7 408.6,284.5 407.7,283.3 406.8,282.1 405.9,280.9 405.0,279.7 404.1,278.5 403.2,277.3 402.3,276.1 401.4,274.9 400.5,273.6 399.6,272.4 398.7,271.2 397.8,270.0 396.9,268.7 396.0,267.5 395.1,266.3 394.2,265.0 393.3,263.8 392.4,262.6 391.5,261.3 390.6,260.1 389.7,258.8 388.8,257.6 387.9,256.3 387.0,255.0 386.1,253.8 385.2,252.5 384.3,251.3 383.4,250.0 382.5,248.7 381.6,247.4 380.7,246.2 379.8,244.9 378.9,243.6 378.0,242.3 377.1,241.0 376.2,239.7 375.3,238.4 374.4,237.1 373.5,235.8 372.6,234.5 371.7,233.2 370.8,231.9 369.9,230.6 369.0,229.3 368.1,227.9 367.2,226.6 366.3,225.3 365.4,224.0 364.5,222.6 363.6,221.3 362.7,220.0 361.8,218.6 360.9,217.3 360.0,215.9 359.1,214.6 358.2,213.2 357.3,211.9 356.4,210.5 355.5,209.2 354.6,207.8 353.7,206.4 352.8,205.1 351.9,203.7 351.0,202.3 350.1,201.0 349.2,199.6 348.3,198.2 347.4,196.8 346.5,195.4 345.6,194.0 344.7,192.6 343.8,191.2 342.9,189.8 342.0,188.4 341.1,187.0 340.2,185.6 339.3,184.2 338.4,182.8 337.5,181.4 336.6,180.0 335.7,178.5 334.8,177.1 333.9,175.7 333.0,174.3 332.1,172.8 331.2,171.4 330.3,169.9 329.4,168.5 328.5,167.1 327.6,165.6 326.7,164.2 325.8,162.7 324.9,161.3 324.0,159.8 323.1,158.3 322.2,156.9 321.3,155.4 320.4,153.9 319.5,152.5 318.6,151.0 317.7,149.5 316.8,148.0 315.9,146.5 315.0,145.0 314.1,143.6 313.2,142.1 312.3,140.6 311.4,139.1 310.5,137.6 309.6,136.1 308.7,134.6 307.8,133.0 306.9,131.5 306.0,130.0 305.1,128.5 304.2,127.0 303.3,125.4 302.4,123.9 301.5,122.4 300.6,120.9 299.7,119.3 298.8,117.8 297.9,116.2 297.0,114.7 296.1,113.1 295.2,111.6 294.3,110.0 293.4,108.5 292.5,106.9" stroke-width="1.6" fill="none" stroke="#993C1D" stroke-dasharray="6 4"/>
+<circle cx="270.0" cy="91.1" r="3.5" fill="#534AB7" stroke="#534AB7" stroke-width="1"/>
+<line x1="270.0" y1="91.1" x2="337.5" y2="66.4" stroke="#534AB7" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="tl halo" x="337.5" y="70.4" text-anchor="start" style="fill:#534AB7">415.3 centreline</text>
+<circle cx="270.0" cy="111.1" r="3.5" fill="#0F6E56" stroke="#0F6E56" stroke-width="1"/>
+<line x1="270.0" y1="111.1" x2="337.5" y2="117.2" stroke="#0F6E56" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="tl halo" x="337.5" y="121.2" text-anchor="start" style="fill:#0F6E56">386.5 EN, F·t/8</text>
+<circle cx="247.5" cy="106.9" r="3.5" fill="#993C1D" stroke="#993C1D" stroke-width="1"/>
+<line x1="247.5" y1="106.9" x2="189.0" y2="84.9" stroke="#993C1D" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="tl halo" x="94.5" y="80.9" text-anchor="start" style="fill:#993C1D">392.6 face, rigid zones</text>
+<circle cx="247.5" cy="130.3" r="3.5" fill="#534AB7" stroke="#534AB7" stroke-width="1"/>
+<line x1="247.5" y1="130.3" x2="189.0" y2="125.2" stroke="#534AB7" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="tl halo" x="94.5" y="121.2" text-anchor="start" style="fill:#534AB7">358.9 face, centreline model</text>
+<rect x="470.0" y="60.0" width="200.0" height="300.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="482.0" y="84.0" text-anchor="start">Centreline model:</text>
+<text class="ts" x="482.0" y="101.0" text-anchor="start">  M face = M − V·c/2 + w(c/2)²/2</text>
+<text class="ts" x="482.0" y="118.0" text-anchor="start">  = 358.9 (−13.6%)</text>
+<text class="ts" x="482.0" y="135.0" text-anchor="start">ACI 318-19 9.4.2.1: Mu at the</text>
+<text class="ts" x="482.0" y="152.0" text-anchor="start">  face permitted (monolithic)</text>
+<text class="ts" x="482.0" y="169.0" text-anchor="start"></text>
+<text class="ts" x="482.0" y="186.0" text-anchor="start">EN 1992-1-1 5.3.2.2:</text>
+<text class="ts" x="482.0" y="203.0" text-anchor="start">  (3) monolithic: face,</text>
+<text class="ts" x="482.0" y="220.0" text-anchor="start">  ≥ 0.65 × FEM = 180.0</text>
+<text class="ts" x="482.0" y="237.0" text-anchor="start">  (4) no rotational restraint:</text>
+<text class="ts" x="482.0" y="254.0" text-anchor="start">  ΔM = F·t/8 = 28.8</text>
+<text class="ts" x="482.0" y="271.0" text-anchor="start"></text>
+<text class="ts" x="482.0" y="288.0" text-anchor="start">Rigid zones (ACI 6.6.2.3(b))</text>
+<text class="ts" x="482.0" y="305.0" text-anchor="start">  change the result: +9%</text>
+<line x1="100.0" y1="446.0" x2="130.0" y2="446.0" stroke="#534AB7" stroke-width="1.6" stroke-linecap="butt"/>
+<text class="ts" x="136.0" y="450.0" text-anchor="start">centreline model</text>
+<line x1="270.0" y1="446.0" x2="300.0" y2="446.0" stroke="#993C1D" stroke-width="1.6" stroke-linecap="butt" stroke-dasharray="6 4"/>
+<text class="ts" x="306.0" y="450.0" text-anchor="start">rigid zones over the column</text></svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="470" viewBox="0 0 680 470" role="img"><style>text{font-family:"DejaVu Sans",Arial,sans-serif}
+.t{font-size:14px;fill:#2C2C2A}.ts{font-size:12px;fill:#5F5E5A}.th{font-size:14px;font-weight:600;fill:#2C2C2A}
+.tl{font-size:12px;fill:#2C2C2A}.tt{font-size:15px;font-weight:600;fill:#2C2C2A}
+.box{fill:#F7F6F2;stroke:#B4B2A9}
+.c-gray{fill:#F1EFE8;stroke:#5F5E5A}.c-purple{fill:#EEEDFE;stroke:#534AB7}.c-coral{fill:#FAECE7;stroke:#993C1D}
+.halo{paint-order:stroke;stroke:#FFFFFF;stroke-width:4px;stroke-linejoin:round}
+.c-amber{fill:#FAEEDA;stroke:#854F0B}.c-teal{fill:#E1F5EE;stroke:#0F6E56}.c-white{fill:#FFFFFF;stroke:#5F5E5A}</style><title>Cracked stiffness changes the drift</title><desc>One-bay portal, 9 m by 3.75 m, fixed bases, 100 kN at beam level. Lateral drift: gross sections 2.78 mm; ACI 318-19 service-level stiffness (1.4 times the factored values) 3.55 mm; ACI factored-level (columns 0.70 Ig, beam 0.35 Ig) 4.95 mm; EN 1998-1 one-half of uncracked 5.52 mm.</desc><defs><marker id="m73726c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/><text class="tt" x="20.0" y="28.0" text-anchor="start">One-bay portal under 100 kN: drift for four stiffness assumptions</text>
+<rect x="83.0" y="120.0" width="14.0" height="130.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<rect x="263.0" y="120.0" width="14.0" height="130.0" rx="0" stroke-width="0.6" class="c-gray"/>
+<rect x="83.0" y="108.0" width="194.0" height="14.0" rx="1" stroke-width="0.6" class="c-purple"/>
+<line x1="90.0" y1="242.0" x2="90.0" y2="258.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="90.0" y1="244.0" x2="81.0" y2="253.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="90.0" y1="251.0" x2="81.0" y2="260.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="270.0" y1="242.0" x2="270.0" y2="258.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="270.0" y1="244.0" x2="279.0" y2="253.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="270.0" y1="251.0" x2="279.0" y2="260.0" stroke="#73726c" stroke-width="0.8" stroke-linecap="butt"/>
+<line x1="70.0" y1="252.0" x2="110.0" y2="252.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="250.0" y1="252.0" x2="290.0" y2="252.0" stroke="#73726c" stroke-width="2" stroke-linecap="butt"/>
+<line x1="20.0" y1="115.0" x2="78.0" y2="115.0" stroke="#D85A30" stroke-width="2" stroke-linecap="butt" marker-end="url(#mD85A30)"/>
+<text class="th" x="20.0" y="106.0" text-anchor="start">100 kN</text>
+<line x1="92.0" y1="280.0" x2="268.0" y2="280.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="90.0" y1="275.0" x2="90.0" y2="285.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="270.0" y1="275.0" x2="270.0" y2="285.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="180.0" y="275.0" text-anchor="middle">9 m</text>
+<line x1="296.0" y1="122.0" x2="296.0" y2="248.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt" marker-end="url(#m73726c)" marker-start="url(#m73726c)"/>
+<line x1="291.0" y1="120.0" x2="301.0" y2="120.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<line x1="291.0" y1="250.0" x2="301.0" y2="250.0" stroke="#73726c" stroke-width="0.6" stroke-linecap="butt"/>
+<text class="ts" x="303.0" y="189.0" text-anchor="start">3.75 m</text>
+<path d="M90 250 C90 190 116 160 116 120" fill="none" stroke="#534AB7" stroke-width="1.4" stroke-dasharray="5 4"/>
+<path d="M270 250 C270 190 296 160 296 120" fill="none" stroke="#534AB7" stroke-width="1.4" stroke-dasharray="5 4"/>
+<line x1="116.0" y1="115.0" x2="296.0" y2="115.0" stroke="#534AB7" stroke-width="1.4" stroke-linecap="butt" stroke-dasharray="5 4"/>
+<text class="th" x="500.0" y="76.0" text-anchor="middle">Drift at beam level (mm)</text>
+<text class="tl" x="472.0" y="106.0" text-anchor="end">Gross sections Ig</text>
+<rect x="480.0" y="92.0" width="64.9" height="20.0" rx="2" stroke-width="0.8" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text class="th" x="550.9" y="106.0" text-anchor="start">2.78</text>
+<text class="tl" x="472.0" y="136.0" text-anchor="end">ACI service (1.4×)</text>
+<rect x="480.0" y="122.0" width="82.8" height="20.0" rx="2" stroke-width="0.8" fill="#E1F5EE" stroke="#0F6E56"/>
+<text class="th" x="568.8" y="136.0" text-anchor="start">3.55</text>
+<text class="tl" x="472.0" y="166.0" text-anchor="end">ACI factored</text>
+<rect x="480.0" y="152.0" width="115.6" height="20.0" rx="2" stroke-width="0.8" fill="#EEEDFE" stroke="#534AB7"/>
+<text class="th" x="601.6" y="166.0" text-anchor="start">4.95</text>
+<text class="tl" x="472.0" y="196.0" text-anchor="end">EN 1998-1: one-half</text>
+<rect x="480.0" y="182.0" width="128.9" height="20.0" rx="2" stroke-width="0.8" fill="#FAECE7" stroke="#993C1D"/>
+<text class="th" x="614.9" y="196.0" text-anchor="start">5.52</text>
+<rect x="30.0" y="310.0" width="640.0" height="140.0" rx="8" stroke-width="0.6" class="box"/>
+<text class="ts" x="42.0" y="332.0" text-anchor="start">ACI 318-19 Table 6.6.3.1.1(a), factored loads: columns 0.70 Ig, beams 0.35 Ig, flat plates 0.25 Ig.</text>
+<text class="ts" x="42.0" y="352.0" text-anchor="start">6.6.3.2.2: lateral deflection under service loads may use 1.4 times these, not more than Ig.</text>
+<text class="ts" x="42.0" y="372.0" text-anchor="start">EN 1998-1 4.3.1(7): one-half of the uncracked flexural and shear stiffness.</text>
+<text class="ts" x="42.0" y="392.0" text-anchor="start">Drift against gross sections: ×1.78 (ACI factored), ×1.99 (EN 1998-1).</text>
+<text class="ts" x="42.0" y="412.0" text-anchor="start">Left column, base / top moment (kN·m): Ig 116.1 / 73.1; ACI 129.0 / 59.5.</text>
+<text class="ts" x="42.0" y="432.0" text-anchor="start">Softer beams restrain the column tops less, so more moment goes to the bases.</text></svg>

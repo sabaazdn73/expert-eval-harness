@@ -4,7 +4,7 @@
 
 Each task is a folder with the prompt, any input files, an answer key and a rubric written by a domain expert. The harness runs every task on several models, several times each, grades the answers, and reports how often each model gets it right.
 
-> **Status: v0.3.** Runs on live Claude and Gemini models with key-scored tasks, one or two graders (Claude and Gemini) with agreement statistics and expert adjudication, an equipped grader, and separate cost budgets per billing account. All tasks in this repository are original; private tasks are kept outside it.
+> **Status: v0.4.** Runs on live Claude and Gemini models with key-scored tasks, one or two graders (Claude and Gemini) with agreement statistics and expert adjudication, an equipped grader, separate cost budgets per billing account, and batch runs at half price. All tasks in this repository are original; private tasks are kept outside it.
 
 ## Related project
 
@@ -85,6 +85,32 @@ Add `--only-errors` to grade again, in place, only the rows whose grading failed
 - **A grading failure is not a model failure.** If the grader's reply cannot be read or misses an item, the answer is saved with `grade_error` and is left out of the scores. `--resume` grades those rows again without calling the model under test, and fills in any trials that are missing.
 - **Cut streams are retried**, as are rate limits and overloads, so a half-received answer is never graded.
 - `--max-turns` (default 25) caps the tool turns of one trial. A run directory is never overwritten without `--resume` or `--overwrite`.
+
+### Batch runs at half price (`--batch`)
+
+For a full run nobody is waiting on, `--batch` sends every plain Claude call through the Message Batches API, billed at
+half the standard price (the discount stacks with prompt caching): the answers of tasks without a tool loop, and the
+grading by graders without `--judge-tools`. All model calls of the run go out as one batch, then all their gradings as
+a second one; most batches end within an hour, at most 24 hours. Results are matched to trials by `custom_id`. A request
+that errored or expired fails only its own trial, is not charged, and `--resume` runs it again. Tool loops (code
+execution, the code library, the local sandbox) need a reply on every turn and stay streamed, as do Gemini models. The
+cost estimate printed before the run applies the discount, and `meta.json` records the batch ids. `regrade --batch` and
+`grader_check.py --batch` grade the same way.
+
+```
+python3 -m harness.run run --models claude-haiku-5-5:3 claude-sonnet-5-5:3 --judge claude-opus-5-5 --batch \
+  --tasks "/path/to/tasks/*" --name full-1
+```
+
+### Checks on pull requests
+
+Two GitHub workflows run on pull requests. `eval.yml` runs the offline self-test (mock models, no cost) on every push
+and pull request, and from the Actions tab a live run with a quality gate. `grader-check.yml` runs when a pull request
+changes a task, the grader or the grading code: the grader must pass each task's reference answer and fail its lure and
+boundary answers (`grader_check.py --strict`, a few cents, skipped without the `ANTHROPIC_API_KEY` secret). Add both as
+required status checks on `main` so a failing check blocks the merge. How these steps map to the evals-in-production
+practice of CI, batch runs and drift monitoring, and what the review agent will need once it is live:
+[docs/evals-in-production.md](docs/evals-in-production.md).
 
 A full run, two trials each of Haiku and Sonnet with Opus as the equipped grader, Claude spend capped at $15:
 

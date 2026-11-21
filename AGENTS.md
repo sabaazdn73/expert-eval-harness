@@ -14,6 +14,9 @@ Python 3.10 or later, standard library only: there is nothing to install.
 5. Check a grader against a key before trusting it: `python3 grader_check.py --judge claude-opus-5-5 --tasks "tasks/str-beam-stirrup-rfi-aci318"`
    (offline wiring test: `--judge mock-judge`). The reference answer must pass, the lure and boundary answers must fail.
 
+For a full run nobody waits on, add `--batch` (Message Batches API, half price, results within about an hour); it applies
+to plain Claude calls only, tool loops stay streamed. `grader_check.py --strict` exits 1 on any wrong verdict.
+
 Task format: `task.json` (files, items with points and required flags, max_score, pass_score, answer_format, checks),
 `prompt.md`, `files/`, `key.md`, `grader_check/`. The complete example is `tasks/str-beam-stirrup-rfi-aci318`.
 

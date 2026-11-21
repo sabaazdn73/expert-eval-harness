@@ -15,6 +15,7 @@ scoring used for the models), then compares the graders with the expected scores
 Usage:
   python3 grader_check.py --judge claude-opus-5-5 gemini-4-argon            # live graders (API keys needed)
   python3 grader_check.py --judge mock-judge                                 # offline wiring test, no cost
+  python3 grader_check.py --judge claude-opus-5-5 --strict                   # as a CI gate: exit 1 on any wrong verdict
 Writes runs/grader-check/ (raw grades) and results/grader_check.md + results/grader_check.json.
 """
 import argparse
@@ -38,6 +39,10 @@ def main():
     ap.add_argument("--retry-errors", action="store_true",
                     help="grade again, in place, only the answers whose grading failed in runs/<name> (no new cost for the rest)")
     ap.add_argument("--results", default=os.path.join(ROOT, "results"), help="folder for grader_check.md/.json")
+    ap.add_argument("--strict", action="store_true",
+                    help="exit with status 1 if any grader passes an answer that must fail, fails one that must pass, "
+                         "or leaves an answer ungraded (for use as a required check on pull requests)")
+    ap.add_argument("--batch", action="store_true", help="grade through the Message Batches API (half price, slower)")
     a = ap.parse_args()
 
     rows, expected = [], {}
@@ -70,9 +75,11 @@ def main():
     if a.retry_errors and os.path.isfile(os.path.join(out, "results.jsonl")):
         cmd = [sys.executable, "-m", "harness.run", "regrade", out, "--only-errors", "--tasks", a.tasks, "--judge", *a.judge,
                "--budget-claude", a.budget_claude, "--budget-google", a.budget_google, "--parallel", "2"]
+        cmd += ["--batch"] if a.batch else []
     else:
         cmd = [sys.executable, "-m", "harness.run", "regrade", src, "--tasks", a.tasks, "--judge", *a.judge,
                "--name", a.name, "--budget-claude", a.budget_claude, "--budget-google", a.budget_google, "--parallel", "2"]
+        cmd += ["--batch"] if a.batch else []
     print(" ".join(cmd), flush=True)
     subprocess.run(cmd, cwd=ROOT, check=True)
 
@@ -151,6 +158,8 @@ def main():
             md += ["", f"{j}: false passes {s['false_pass'] or 'none'}; false fails {s['false_fail'] or 'none'}"]
     open(os.path.join(a.results, "grader_check.md"), "w").write("\n".join(md) + "\n")
     print("\n".join(md))
+    if a.strict and any(s["false_pass"] or s["false_fail"] or s["errors"] for s in summary.values()):
+        sys.exit("grader check failed: a grader gave a wrong verdict or left an answer ungraded (see the table above)")
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 
     python3 -m unittest discover -s tests -v
 """
+import argparse
 import io
 import json
 import os
@@ -127,6 +128,102 @@ class Streams(unittest.TestCase):
         self.assertAlmostEqual(api.cost_of("claude-sonnet-5-5", {"cache_read_input_tokens": 1_000_000}), 0.1)
         self.assertAlmostEqual(api.cost_of("claude-haiku-5-5", {"input_tokens": 50_000}), 0.005)
         self.assertAlmostEqual(api.cost_of("claude-haiku-5-5", {"input_tokens": 200_000}), 0.1)
+
+
+class Batches(unittest.TestCase):
+    """--batch: plain calls made together go out as one Message Batch, at half price, matched by custom_id."""
+
+    def setUp(self):
+        api.reset_meter()
+        self.sent = []
+
+    def tearDown(self):
+        api.disable_batch()
+        api.reset_meter()
+
+    def fake_api(self, outcome):
+        def request(method, url, body=None):
+            if method == "POST":
+                self.sent.append(body["requests"])
+                return {"id": "msgbatch_test", "processing_status": "in_progress"}
+            return {"id": "msgbatch_test", "processing_status": "ended", "results_url": "https://results",
+                    "request_counts": {"succeeded": len(self.sent[-1])}}
+
+        def results(url):
+            lines = [outcome(r) for r in self.sent[-1]]
+            return list(reversed(lines))  # results can arrive in any order
+        return request, results
+
+    def call_together(self, n):
+        out = [None] * n
+
+        def worker(i):
+            try:
+                out[i] = api.call("claude-haiku-5-5", [{"type": "text", "text": f"question {i}"}], max_tokens=100)
+            except api.APIError as e:
+                out[i] = e
+        threads = [threading.Thread(target=worker, args=(i,)) for i in range(n)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(10)
+        return out
+
+    def test_calls_made_together_are_one_batch_at_half_price(self):
+        usage = {"input_tokens": 1000, "output_tokens": 500}
+
+        def outcome(r):
+            q = r["params"]["messages"][0]["content"][0]["text"]
+            return {"custom_id": r["custom_id"], "result": {"type": "succeeded", "message": {
+                "content": [{"type": "text", "text": "answer to " + q}], "stop_reason": "end_turn", "usage": usage}}}
+        request, results = self.fake_api(outcome)
+        api.enable_batch(idle=0.2, poll=0.01, log=lambda m: None)
+        with mock.patch.object(api, "_batch_request", side_effect=request), \
+                mock.patch.object(api, "_batch_results", side_effect=results):
+            out = self.call_together(3)
+        self.assertEqual(len(self.sent), 1)
+        self.assertEqual(len(self.sent[0]), 3)
+        self.assertTrue(all("stream" not in r["params"] for r in self.sent[0]))
+        self.assertEqual(len({r["custom_id"] for r in self.sent[0]}), 3)
+        for i, (text, u) in enumerate(out):
+            self.assertEqual(text, f"answer to question {i}")
+            self.assertEqual(u["stop_reason"], "end_turn")
+        self.assertAlmostEqual(api.spent()[0], 3 * api.cost_of("claude-haiku-5-5", usage) * 0.5)
+        self.assertEqual(api.batch_ids(), ["msgbatch_test"])
+
+    def test_errored_and_expired_requests_raise_and_cost_nothing(self):
+        def outcome(r):
+            if r["params"]["messages"][0]["content"][0]["text"].endswith("0"):
+                return {"custom_id": r["custom_id"], "result": {"type": "errored", "error": {
+                    "type": "error", "error": {"type": "invalid_request_error", "message": "bad"}}}}
+            return {"custom_id": r["custom_id"], "result": {"type": "expired"}}
+        request, results = self.fake_api(outcome)
+        api.enable_batch(idle=0.1, poll=0.01, log=lambda m: None)
+        with mock.patch.object(api, "_batch_request", side_effect=request), \
+                mock.patch.object(api, "_batch_results", side_effect=results):
+            out = self.call_together(2)
+        self.assertIn("invalid_request_error", str(out[0]))
+        self.assertIn("expired", str(out[1]))
+        self.assertEqual(api.spent()[0], 0)
+
+    def test_failed_batch_creation_reaches_every_caller(self):
+        api.enable_batch(idle=0.1, poll=0.01, log=lambda m: None)
+        with mock.patch.object(api, "_batch_request", side_effect=api.APIError("HTTP 401")):
+            out = self.call_together(2)
+        self.assertTrue(all(isinstance(o, api.APIError) and "batch failed" in str(o) for o in out))
+
+    def test_estimate_halves_plain_claude_calls_only(self):
+        with tempfile.TemporaryDirectory() as d:
+            t = key_task(d)
+            base = dict(with_refs=False, est_output=10000, est_output_low=5000, judge_tools=False, model_library=False)
+            plain = run.estimate_cost([t], {"claude-sonnet-5-5": 2}, ["claude-opus-5-5"], argparse.Namespace(**base))
+            half = run.estimate_cost([t], {"claude-sonnet-5-5": 2}, ["claude-opus-5-5"],
+                                     argparse.Namespace(**base, batch=True))
+            self.assertAlmostEqual(half["high"]["anthropic"], plain["high"]["anthropic"] / 2)
+            t["code_execution"] = True  # a tool loop is not batched
+            tool = run.estimate_cost([t], {"claude-sonnet-5-5": 2}, [], argparse.Namespace(**base))
+            tool_b = run.estimate_cost([t], {"claude-sonnet-5-5": 2}, [], argparse.Namespace(**base, batch=True))
+            self.assertAlmostEqual(tool["high"]["anthropic"], tool_b["high"]["anthropic"])
 
 
 class Library(unittest.TestCase):

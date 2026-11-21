@@ -4,6 +4,7 @@ import json
 import mimetypes
 import os
 import random
+import re
 import socket
 import ssl
 import time
@@ -82,7 +83,7 @@ def call(model, content, system=None, max_tokens=4000, temperature=None, effort=
         body["output_config"] = {"effort": effort}
     if system:
         body["system"] = system
-    res = create(body)
+    res = _BATCHER.submit(body) if (_BATCHER and provider(model) == "anthropic") else create(body)
     text = "".join(b.get("text", "") for b in res.get("content", []) if b.get("type") == "text")
     return text, dict(res.get("usage", {}), stop_reason=res.get("stop_reason"))
 
@@ -216,8 +217,8 @@ def spent_by_provider():
     return dict(_METER["usd"])
 
 
-def _charge(model, usage):
-    c = cost_of(model, usage)
+def _charge(model, usage, factor=1.0):
+    c = cost_of(model, usage) * factor
     p = provider(model)
     with _METER_LOCK:
         if p in _METER["usd"]:
@@ -317,6 +318,162 @@ def create(body):
                 _wait(attempt)
                 continue
             raise APIError(f"could not reach the API: {getattr(e, 'reason', e)}")
+    raise APIError("gave up after repeated retries")
+
+
+# ---- Message Batches API: half price for calls nobody is waiting on ----
+BATCH_URL = API_URL + "/batches"
+BATCH_DISCOUNT = 0.5  # batch usage is billed at half the standard price; it stacks with prompt caching
+BATCH_MAX_REQUESTS = 100_000
+BATCH_MAX_BYTES = 200 * 1024 * 1024  # the API's limit is 256 MB per batch; keep a margin
+_BATCHER = None
+
+
+class Batcher:
+    """Sends the plain Messages calls that the run's threads make at about the same time as one Message Batch.
+
+    Each calling thread waits for its own result. A batch goes out once no new call has arrived for `idle`
+    seconds, so all model calls of a run leave together, and later all their grading calls. Results are matched
+    by custom_id (they can come back in any order); a request that errored, expired or was canceled raises
+    APIError in its own thread (not charged), and the others are unaffected. Only api.call() is batched:
+    tool loops (code execution, the code library, the local sandbox) need a reply per turn and stay streamed."""
+
+    def __init__(self, idle=20.0, poll=30.0, log=None):
+        self.idle, self.poll = idle, poll
+        self.log = log or (lambda m: print(m, flush=True))
+        self.lock = _threading.Lock()
+        self.pending, self.last, self.seq, self.flusher, self.ids = [], 0.0, 0, None, []
+
+    def submit(self, body):
+        slot = {"done": _threading.Event()}
+        with self.lock:
+            self.seq += 1
+            cid = re.sub(r"[^a-zA-Z0-9_-]", "-", f"r{self.seq:05d}_{body['model']}")[:64]
+            self.pending.append((cid, {k: v for k, v in body.items() if k != "stream"}, slot))
+            self.last = time.monotonic()
+            if self.flusher is None:
+                self.flusher = _threading.Thread(target=self._flush_loop, daemon=True)
+                self.flusher.start()
+        slot["done"].wait()
+        if "error" in slot:
+            raise APIError(slot["error"])
+        return slot["message"]
+
+    def _flush_loop(self):
+        while True:
+            with self.lock:
+                if not self.pending:
+                    self.flusher = None
+                    return
+                wait = self.idle - (time.monotonic() - self.last)
+                take = None
+                if wait <= 0:
+                    take, self.pending = self.pending, []
+            if take is None:
+                time.sleep(min(max(wait, 0.05), 1.0))
+                continue
+            chunk, size = [], 0
+            for item in take:  # stay under the per-batch request and size limits
+                n = len(json.dumps(item[1]))
+                if chunk and (len(chunk) >= BATCH_MAX_REQUESTS or size + n > BATCH_MAX_BYTES):
+                    _threading.Thread(target=self._run, args=(chunk,), daemon=True).start()
+                    chunk, size = [], 0
+                chunk.append(item)
+                size += n
+            _threading.Thread(target=self._run, args=(chunk,), daemon=True).start()
+
+    def _run(self, chunk):
+        try:
+            b = _batch_request("POST", BATCH_URL, {"requests": [{"custom_id": c, "params": p} for c, p, _ in chunk]})
+            with self.lock:
+                self.ids.append(b["id"])
+            self.log(f"batch {b['id']}: {len(chunk)} requests sent; checking every {self.poll:g} s "
+                     "(most batches end within an hour, at most 24 h)")
+            while b.get("processing_status") != "ended":
+                time.sleep(self.poll)
+                b = _batch_request("GET", f"{BATCH_URL}/{b['id']}")
+            rc = b.get("request_counts") or {}
+            self.log(f"batch {b['id']} ended: " + ", ".join(f"{k} {rc.get(k, 0)}" for k in
+                                                             ("succeeded", "errored", "expired", "canceled")))
+            results = {r.get("custom_id"): r.get("result") or {} for r in _batch_results(b["results_url"])}
+            for cid, params, slot in chunk:
+                res = results.get(cid) or {}
+                kind = res.get("type")
+                if kind == "succeeded":
+                    msg = res["message"]
+                    _charge(params["model"], msg.get("usage", {}), BATCH_DISCOUNT)
+                    slot["message"] = msg
+                elif kind == "errored":
+                    err = res.get("error") or {}
+                    err = err.get("error", err)
+                    slot["error"] = f"batch request errored: {err.get('type')}: {str(err.get('message'))[:300]}"
+                else:
+                    slot["error"] = f"batch request {kind or 'missing from the results'} (not charged)"
+        except Exception as e:
+            for _, _, slot in chunk:
+                slot.setdefault("error", f"batch failed: {type(e).__name__}: {str(e)[:300]}")
+        finally:
+            for _, _, slot in chunk:
+                slot["done"].set()
+
+
+def enable_batch(idle=20.0, poll=30.0, log=None):
+    """Route api.call() for Claude models through the Message Batches API from now on."""
+    global _BATCHER
+    _BATCHER = Batcher(idle, poll, log)
+    return _BATCHER
+
+
+def disable_batch():
+    global _BATCHER
+    _BATCHER = None
+
+
+def batch_ids():
+    return list(_BATCHER.ids) if _BATCHER else []
+
+
+def _batch_request(method, url, body=None):
+    """Create (POST) or read (GET) a batch. A GET is retried on any failure. A POST is retried only when the API
+    refused it (429, 5xx), never after a dropped connection, so a batch is not created and paid for twice."""
+    headers = {"x-api-key": _key(), "anthropic-version": API_VERSION, "content-type": "application/json"}
+    data = json.dumps(body).encode() if body is not None else None
+    for attempt in range(TRIES):
+        req = urllib.request.Request(url, data=data, headers=headers, method=method)
+        try:
+            with urllib.request.urlopen(req, timeout=300) as r:
+                return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            raw = e.read().decode(errors="replace")
+            if e.code in RETRY_CODES and attempt < TRIES - 1:
+                _wait(attempt, e.headers)
+                continue
+            raise APIError(f"batch {method} HTTP {e.code}: {raw[:400]}")
+        except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
+            if method == "GET" and attempt < TRIES - 1:
+                _wait(attempt)
+                continue
+            raise APIError(f"batch {method} could not reach the API: {getattr(e, 'reason', e)}")
+    raise APIError("gave up after repeated retries")
+
+
+def _batch_results(url):
+    """The batch's results file: one JSON object per line, in any order."""
+    headers = {"x-api-key": _key(), "anthropic-version": API_VERSION}
+    for attempt in range(TRIES):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=600) as r:
+                return [json.loads(line) for line in r.read().decode("utf-8").splitlines() if line.strip()]
+        except urllib.error.HTTPError as e:
+            if e.code in RETRY_CODES and attempt < TRIES - 1:
+                _wait(attempt, e.headers)
+                continue
+            raise APIError(f"batch results HTTP {e.code}: {e.read().decode(errors='replace')[:400]}")
+        except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, ssl.SSLError, OSError) as e:
+            if attempt < TRIES - 1:
+                _wait(attempt)
+                continue
+            raise APIError(f"batch results could not be read: {getattr(e, 'reason', e)}")
     raise APIError("gave up after repeated retries")
 
 

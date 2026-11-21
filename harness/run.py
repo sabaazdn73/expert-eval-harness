@@ -24,7 +24,7 @@ from harness import gemini
 from harness import sandbox
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HARNESS_VERSION = "2026-11-02 (separate Claude/Google budgets, second grader, adjudication, preflight)"
+HARNESS_VERSION = "2026-11-21 (batch runs at half price; separate Claude/Google budgets, second grader, adjudication, preflight)"
 SYSTEM = ("You are an expert answering a professional task. Work carefully, state assumptions, "
           "and do not invent facts, standards or citations. If the task's premise or figures are wrong "
           "or inconsistent, say so instead of forcing an answer.")
@@ -440,6 +440,13 @@ def _price(model):
     return next((v for k, v in api.PRICES.items() if model.startswith(k)), None)
 
 
+def _batched_trial(a, task, model):
+    """Whether --batch sends this trial's model call through the Message Batches API: Claude, one plain call.
+    Trials with a tool loop (code execution, the code library, the local sandbox) stay streamed."""
+    return (getattr(a, "batch", False) and api.provider(model) == "anthropic" and not task.get("code_execution")
+            and not getattr(a, "model_library", False))
+
+
 def estimate_cost(tasks, ks, judges, a):
     """Low and high estimate (USD) of a run, by provider and by model, before it starts. Model trials: the first
     trial of each (task, model) writes the prompt to the cache (Claude, 1-hour rate), later ones read it; Gemini is
@@ -482,6 +489,8 @@ def estimate_cost(tasks, ks, judges, a):
                     first = tin[i] * inp * 2 + (tin[i] * (turns - 1) + growth) * inp * rd
                     later = (tin[i] * turns + growth) * inp * rd
                     cost = (first + (k - 1) * later + k * out * outp) / 1e6
+                    if _batched_trial(a, task, m):
+                        cost *= api.BATCH_DISCOUNT
                 add(m, side, cost)
             # gradings: every trial of every model is graded by every judge
             answer_tok = min(out, 12000)  # the graded text is the answer, not the thinking
@@ -500,6 +509,8 @@ def estimate_cost(tasks, ks, judges, a):
                 else:
                     cost = (static * inp * 2 + (n_trials - 1) * static * jturns * inp * rd
                             + n_trials * answer_tok * jturns * inp + n_trials * jout * outp) / 1e6 if n_trials else 0
+                    if getattr(a, "batch", False) and not a.judge_tools:
+                        cost *= api.BATCH_DISCOUNT
                 add(j, side, cost)
     return est
 
@@ -688,6 +699,11 @@ def cmd_run(a):
     for p, b in budgets.items():
         if b is not None:
             api.set_budget(b, p)
+    if a.batch and not mock:
+        api.enable_batch()
+        print("batch mode: plain Claude calls (model answers without tools, graders without --judge-tools) go through "
+              "the Message Batches API at half price; tool-loop trials and Gemini run as usual. Most batches end "
+              "within an hour; the run waits for them (at most 24 h).", flush=True)
     started = dt.datetime.now().isoformat(timespec="seconds")
     import threading
     from concurrent.futures import ThreadPoolExecutor
@@ -880,7 +896,10 @@ def cmd_run(a):
         regrades += [(i, task, lib_block) for i, r in enumerate(rows) if r["task"] == task["id"] and not r.get("no_answer")
                      and (r.get("grade_error") or r.get("secondary_grade_error")
                           or any(j not in (r.get("grades") or {}) for j in judges))]
-    print(f"running {len(jobs)} trials, {a.parallel} at a time" + (f"; regrading {len(regrades)} saved answers" if regrades else "")
+    workers = max(1, a.parallel)
+    if a.batch and not mock:  # every trial waits on its batch at once, so all of them go out together
+        workers = max(workers, len(jobs) + len(regrades))
+    print(f"running {len(jobs)} trials, {workers} at a time" + (f"; regrading {len(regrades)} saved answers" if regrades else "")
           + "".join(f"; {p} budget ${b:.2f}" for p, b in budgets.items() if b is not None), flush=True)
     # Warm the prompt cache: the first trial of each (task, model) starts alone; the other trials of that
     # pair start a little later, once the first request has written the task files to the cache.
@@ -890,10 +909,10 @@ def cmd_run(a):
         key = (j[0]["id"], j[3])
         (rest if key in seen else first).append(j)
         seen.add(key)
-    with ThreadPoolExecutor(max_workers=max(1, a.parallel)) as pool:
+    with ThreadPoolExecutor(max_workers=workers) as pool:
         futs = [pool.submit(regrade_one, *g) for g in regrades]
         futs += [pool.submit(one, *j) for j in first]
-        if rest and not mock:
+        if rest and not mock and not a.batch:  # a batch runs its requests in any order: no warm-up to wait for
             _time.sleep(a.warmup)
         futs += [pool.submit(one, *j) for j in rest]
         for fut in futs:
@@ -927,7 +946,7 @@ def cmd_run(a):
     meta = {"run_id": run_id, "models": order, "k": max(ks.values()), "k_per_model": ks, "judge_tools": a.judge_tools,
             "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs,
             "judge": judge_model, "judges": judges, "consensus": a.consensus, "ref_library": bool(lib),
-            "sandbox": a.sandbox,
+            "sandbox": a.sandbox, "batch": bool(a.batch), "batch_ids": api.batch_ids(),
             "tasks": [os.path.basename(d) for d in task_dirs], "budgets": budgets,
             "task_sha256": {t: task_fingerprint(tk) for t, tk in tasks_by_id.items()},
             "harness_version": HARNESS_VERSION, "started": started,
@@ -1229,6 +1248,11 @@ def cmd_regrade(a):
     todo = [i for i, r in enumerate(new) if dirs.get(r["task"]) and not r.get("no_answer") and r.get("response")
             and (not a.only_errors or r.get("grade_error") or r.get("secondary_grade_error")
                  or any(j not in (r.get("grades") or {}) for j in judges))]
+    workers = max(1, a.parallel)
+    if a.batch:
+        api.enable_batch()
+        workers = max(workers, len(todo))
+        print("batch mode: graders without --judge-tools go through the Message Batches API at half price", flush=True)
     print(f"regrading {len(todo)} of {len(new)} saved answers with {', '.join(judges)}", flush=True)
 
     def save():
@@ -1270,7 +1294,7 @@ def cmd_regrade(a):
             save()
             print(f"{r['task']:<28} {r['model']:<22} trial {r['trial'] + 1}: {line}", flush=True)
 
-    with ThreadPoolExecutor(max_workers=max(1, a.parallel)) as pool:
+    with ThreadPoolExecutor(max_workers=workers) as pool:
         for fut in [pool.submit(one, i) for i in todo]:
             fut.result()
     save()
@@ -1403,6 +1427,9 @@ def main():
                         "new trial starts (default 20; trials under way finish and are graded)")
     s.add_argument("--budget-google", dest="budget_google", type=float, default=20.0,
                    help="estimated USD on Google Cloud (Gemini models under test and Gemini graders), metered separately (default 20)")
+    s.add_argument("--batch", action="store_true",
+                   help="send plain Claude calls (no tool loop) through the Message Batches API: half price, results "
+                        "usually within an hour; for full runs nobody waits on")
     s.add_argument("--dry-run", action="store_true", help="print the plan and the cost estimate, call nothing")
     s.add_argument("--yes", action="store_true", help="start even if the high cost estimate is above a budget")
     s.add_argument("--est-output", type=int, default=40000, help="high estimate of output (thinking + answer) tokens per trial")
@@ -1435,6 +1462,7 @@ def main():
     s.add_argument("--ref-lib")
     s.add_argument("--parallel", type=int, default=3)
     s.add_argument("--only-errors", action="store_true", help="grade only the answers whose grading failed (in place)")
+    s.add_argument("--batch", action="store_true", help="send graders without --judge-tools through the Message Batches API (half price)")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_regrade)
     s = sub.add_parser("compare", help="compare two or more runs side by side")

@@ -1,0 +1,31 @@
+name: grader-check
+
+# Smoke check on pull requests that change a task, the grader or the grading code: the grader must still pass the
+# reference answer and fail the lure and boundary answers of every task with a grader_check/ folder. It catches a
+# key edit or a grading-prompt change that makes the grader accept a wrong answer, before it reaches a paid run.
+# Costs a few cents per pull request (Claude grader only). Without the ANTHROPIC_API_KEY secret it is skipped.
+# To make it block merging, add "grader-check" as a required status check in the branch protection rule for main.
+
+on:
+  pull_request:
+    paths: ["tasks/**", "harness/**", "grader_check.py"]
+  workflow_dispatch:
+
+jobs:
+  grader-check:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Skipped without an API key
+        if: env.ANTHROPIC_API_KEY == ''
+        run: echo "::notice::No ANTHROPIC_API_KEY repository secret, so the grader check was skipped (no cost)."
+      - name: Grader check on the public tasks
+        if: env.ANTHROPIC_API_KEY != ''
+        run: python grader_check.py --judge claude-opus-5-5 --budget-claude 2 --strict
+      - uses: actions/upload-artifact@v4
+        if: always() && env.ANTHROPIC_API_KEY != ''
+        with: { name: grader-check, path: results/ }

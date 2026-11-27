@@ -99,6 +99,11 @@ cache. Each conversation is saved as `runs/<name>/channels/<task>__<model>__tria
 the @mentions and questions marked, and as `.json`; each result row says which agents took part and how many questions
 they asked.
 
+Add `--live` to watch the agents while they work: a page opens in the browser with each trial as a channel in the
+sidebar, the posts appearing as they are written, and the agents at work shown as working, with how long they have been
+at it. The page is served from this computer only (127.0.0.1). `python3 -m harness.run watch runs/<name>` opens the same
+page for a run going on in another terminal, or one that has finished.
+
 A team trial makes up to 3 + agents × (1 + rounds) model calls (11 with the defaults), so check the estimate first and
 raise `--max-calls` to match:
 

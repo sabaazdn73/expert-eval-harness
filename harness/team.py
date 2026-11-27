@@ -24,6 +24,7 @@ later call. The whole conversation is saved as JSON and as a chat-style HTML pag
 import html
 import json
 import re
+import threading
 from concurrent.futures import ThreadPoolExecutor
 
 from harness import api
@@ -126,9 +127,13 @@ def render_channel(channel, cap=MSG_CAP):
     return "<channel>\n" + "\n\n".join(out) + "\n</channel>"
 
 
-def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_post=None):
+def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=None):
     """solve(content, tag_suffix) -> (text, usage, trace, note) runs one agent: the same model, tools and sandbox as a
-    solo trial. Returns (final_text, usage, trace, note, channel, agents)."""
+    solo trial. Returns (final_text, usage, trace, note, channel, agents).
+
+    on_event(dict), if given, is told what happens as it happens, for the live view (harness/live.py):
+    {"type": "working", "agent", "kind"} when an agent starts, {"type": "idle", ...} when it is done,
+    {"type": "plan", "agents"} once the review is split, and {"type": "post", "msg"} for every post."""
     files, request, post = _split(task, content)
     files = [dict(b) for b in files]
     for b in reversed(files):  # one cache point after the files: every agent reads them from the cache
@@ -137,8 +142,15 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_post=N
             break
     bare = {"type": "text", "text": "<request>\n" + task["prompt_text"] + "\n</request>"}
     channel, usage, trace, calls = [], {}, [], [0]
-    import threading
+    ids = set()  # the agents a question can go to, known once the plan is in
     lock = threading.Lock()
+
+    def emit(e):
+        if on_event:
+            try:
+                on_event(e)
+            except Exception:  # the live view must never stop a trial
+                pass
 
     def add_usage(u):
         for k, v in (u or {}).items():
@@ -149,11 +161,17 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_post=N
         if u and u.get("stop_reason"):
             usage["stop_reason"] = u["stop_reason"]
 
-    def ask(role_text, who, final=False):
+    def ask(role_text, who, kind, final=False):
         req = request if final else bare
-        cx = files + [req, {"type": "text", "text": render_channel(channel)},
+        with lock:
+            seen = render_channel(channel)
+        cx = files + [req, {"type": "text", "text": seen},
                       {"type": "text", "text": "<your_role>\n" + role_text + "\n</your_role>"}] + post
-        text, u, tr, _ = solve(cx, f"team-{who}")
+        emit({"type": "working", "agent": who, "kind": kind})
+        try:
+            text, u, tr, _ = solve(cx, f"team-{who}")
+        finally:
+            emit({"type": "idle", "agent": who, "kind": kind})
         with lock:
             calls[0] += 1
             add_usage(u)
@@ -161,21 +179,23 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_post=N
         return text or ""
 
     def say(rnd, who, text, kind, to=None):
+        if to is None:  # a post is addressed to the agents its ASK lines name
+            to = sorted({t.lower() for t, _ in ASK_RE.findall(text) if t.lower() in ids and t.lower() != who})
         with lock:
-            msg = {"n": len(channel) + 1, "round": rnd, "from": who, "to": to or [], "kind": kind, "text": text.strip()}
+            msg = {"n": len(channel) + 1, "round": rnd, "from": who, "to": to, "kind": kind, "text": text.strip()}
             channel.append(msg)
-        if on_post:
-            on_post(msg)
+        emit({"type": "post", "msg": dict(msg)})
         return msg
 
     # 1. code basis, 2. plan
-    say(0, CODE_BASIS_ID, ask(CODE_BASIS_ROLE, CODE_BASIS_ID), "basis")
-    plan_text = ask(LEAD_ROLE.format(n=max_agents), LEAD_ID)
+    say(0, CODE_BASIS_ID, ask(CODE_BASIS_ROLE, CODE_BASIS_ID, "basis"), "basis")
+    plan_text = ask(LEAD_ROLE.format(n=max_agents), LEAD_ID, "plan")
     agents, cross = _parse_plan(plan_text, max_agents)
+    ids.update([a["id"] for a in agents] + [CODE_BASIS_ID])
+    emit({"type": "plan", "agents": agents})
     roster = ", ".join(["@" + CODE_BASIS_ID] + ["@" + a["id"] for a in agents])
     say(0, LEAD_ID, "Plan:\n" + "\n".join(f"- @{a['id']}: {a['member']}. {a['scope']}" for a in agents)
         + ("\nCross-checks:\n" + "\n".join(f"- {c}" for c in cross) if cross else ""), "plan")
-    ids = {a["id"] for a in agents} | {CODE_BASIS_ID}
 
     def questions_in(msgs):
         qs = {}
@@ -186,33 +206,32 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_post=N
                     qs.setdefault(target, []).append((m["from"], q.strip()))
         return qs
 
-    # 3. members, in parallel
+    # 3. members, in parallel; each post goes up as soon as its agent is done
+    def member(a):
+        text = ask(MEMBER_ROLE.format(id=a["id"], member=a["member"], scope=a["scope"], roster=roster), a["id"], "findings")
+        return say(1, a["id"], text, "findings")
     with ThreadPoolExecutor(max_workers=max(1, min(parallel, len(agents)))) as pool:
-        texts = list(pool.map(lambda a: ask(MEMBER_ROLE.format(id=a["id"], member=a["member"], scope=a["scope"],
-                                                               roster=roster), a["id"]), agents))
-    new = [say(1, a["id"], t, "findings") for a, t in zip(agents, texts)]
+        new = list(pool.map(member, agents))
 
     # 4. answer rounds: questions go to the agent they name
+    role_of = {a["id"]: a for a in agents}
     for r in range(rounds):
         qs = questions_in(new)
         if not qs:
             break
-        for m in new:
-            m["to"] = sorted({t.lower() for t, _ in ASK_RE.findall(m["text"]) if t.lower() in ids})
-        targets = sorted(qs)
-        role_of = {a["id"]: a for a in agents}
 
-        def answer(t):
+        def answer(t, r=r, qs=qs):
             qtext = "\n".join(f"- from @{frm}: {q}" for frm, q in qs[t])
-            return ask(ANSWER_ROLE.format(id=t, questions=qtext) + (
+            text = ask(ANSWER_ROLE.format(id=t, questions=qtext) + (
                 "\nYou are the code-basis engineer: answer from the documents and the adopted code." if t == CODE_BASIS_ID
-                else f"\nYour part: {role_of[t]['member']}."), t)
+                else f"\nYour part: {role_of[t]['member']}."), t, "answer")
+            return say(2 + r, t, text, "answer", to=sorted({frm for frm, _ in qs[t]}))
+        targets = sorted(qs)
         with ThreadPoolExecutor(max_workers=max(1, min(parallel, len(targets)))) as pool:
-            answers = list(pool.map(answer, targets))
-        new = [say(2 + r, t, a, "answer", to=sorted({frm for frm, _ in qs[t]})) for t, a in zip(targets, answers)]
+            new = list(pool.map(answer, targets))
 
     # 5. the checker writes the answer that is graded
-    final = ask(CHECKER_ROLE, CHECKER_ID, final=True)
+    final = ask(CHECKER_ROLE, CHECKER_ID, "final", final=True)
     say(max(m["round"] for m in channel) + 1, CHECKER_ID, final, "final")
     note = f"team of {len(agents)} agents + code basis + checker, {len(channel)} posts, {calls[0]} model calls"
     return final, usage, trace, note, channel, agents

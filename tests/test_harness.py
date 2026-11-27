@@ -864,3 +864,47 @@ class TeamReview(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(tmp, "runs", "tm", by["mock-good"]["team"]["channel"])))
         meta = json.load(open(os.path.join(tmp, "runs", "tm", "meta.json")))
         self.assertEqual(meta["team"], {"agents": 4, "rounds": 1})
+
+
+class LiveView(unittest.TestCase):
+    """--team --live: the state file the page reads, and the local server that serves it."""
+
+    def test_board_follows_the_team_and_the_page_can_read_it(self):
+        import urllib.request
+        from harness import live, team
+        tmp = tempfile.mkdtemp()
+        board = live.Board(tmp, "r1")
+        board.add("t__m__trial1", "t", "m", 0)
+        board.state("t__m__trial1", "working")
+        working_during = []
+
+        def solve(cx, sfx):
+            state = json.load(open(os.path.join(tmp, "channels", "live.json")))
+            working_during.append(list(state["trials"]["t__m__trial1"]["working"]))
+            return ("Final.\n```json\n{}\n```" if sfx == "team-checker" else "post"), {}, [], ""
+        task = {"id": "t", "prompt_text": "Review it."}
+        team.run_team(task, [{"type": "text", "text": "Review it."}], solve,
+                      on_event=lambda e: board.event("t__m__trial1", e))
+        board.state("t__m__trial1", "done", verdict="PASS (3/3)")
+        board.finish()
+        self.assertEqual(working_during[0], ["code-basis"])  # the page sees who is working while they work
+        srv, url = live.serve(tmp, port=0, open_browser=False)
+        try:
+            page = urllib.request.urlopen(url).read().decode()
+            state = json.loads(urllib.request.urlopen(url.replace("live.html", "live.json")).read())
+        finally:
+            srv.shutdown()
+        self.assertIn("fetch(\"live.json\"", page)
+        self.assertTrue(state["finished"])
+        t = state["trials"]["t__m__trial1"]
+        self.assertEqual((t["state"], t["verdict"], t["working"]), ("done", "PASS (3/3)", {}))
+        self.assertEqual([p["kind"] for p in t["posts"]], ["basis", "plan", "findings", "final"])
+
+    def test_a_failing_live_view_does_not_stop_the_trial(self):
+        from harness import team
+
+        def boom(e):
+            raise OSError("disk full")
+        out = team.run_team({"id": "t", "prompt_text": "Q"}, [{"type": "text", "text": "Q"}],
+                            lambda cx, sfx: ("ok", {}, [], ""), on_event=boom)
+        self.assertEqual(out[0], "ok")

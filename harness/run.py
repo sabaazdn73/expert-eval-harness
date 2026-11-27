@@ -23,6 +23,7 @@ from harness import grader_tools
 from harness import gemini
 from harness import sandbox
 from harness import team
+from harness import live
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HARNESS_VERSION = "2026-11-27 (team review mode; batch runs at half price; separate Claude/Google budgets, second grader, adjudication, preflight)"
@@ -684,6 +685,8 @@ def cmd_run(a):
     out = os.path.join(ROOT, "runs", run_id)
     if a.team and a.batch:
         sys.exit("--team and --batch do not go together: the agents of a team answer one after another")
+    if a.live and not a.team:
+        sys.exit("--live shows the conversations of a team: add --team")
     per_trial = team.call_count(a.team_agents, a.team_rounds) if a.team else 1
     trials = len(task_dirs) * sum(ks.values())
     planned = trials * per_trial
@@ -765,6 +768,7 @@ def cmd_run(a):
             print(line, flush=True)
 
     tasks_by_id = {}
+    board = server = None  # --team: the live state and, with --live, the page's server
 
     def grade_into(row, task, text, lib_block):
         """Grade an answer into its row with every grader. On primary-grader failure the answer is kept with
@@ -864,15 +868,17 @@ def cmd_run(a):
             print(head + f"skipped: {e} (not saved; raise --budget and use --resume)", flush=True)
             return
         team_info = None
+        cname = f"{task['id']}__{model}__trial{trial + 1}"
         try:
             if a.team:
                 # the same model as a review team talking in one channel; the checker's answer is graded (harness/team.py)
                 def agent(cx, sfx):
                     api.check_budget({api.provider(model)})
                     return solve(task, cx, model, trial, sfx)
+                board.state(cname, "working")
                 text, usage, mtrace, note, channel, agents = team.run_team(
-                    task, content, agent, max_agents=a.team_agents, rounds=a.team_rounds, parallel=a.team_parallel)
-                cname = f"{task['id']}__{model}__trial{trial + 1}"
+                    task, content, agent, max_agents=a.team_agents, rounds=a.team_rounds, parallel=a.team_parallel,
+                    on_event=lambda e: board.event(cname, e))
                 cdir = os.path.join(out, "channels")
                 os.makedirs(cdir, exist_ok=True)
                 json.dump({"task": task["id"], "model": model, "trial": trial, "agents": agents, "channel": channel},
@@ -886,6 +892,8 @@ def cmd_run(a):
                 text, usage, mtrace, note = solve(task, content, model, trial)
         except Exception as e:  # one failed trial must not stop the run
             print(head + f"ERROR {str(e)[:300]} (not saved; rerun with --resume)", flush=True)
+            if board:
+                board.state(cname, "error", verdict="error: " + str(e)[:200])
             return
         row = {"task": task["id"], "domain": task.get("domain"), "model": model, "trial": trial,
                "with_refs": a.with_refs, "passed": False, "checks": [], "rubric": [], "answer": None, "score": None,
@@ -902,9 +910,15 @@ def cmd_run(a):
                    else f"empty answer (stop_reason {stop})")
             row["no_answer"] = why
             record(row, usage, {}, head + f"NO ANSWER - {why}; not graded" + (f"  [{note}]" if note else ""))
+            if board:
+                board.state(cname, "done", verdict="no answer")
             return
+        if board:
+            board.state(cname, "grading")
         row, jusage, verdict = grade_into(row, task, text, lib_block)
         record(row, usage, jusage, head + verdict + (f"  [{note}]" if note else ""))
+        if board:
+            board.state(cname, "done", verdict=" ".join(verdict.split("  [")[0].split()))
 
     def regrade_one(i, task, lib_block):
         r = rows[i]
@@ -936,6 +950,13 @@ def cmd_run(a):
     workers = max(1, a.parallel)
     if a.batch and not mock:  # every trial waits on its batch at once, so all of them go out together
         workers = max(workers, len(jobs) + len(regrades))
+    if a.team:  # channels/live.json: the state of every team trial, for the live page
+        board = live.Board(out, run_id)
+        for j in jobs:
+            board.add(f"{j[0]['id']}__{j[3]}__trial{j[4] + 1}", j[0]["id"], j[3], j[4])
+        if a.live:
+            server, url = live.serve(out, port=a.live_port)
+            print(f"live view: {url}  (open it in a browser; it updates as the agents post)", flush=True)
     print(f"running {len(jobs)} trials, {workers} at a time" + (f"; regrading {len(regrades)} saved answers" if regrades else "")
           + "".join(f"; {p} budget ${b:.2f}" for p, b in budgets.items() if b is not None), flush=True)
     # Warm the prompt cache: the first trial of each (task, model) starts alone; the other trials of that
@@ -993,6 +1014,12 @@ def cmd_run(a):
             "est_cost_by_model": {m: round(v, 2) for m, v in by_model.items()}}
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), indent=2)
     write_report(out)
+    if board:
+        board.finish()
+    if server:
+        _time.sleep(3)  # long enough for the page to read that the run is finished
+        server.shutdown()
+        print(f"live view closed; to see the conversations again: python3 -m harness.run watch {out}")
     print(f"\nreport: {os.path.join(out, 'report.md')}")
     print("estimated cost of this run: Claude (Anthropic Console) ${:.2f}, Gemini (Google Cloud) ${:.2f}  ".format(
         by_prov.get("anthropic", 0), by_prov.get("google", 0)) + json.dumps(meta["est_cost_by_model"])
@@ -1408,6 +1435,20 @@ def cmd_compare(a):
     print(text)
 
 
+def cmd_watch(a):
+    """Open the live page of a --team run: one going on in another terminal, or one already finished."""
+    if not os.path.exists(os.path.join(a.run, "channels", "live.json")):
+        sys.exit(f"{a.run} has no channels/live.json: watch works for runs made with --team")
+    server, url = live.serve(a.run, port=a.port, open_browser=not a.no_open)
+    print(f"live view: {url}\nstop with Ctrl+C", flush=True)
+    import time as _time
+    try:
+        while True:
+            _time.sleep(3600)
+    except KeyboardInterrupt:
+        server.shutdown()
+
+
 def cmd_gate(a):
     meta, rows = load_run(a.run)
     rows = apply_adjudications(rows, load_adjudications(a.run))
@@ -1487,6 +1528,9 @@ def main():
     s.add_argument("--team-agents", type=int, default=4, help="--team: at most this many member agents (default 4)")
     s.add_argument("--team-rounds", type=int, default=1, help="--team: rounds of questions and answers (default 1)")
     s.add_argument("--team-parallel", type=int, default=4, help="--team: agents of one trial working at the same time")
+    s.add_argument("--live", action="store_true",
+                   help="--team: open a page in the browser that shows the agents' conversations as they happen")
+    s.add_argument("--live-port", type=int, default=8765, help="--live: port on this computer (127.0.0.1) for the page")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_run)
     s = sub.add_parser("preflight", help="validate tasks and API keys before the paid run; --ping sends one tiny request per model")
@@ -1516,6 +1560,11 @@ def main():
     s.add_argument("runs", nargs="+")
     s.add_argument("--out", help="also write the comparison to this file")
     s.set_defaults(fn=cmd_compare)
+    s = sub.add_parser("watch", help="open the live page of a --team run (going on in another terminal, or finished)")
+    s.add_argument("run", help="runs/<name>")
+    s.add_argument("--port", type=int, default=8765)
+    s.add_argument("--no-open", action="store_true", help="print the address without opening the browser")
+    s.set_defaults(fn=cmd_watch)
     s = sub.add_parser("gate")
     s.add_argument("run")
     s.add_argument("--mode", choices=["difficulty", "quality"], default="difficulty")

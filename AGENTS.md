@@ -15,8 +15,8 @@ Python 3.10 or later, standard library only: there is nothing to install.
    (offline wiring test: `--judge mock-judge`). The reference answer must pass, the lure and boundary answers must fail.
 
 `--team` runs each trial as a review team of the same model (code basis, lead, one agent per member, questions in a
-shared channel, a checker whose answer is graded): see "Team review" in README.md and `harness/team.py`. Offline check:
-`python3 -m harness.run run --models mock-good mock-bad --k 1 --team`.
+shared channel, a checker whose answer is graded): see "Team review" in README.md and `harness/team.py`. `--live` opens a page that shows the conversations as they
+happen (`harness/live.py`). Offline check: `python3 -m harness.run run --models mock-good mock-bad --k 1 --team`.
 
 For a full run nobody waits on, add `--batch` (Message Batches API, half price, results within about an hour); it applies
 to plain Claude calls only, tool loops stay streamed. `grader_check.py --strict` exits 1 on any wrong verdict.

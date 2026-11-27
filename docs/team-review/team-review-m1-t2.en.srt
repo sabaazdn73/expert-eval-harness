@@ -1,0 +1,95 @@
+1
+00:00:00,600 --> 00:00:06,147
+Can a team of AI agents review a structural submittal better than one model working alone?
+
+2
+00:00:06,597 --> 00:00:09,242
+I tried it on one of my evaluation tasks.
+
+3
+00:00:10,242 --> 00:00:15,917
+A pedestrian skybridge spans between a parking garage and an office building in Salt Lake City.
+
+4
+00:00:16,367 --> 00:00:21,295
+At the garage end, it rests on a sliding bearing with 5 inches of travel each way.
+
+5
+00:00:21,745 --> 00:00:26,950
+The fabricator's engineer says that is enough, and a junior engineer's draft review agrees.
+
+6
+00:00:27,400 --> 00:00:31,389
+Before signing, the engineer of record asks the model to check both.
+
+7
+00:00:32,389 --> 00:00:38,832
+In team mode, the same model, Claude Sonnet 5.5, works as a review team in one shared channel.
+
+8
+00:00:39,282 --> 00:00:50,290
+First, a code-basis agent pins down the rules: the 2024 IBC as adopted by Utah, ASCE 7-22 and ACI 318-19.
+
+9
+00:00:51,290 --> 00:00:58,906
+A lead splits the review into three parts: the seismic movement at the bearing, the bearing travel, and the corbel with the draft review.
+
+10
+00:00:59,906 --> 00:01:03,725
+Three agents work in parallel, each with its own Python sandbox.
+
+11
+00:01:04,175 --> 00:01:05,519
+They catch real errors.
+
+12
+00:01:05,969 --> 00:01:13,862
+The fabricator took the garage movement at the center of mass, not at the bearing, and used the office building's movement without amplifying it.
+
+13
+00:01:14,862 --> 00:01:17,422
+Then they ask each other questions in the channel.
+
+14
+00:01:17,872 --> 00:01:26,875
+They raise the critical doubt: if the current code calls for the MCE displacement, the pad runs off its stainless sheet.
+
+15
+00:01:27,325 --> 00:01:34,791
+But the code-basis agent, recalling the 2016 edition from memory, says there is no such factor, and the team drops it.
+
+16
+00:01:35,791 --> 00:01:44,730
+The checker reads the whole channel and signs: revise and resubmit, but the bearing itself is adequate, with 3.66 inches of movement.
+
+17
+00:01:45,730 --> 00:01:47,010
+That is the wrong call.
+
+18
+00:01:47,460 --> 00:01:55,865
+ASCE 7-22 requires the MCE displacement for a member that spans between two structures.
+
+19
+00:01:56,315 --> 00:02:00,859
+That is about 6 inches with thermal movement, more than the 5 inches of travel.
+
+20
+00:02:01,309 --> 00:02:04,104
+The team failed the task, just like Sonnet alone.
+
+21
+00:02:04,554 --> 00:02:07,818
+With the code text as a look-up tool, Sonnet alone passed.
+
+22
+00:02:08,818 --> 00:02:12,167
+More agents of the same model share the same blind spot.
+
+23
+00:02:12,617 --> 00:02:14,644
+The governing text is what fixes it.
+
+24
+00:02:15,094 --> 00:02:19,723
+The task, the full conversation and the harness are open source on GitHub.

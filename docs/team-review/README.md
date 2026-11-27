@@ -5,7 +5,7 @@ One trial of the harness's team review mode (`--team`, see [Team review](../../R
 Hackathon tasks. I made this task public after the hackathon so that the whole process can be read: the drawings, the
 calculation under review, the draft review, the key, and here every message the agents exchanged.
 
-- [`team-review-m1-t2.mp4`](team-review-m1-t2.mp4): the narrated screen recording of the run with the task drawings (2:22)
+- [`team-review-m1-t2.mp4`](team-review-m1-t2.mp4): the narrated screen recording of the run with the task drawings (2:22); English subtitles in [`team-review-m1-t2.en.srt`](team-review-m1-t2.en.srt)
 - [`channel.html`](channel.html): the whole conversation as a chat page (download and open it in a browser)
 - [`channel.json`](channel.json): the same conversation as data
 - [`grade-2026-11-01-key.json`](grade-2026-11-01-key.json): the grader's item-by-item verdict

@@ -860,6 +860,14 @@ def cmd_run(a):
             mtrace, note = [], ""
         return text, usage, mtrace, note
 
+    def save_channel(cname, task, model, trial, agents, channel, note):
+        cdir = os.path.join(out, "channels")
+        os.makedirs(cdir, exist_ok=True)
+        json.dump({"task": task["id"], "model": model, "trial": trial, "agents": agents, "channel": channel,
+                   "note": note}, open(os.path.join(cdir, cname + ".json"), "w"), indent=1)
+        open(os.path.join(cdir, cname + ".html"), "w").write(team.render_html(
+            channel, f"{task['id']} · {model} · trial {trial + 1}", note))
+
     def one(task, content, lib_block, model, trial):
         head = f"{task['id']:<28} {model:<22} trial {trial + 1}: "
         try:
@@ -873,18 +881,19 @@ def cmd_run(a):
             if a.team:
                 # the same model as a review team talking in one channel; the checker's answer is graded (harness/team.py)
                 def agent(cx, sfx):
-                    api.check_budget({api.provider(model)})
                     return solve(task, cx, model, trial, sfx)
+
+                def over_budget():  # the team then skips its optional steps and the checker answers
+                    try:
+                        api.check_budget({api.provider(model)})
+                        return False
+                    except api.BudgetExceeded:
+                        return True
                 board.state(cname, "working")
                 text, usage, mtrace, note, channel, agents = team.run_team(
                     task, content, agent, max_agents=a.team_agents, rounds=a.team_rounds, parallel=a.team_parallel,
-                    on_event=lambda e: board.event(cname, e), revisions=a.team_revisions)
-                cdir = os.path.join(out, "channels")
-                os.makedirs(cdir, exist_ok=True)
-                json.dump({"task": task["id"], "model": model, "trial": trial, "agents": agents, "channel": channel},
-                          open(os.path.join(cdir, cname + ".json"), "w"), indent=1)
-                open(os.path.join(cdir, cname + ".html"), "w").write(team.render_html(
-                    channel, f"{task['id']} · {model} · trial {trial + 1}", note))
+                    on_event=lambda e: board.event(cname, e), revisions=a.team_revisions, wrap_up=over_budget)
+                save_channel(cname, task, model, trial, agents, channel, note)
                 team_info = {"agents": [x["id"] for x in agents], "posts": len(channel),
                              "asks": sum(len(team.ASK_RE.findall(m["text"])) for m in channel),
                              "sent_back": sorted({m["from"] for m in channel if m["kind"] == "revision"}),
@@ -892,7 +901,12 @@ def cmd_run(a):
             else:
                 text, usage, mtrace, note = solve(task, content, model, trial)
         except Exception as e:  # one failed trial must not stop the run
-            print(head + f"ERROR {str(e)[:300]} (not saved; rerun with --resume)", flush=True)
+            part = getattr(e, "team_channel", None)
+            if part:  # keep the conversation up to the failure, to read; the trial itself is not saved or graded
+                save_channel(cname, task, model, trial, getattr(e, "team_agents", []), part,
+                             f"stopped by an error after {len(part)} posts: {str(e)[:200]}")
+            print(head + f"ERROR {str(e)[:300]} (not saved; rerun with --resume)"
+                  + (f"; the {len(part)} posts so far are in channels/{cname}.html" if part else ""), flush=True)
             if board:
                 board.state(cname, "error", verdict="error: " + str(e)[:200])
             return

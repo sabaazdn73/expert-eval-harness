@@ -942,3 +942,37 @@ class LiveView(unittest.TestCase):
         out = team.run_team({"id": "t", "prompt_text": "Q"}, [{"type": "text", "text": "Q"}],
                             lambda cx, sfx: ("ok", {}, [], ""), on_event=boom)
         self.assertEqual(out[0], "ok")
+
+
+class TeamBudget(unittest.TestCase):
+    def test_budget_reached_skips_the_optional_steps_and_the_checker_still_answers(self):
+        from harness import team
+        plan = '{"agents": [{"id": "bearing", "member": "bearing"}, {"id": "anchor", "member": "anchors"}]}'
+        calls = []
+
+        def solve(cx, sfx):
+            calls.append(sfx)
+            role = cx[-1]["text"]
+            if "You lead" in role:
+                return plan, {}, [], ""
+            if "checking engineer" in role:
+                self.assertIn("Budget reached", next(b["text"] for b in cx if b["text"].startswith("<channel>")))
+                return "Final.\n```json\n{}\n```", {}, [], ""
+            return "FINDINGS.\nASK @anchor: uplift?", {}, [], ""
+        final, usage, trace, note, channel, agents = team.run_team(
+            {"id": "t", "prompt_text": "Q"}, [{"type": "text", "text": "Q"}], solve, wrap_up=lambda: True)
+        self.assertNotIn("team-anchor", calls[4:-1])  # no answer round, no send-back check, no revisions
+        self.assertEqual(calls[-1], "team-checker")
+        self.assertEqual([m["kind"] for m in channel][-2:], ["note", "final"])
+        self.assertIn("stopped early at the budget", note)
+
+    def test_a_failed_trial_keeps_its_posts(self):
+        from harness import team
+
+        def solve(cx, sfx):
+            if sfx == "team-lead":
+                raise api.APIError("credit balance too low")
+            return "ACI 318-19.", {}, [], ""
+        with self.assertRaises(api.APIError) as ctx:
+            team.run_team({"id": "t", "prompt_text": "Q"}, [{"type": "text", "text": "Q"}], solve)
+        self.assertEqual([m["kind"] for m in ctx.exception.team_channel], ["basis"])

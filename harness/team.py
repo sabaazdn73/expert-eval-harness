@@ -148,13 +148,29 @@ def render_channel(channel, cap=MSG_CAP):
     return "<channel>\n" + "\n\n".join(out) + "\n</channel>"
 
 
-def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=None, revisions=1):
+def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=None, revisions=1, wrap_up=None):
     """solve(content, tag_suffix) -> (text, usage, trace, note) runs one agent: the same model, tools and sandbox as a
     solo trial. Returns (final_text, usage, trace, note, channel, agents).
 
     on_event(dict), if given, is told what happens as it happens, for the live view (harness/live.py):
     {"type": "working", "agent", "kind"} when an agent starts, {"type": "idle", ...} when it is done,
-    {"type": "plan", "agents"} once the review is split, and {"type": "post", "msg"} for every post."""
+    {"type": "plan", "agents"} once the review is split, and {"type": "post", "msg"} for every post.
+
+    wrap_up(), if given, is asked before each optional step (a round of questions, a send-back check, a round of
+    revisions); when it says True (the budget is reached) the team skips the rest and the checker writes the answer
+    from what is in the channel. If the trial fails anyway, the exception carries the posts so far (.team_channel)."""
+    channel, agents = [], []
+    try:
+        return _run_team(task, content, solve, max_agents, rounds, parallel, on_event, revisions, wrap_up, channel, agents)
+    except Exception as e:
+        try:
+            e.team_channel, e.team_agents = list(channel), list(agents)
+        except Exception:
+            pass
+        raise
+
+
+def _run_team(task, content, solve, max_agents, rounds, parallel, on_event, revisions, wrap_up, channel, agents):
     files, request, post = _split(task, content)
     files = [dict(b) for b in files]
     for b in reversed(files):  # one cache point after the files: every agent reads them from the cache
@@ -162,7 +178,7 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=
             b["cache_control"] = dict(api.CACHE_1H)
             break
     bare = {"type": "text", "text": "<request>\n" + task["prompt_text"] + "\n</request>"}
-    channel, usage, trace, calls = [], {}, [], [0]
+    usage, trace, calls = {}, [], [0]
     ids = set()  # the agents a question can go to, known once the plan is in
     lock = threading.Lock()
 
@@ -211,7 +227,8 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=
     # 1. code basis, 2. plan
     say(0, CODE_BASIS_ID, ask(CODE_BASIS_ROLE, CODE_BASIS_ID, "basis"), "basis")
     plan_text = ask(LEAD_ROLE.format(n=max_agents), LEAD_ID, "plan")
-    agents, cross = _parse_plan(plan_text, max_agents)
+    parsed, cross = _parse_plan(plan_text, max_agents)
+    agents.extend(parsed)
     ids.update([a["id"] for a in agents] + [CODE_BASIS_ID])
     emit({"type": "plan", "agents": agents})
     roster = ", ".join(["@" + CODE_BASIS_ID] + ["@" + a["id"] for a in agents])
@@ -227,6 +244,18 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=
                     qs.setdefault(target, []).append((m["from"], q.strip()))
         return qs
 
+    stopped = []
+
+    def out_of_budget():
+        if not stopped and wrap_up and wrap_up():
+            stopped.append(True)
+            say(next_round(), "harness", "Budget reached: the remaining questions and revisions are skipped. "
+                "The checker writes the answer now from the posts above.", "note")
+        return bool(stopped)
+
+    def next_round():
+        return max([m["round"] for m in channel] or [0]) + 1
+
     # 3. members, in parallel; each post goes up as soon as its agent is done
     def member(a):
         text = ask(MEMBER_ROLE.format(id=a["id"], member=a["member"], scope=a["scope"], roster=roster), a["id"], "findings")
@@ -238,7 +267,7 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=
     role_of = {a["id"]: a for a in agents}
     for r in range(rounds):
         qs = questions_in(new)
-        if not qs:
+        if not qs or out_of_budget():
             break
 
         def answer(t, r=r, qs=qs):
@@ -252,10 +281,10 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=
             new = list(pool.map(answer, targets))
 
     # 5. the checker sends wrong parts back to their owners, then writes the answer that is graded
-    def next_round():
-        return max(m["round"] for m in channel) + 1
     final = None
     for cycle in range(revisions):
+        if out_of_budget():
+            break
         text = ask(CHECKER_ROLE.format(then=CHECKER_SEND_BACK.format(roster=roster)), CHECKER_ID, "check", final=True)
         fixes = {}
         for target, fix in REVISE_RE.findall(text):
@@ -267,6 +296,8 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=
         if not fixes:
             break  # it sent parts back to agents that are not on the team: ask once more for the answer itself
         say(next_round(), CHECKER_ID, text, "review", to=sorted(fixes))
+        if out_of_budget():
+            break
         rnd = next_round()
 
         def revise(t, rnd=rnd, fixes=fixes):
@@ -281,7 +312,8 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=
     say(next_round(), CHECKER_ID, final, "final")
     sent_back = sum(1 for m in channel if m["kind"] == "revision")
     note = (f"team of {len(agents)} agents + code basis + checker, {len(channel)} posts, {calls[0]} model calls"
-            + (f", {sent_back} part(s) sent back and revised" if sent_back else ""))
+            + (f", {sent_back} part(s) sent back and revised" if sent_back else "")
+            + (", stopped early at the budget" if stopped else ""))
     return final, usage, trace, note, channel, agents
 
 
@@ -310,7 +342,7 @@ def render_html(channel, title, subtitle=""):
             who.append(m["from"])
     color = {w: COLORS[i % len(COLORS)] for i, w in enumerate(who)}
     kinds = {"basis": "code basis", "plan": "plan", "findings": "findings", "answer": "answer",
-             "review": "sent back", "revision": "revision", "final": "final answer"}
+             "review": "sent back", "revision": "revision", "note": "note", "final": "final answer"}
     rows = []
     for m in channel:
         c = color[m["from"]]

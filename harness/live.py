@@ -177,7 +177,7 @@ const DOING = {basis: "is settling the code basis", plan: "is splitting the revi
   answer: "is answering a question", check: "is checking the team's work", revision: "is fixing its part",
   final: "is writing the team's answer"};
 const KIND = {basis: "code basis", plan: "plan", findings: "findings", answer: "answer", review: "sent back",
-  revision: "revision", final: "final answer"};
+  revision: "revision", note: "note", final: "final answer"};
 let data = null, sel = null, shown = {key: null, n: 0}, seen = {}, lost = false, chosen = false;
 
 function esc(s) { return s.replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c])); }

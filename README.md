@@ -6,9 +6,24 @@ Each task is a folder with the prompt, any input files, an answer key and a rubr
 
 > **Status: v0.4.** Runs on live Claude and Gemini models with key-scored tasks, one or two graders (Claude and Gemini) with agreement statistics and expert adjudication, an equipped grader, separate cost budgets per billing account, and batch runs at half price. All tasks in this repository are original; private tasks are kept outside it.
 
-## Related project
+## Related work
 
 This harness is the measuring side of [Tnega](https://github.com/sabaazdn73/tnega) ([tnega.app](https://www.tnega.app)), an AI reviewer for structural drawings in development. Before that agent is trusted with real drawings, its tasks are run and graded here.
+
+The rest of my civil and structural engineering work, all public:
+
+| Work | What it is | Links |
+|---|---|---|
+| AI reviewer for structural drawings | The agent this harness tests. It is being built to check reinforced concrete drawings against ACI 318-19 and ASCE 7-16 and to send every life-safety finding to an engineer. It does not review drawings yet. | [tnega.app](https://www.tnega.app) · [4-minute talk](https://www.youtube.com/watch?v=JYRgS2VCLQQ) |
+| Task pipeline and results | The six micro1 Eval Hackathon tasks, each with its drawings, the nine stages it went through and its results with and without the code library. | [tnega.app/eval](https://www.tnega.app/eval/) · [walkthrough video](https://www.youtube.com/watch?v=IWcEG7c-mQU) |
+| RC Code Town | Six types of US concrete structures in 3D at true scale. Clicking a part shows the governing provisions and the errors AI models tend to make there (84 failure cards, 25 review scenarios). Some tasks in this harness are set on these buildings. | [tnega.app/town](https://www.tnega.app/town/) |
+| Review notebook, web edition | The notebook in [docs/review-notebook](docs/review-notebook/README.md) as web pages. | [tnega.app/notebook](https://www.tnega.app/notebook/) |
+| Vasco da Gama Bridge modal study | A simplified 3D OpenSeesPy model of the cable-stayed bridge in Lisbon, calibrated to five measured natural frequencies and checked against modes it was not tuned to (4 of 5 within 8%). Vibration-based assessment was the subject of my MSc research. | [tnega.app/bridge/vasco-da-gama](https://www.tnega.app/bridge/vasco-da-gama/) · [code](https://github.com/sabaazdn73/tnega/tree/main/research/vasco-da-gama-modal) |
+| BIM practice | A free course: model one reinforced concrete building in 32 exercises with free tools. An IFC checker in the browser says, line by line, what is right. | [tnega.app/bim](https://www.tnega.app/bim/) · [code](https://github.com/sabaazdn73/open-structural-bim-course) |
+| Reclaimed steel reliability | FORM, checked by importance sampling and Monte Carlo, to calibrate the partial factor that gives a Eurocode member of reclaimed steel the same reliability as one of modern steel. | [code](https://github.com/sabaazdn73/reclaimed-steel-reliability) |
+| Pipeline damage detection with ML | Surrogate models trained on simplified FEM simulations of wall-thickness loss in a pipe. Gaussian process regression reached R² = 0.997, with uncertainty bounds. | [code](https://github.com/sabaazdn73/Pipeline-Damage-ML) |
+
+Two sole-author papers on the tasks in this harness are under review: "Can an AI-drafted review be signed? Language model errors in concrete design review" (ISEC-2027) and "Where language models fail in structural engineering review: expert-designed tasks and the code-edition trap" (EG-ICE 2027). The method is also published on [Medium](https://medium.com/@sabaazadegan/where-the-human-belongs-ab775c2fa3f7).
 
 ## Method
 

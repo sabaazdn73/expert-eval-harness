@@ -1,0 +1,3 @@
+I'm the engineer of record on the 26-210 parking structure in Salt Lake City (2024 IBC with the Utah amendments, ASCE 7-22, ACI 318-19). The steel fabricator's delegated engineer has submitted deferred submittal SB-7 for the skybridge bearing at our L2 corbel, and my junior engineer has drafted our review. Our general notes, the bearing detail, our seismic analysis output, the office building engineer's letter, the calc and the draft review are attached.
+
+Please check the submittal and the draft before I sign, tell me what our review should say, and give me the numbers and code references behind it.

@@ -115,8 +115,8 @@ raise `--max-calls` to match:
 python3 -m harness.run run --models claude-sonnet-5-5:1 --team --sandbox local --tasks "/path/to/tasks/*" --dry-run
 ```
 
-`--team` does not combine with `--batch`. It has not yet been run on the hackathon tasks; results will be added to
-`docs/results.md` when it is.
+`--team` does not combine with `--batch`. A worked example on a public task, with the narrated recording, the whole
+conversation and how it compares with a single model: [docs/team-review](docs/team-review/).
 
 ### Compare runs
 
@@ -354,6 +354,7 @@ python3 -m harness.run gate runs/<run_id> --mode quality --model claude-haiku-5-
 | `str-beam-flexure-aci318` | Structural | RC beam flexure check that fails by under 3% |
 | `str-load-combination-wind` | Structural | Governing compression and uplift with wind reversing the load |
 | `str-beam-stirrup-rfi-aci318` | Structural | Review of a contractor's RFI and a junior engineer's draft before the EOR signs: stirrup spacing checked with the concrete strength the general notes give for the beam (full key, grader-check answers; built to the hackathon standard) |
+| `m1-t2-skybridge-sliding-bearing` | Structural | Deferred submittal for a skybridge sliding bearing between two buildings: ASCE 7-22 δMCE at the bearing, absolute sum, against 5.0 in. of travel (micro1 hackathon task, made public with its key and grader-check answers; a team review run is in [docs/team-review](docs/team-review/)) |
 
 ## Adding a task
 

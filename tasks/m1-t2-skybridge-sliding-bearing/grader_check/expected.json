@@ -1,0 +1,53 @@
+{
+  "reference": {
+    "pass": true,
+    "items": {
+      "1": 2,
+      "2": 2,
+      "3": 1,
+      "4": 1,
+      "5": 1,
+      "6": 1,
+      "7": 1,
+      "8": 1,
+      "9": 1,
+      "10": 1
+    },
+    "notes": "Earns every item: delta_MCE per 12.12.3 and Eq. 12.8-17 (garage 1.85 in. at the bearing with delta_di 0.118 in., office 3.84 in.), absolute sum 5.69 in. (6.05 in. with thermal) > 5.0 in., Revise and Resubmit, 18.1 in. sheet, 12.12.2 SRSS identified as the separation rule, joint 7 in. > 6.05 in., and numbered comments to the delegated engineer.",
+    "total": 12
+  },
+  "lure": {
+    "pass": false,
+    "items": {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 1,
+      "5": 1,
+      "6": 1,
+      "7": 0,
+      "8": 1,
+      "9": 0,
+      "10": 0
+    },
+    "notes": "Falls into the key's first documented trap: fixes the location, delta_di and office amplification but uses delta_DE (Cd) instead of delta_MCE, so the absolute sum is 3.20 in. and the bearing is accepted with No Exceptions Taken. Required items 1, 2 and 3 earn 0, there is no fix (item 7), the joint is checked against 3.20 in. (item 9), and the comments keep No Exceptions Taken (item 10). Total 4/12.",
+    "total": 4
+  },
+  "boundary": {
+    "pass": false,
+    "items": {
+      "1": 2,
+      "2": 2,
+      "3": 1,
+      "4": 1,
+      "5": 1,
+      "6": 0,
+      "7": 1,
+      "8": 0,
+      "9": 0,
+      "10": 0
+    },
+    "notes": "Earns all required items plus location, office-elastic and the 17.9 in. sheet fix, but omits delta_di entirely (garage 1.73 in., total 5.93 in. with thermal, inside the accepted range), never addresses the calc's 12.12.2 SRSS or draft comment 3 (item 8), does not recheck the joint (item 9) and gives no ready-to-send comments (item 10); 8/12 < 9.",
+    "total": 8
+  }
+}

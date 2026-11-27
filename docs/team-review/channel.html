@@ -1,0 +1,576 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>m1-t2-skybridge-sliding-bearing · claude-sonnet-5-5 · trial 1</title>
+<style>
+:root { --bg:#f7f6f3; --panel:#ffffff; --ink:#1f2328; --muted:#5d6470; --line:#e2dfd8; --side:#22313f; --sideink:#e8edf2;
+  --ask:#fff4d6; --askink:#6b4e00; --at:#1d5fa8; --final:#eef6f1; }
+@media (prefers-color-scheme: dark) { :root { --bg:#15181c; --panel:#1d2126; --ink:#e6e8eb; --muted:#9aa3ad; --line:#2c3239;
+  --side:#0f1418; --sideink:#cfd8e0; --ask:#3a3020; --askink:#f1d38a; --at:#7fb0ea; --final:#1d2a23; } }
+* { box-sizing:border-box }
+body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.45 -apple-system, "Segoe UI", Inter, sans-serif; }
+.wrap { display:flex; min-height:100vh }
+aside { width:230px; flex:none; background:var(--side); color:var(--sideink); padding:20px 16px }
+aside h1 { font-size:15px; margin:0 0 4px } aside p { margin:0 0 16px; opacity:.75; font-size:12px }
+aside ul { list-style:none; padding:0; margin:0 } aside li { display:flex; gap:8px; align-items:center; padding:3px 0; font-size:13px }
+.dot { width:9px; height:9px; border-radius:50% }
+main { flex:1; min-width:0; padding:20px max(16px, 3vw) }
+main > h2 { margin:0 0 4px; font-size:18px } main > p { margin:0 0 18px; color:var(--muted) }
+.msg { display:flex; gap:12px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px }
+.msg.final { background:var(--final) }
+.av { width:36px; height:36px; flex:none; border-radius:8px; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px }
+.body { min-width:0; flex:1 } header { display:flex; flex-wrap:wrap; gap:8px; align-items:baseline }
+.meta { color:var(--muted); font-size:12px }
+pre { white-space:pre-wrap; word-wrap:break-word; margin:6px 0 0; font:13px/1.5 ui-monospace, Menlo, Consolas, monospace }
+.ask { background:var(--ask); color:var(--askink); border-radius:4px; padding:0 3px } .at { color:var(--at); font-weight:600 }
+@media (max-width:700px) { .wrap { display:block } aside { width:auto } }
+</style></head><body><div class="wrap">
+<aside><h1>#review</h1><p>m1-t2-skybridge-sliding-bearing · claude-sonnet-5-5 · trial 1</p><ul><li><span class="dot" style="background:#2f6f62"></span>@code-basis</li><li><span class="dot" style="background:#7a4fb0"></span>@lead</li><li><span class="dot" style="background:#b5562e"></span>@seismic-demand</li><li><span class="dot" style="background:#2f5d8a"></span>@review-corbel-draft</li><li><span class="dot" style="background:#8a6d1f"></span>@bearing-travel</li><li><span class="dot" style="background:#a03f6b"></span>@checker</li></ul></aside>
+<main><h2>m1-t2-skybridge-sliding-bearing · claude-sonnet-5-5 · trial 1</h2><p>team of 3 agents + code basis + checker, 10 posts, 10 model calls</p><article class="msg"><div class="av" style="background:#2f6f62">CB</div><div class="body"><header><b>@code-basis</b><span class="meta">code basis · round 0</span></header><pre>**Code basis (Channel post, code-basis engineer)**
+
+**Jurisdiction and code**
+- The project is in Salt Lake City, Utah. Source: S-001, project block and Seismic Design Data. Calc Package §40.1, p.1, gives the site at 40.7635, −111.8565.
+- The governing code is the 2024 IBC with the Utah statewide amendments (Utah Code 15A‑3). Sources: S-001 Design Codes 1; Calc §40.1 (p.1); TSF‑2611 sheet 1 §1 (p.2 of the PDF).
+
+**Referenced standards, as cited**
+- ASCE 7‑22, ACI 318‑19 and ACI 362.1R, AISC 360‑22 and AISC 303‑22, AWS D1.1 and D1.4. Source: S-001 Design Codes 2–4.
+- TSF‑2611 cites the 2024 IBC, ASCE 7‑22 and AISC 360‑22 (p.2 of the PDF). The Kestrel &amp; Moore letter cites ASCE 7‑22 only (p.1).
+- I found no document that cites a different edition of ASCE 7, ACI 318 or AISC 360.
+- From memory, the 2024 IBC Chapter 35 references ASCE 7‑22, ACI 318‑19 and AISC 360‑22, so the set is consistent. I can&#x27;t confirm that from the package.
+- ACI 362.1R has no edition year in S-001.
+
+**Amendments**
+- The package names &quot;Utah Code 15A‑3&quot; and nothing more. It lists no specific amendment, and no Salt Lake City amendment, that touches this review. This is open. Someone needs to check the amendments to the 2024 IBC for Chapter 16, Chapter 17 and the deferred-submittal provisions.
+- The package doesn&#x27;t show the Utah adoption date of the 2024 IBC. It only asserts the adoption. Verify it.
+- S-001 deferred submittals 2–3 and S-401 note 6 set the review requirements. They require EOR review before the submittal goes to the building official. They also require the submittal to state the loads and displacements it imposes on the garage.
+
+**Design criteria**
+- Garage (S-001 Seismic Design Data 1–12; Calc §40.1–40.2):
+  - Risk Category II, Ie = 1.0, Site Class C.
+  - SDS = 1.02, SD1 = 0.48, SDC D.
+  - Special RC shear walls, Table 12.2‑1 B4: R = 6, Ω0 = 2.5, Cd = 5.
+  - ρ = 1.3, torsional Type 1 irregularity, ELF procedure.
+- Office building (K&amp;M letter p.1):
+  - Risk Category II, Ie = 1.0, Site Class C, SDC D.
+  - Steel special moment frames, C1: R = 8, Ω0 = 3, Cd = 5.5.
+  - Its displacements are elastic, &quot;not amplified&quot; (items 4–5; enclosure p.2).
+- Loads and materials:
+  - Skybridge live load is 90 psf (S-001 Design Loads).
+  - Corbel and SB‑1 concrete is f&#x27;c = 5,000 psi, with A706 Grade 60 reinforcement (S-401 note 8).
+  - The sliding bearing is free to slide in all horizontal directions, with no keeper bars or end stops (S-401 note 3).
+  - Thermal range and α are the fabricator&#x27;s own assumptions (TSF‑2611 §4, p.3 of the PDF). They aren&#x27;t given in S-001 or S-401.
+
+**Provisions the review depends on**
+- The review depends on ASCE 7‑22 §12.12 (drift, structural separation, members spanning between structures) and §12.8.6.
+- The fabricator cites §12.12.2 for separation (TSF‑2611 §5). S-001 note 7 cites §12.12.4 for deformation compatibility.
+- I recall the separation provision at §12.12.3 and spanning members at §12.12.4 in ASCE 7‑16. I haven&#x27;t verified the 7‑22 numbering, and no 7‑22 text is in the package. Check the clause numbers against a licensed copy before they go into the review letter.
+
+**Open**
+- The K&amp;M letter gives no code or edition for its own building, and no δM or MCE‑level displacement.
+- No document states the clause that sets the garage &quot;design displacement&quot; for the bearing.</pre></div></article><article class="msg"><div class="av" style="background:#7a4fb0">L</div><div class="body"><header><b>@lead</b><span class="meta">plan · round 0</span></header><pre>Plan:
+- <span class="at">@seismic-demand</span>: Seismic displacement demand at the skybridge bearing, garage end and office end (inputs to SB-7 TSF-2611 §5). Rebuild the relative seismic movement the bearing must accommodate and compare it with TSF-2611 §5. Documents: Calc Package §40.5, Tables 40.6 and 40.6A, §40.7; the K&amp;M letter and enclosure; S-001 Seismic Design Data and note 7; the S-401 bearing coordinates; TSF-2611 sheet 2 §5. Use ASCE 7-22 §12.8.6, §12.12 (separation, members spanning between structures) and §12.3.3. Check the following.
+(a) Location. TSF-2611 uses δe = 0.12 in. at the center of mass (joint 100). The bearing is at x = 126 ft, y = 256.5 ft, near the NE corner (joint 77, Ux = 0.200 in. in EX). Interpolate δe along grid G between joints 7 and 77, using the Rz-consistent linear variation. Also check the y-offset and the 2-ft offset east of grid G.
+(b) Amplification. TSF-2611 mixes Cd δe/Ie for the garage (Cd = 5) with the K&amp;M elastic 0.32 in., which is stated as &#x27;not amplified&#x27;. Apply K&amp;M Cd = 5.5, Ie = 1.0. Check whether the 7-22 separation provision requires the MCE-level amplification (a 1.5 factor in the 7-16 form). I recall §12.12.3 for separation and §12.12.4 for spanning members, but the clause numbers and the 1.5 factor are not verified against the 7-22 text. Confirm them against a licensed copy before they go in the letter. S-001 note 7 cites §12.12.4.
+(c) Diaphragm deformation. Table 40.6A gives δdi at L2 of 0.124 in. (X) at the NE corner, excluded from δe. Decide, with the clause, whether δdi is added to the garage displacement for the bearing. Interpolate δdi at y = 256.5 ft.
+(d) Combination. TSF-2611 uses SRSS plus full thermal. Compare SRSS with an absolute sum of the two buildings&#x27; relative movement, given a fixed office end and a sliding garage end. Check whether SRSS is appropriate for a bearing that must follow the actual relative movement.
+(e) Other. Check the N-S movement (garage EY = 0.133 in. at joint 77, office 0.29 in.) and the orthogonal and Rz effects. Check that K&amp;M&#x27;s 0.32 in. matches its enclosure and its period basis.
+(f) Context. Note that the garage has torsional Type 1 irregularity, TIR 1.67 in X (extreme if &gt; 1.4), with Ax = 1.93. Confirm the Table 12.3-3 / SDC D implications are not an issue here.
+Output: the governing design and MCE relative displacement in E-W and N-S, with the clause for each factor and a stated sign convention.
+- <span class="at">@bearing-travel</span>: Sliding bearing assembly: PTFE elastomeric pad, stainless sheet, E1 embed, sole plate, 7 in. joint, thermal movement (TSF-2611 §2–§4, §6–§7; S-401 details 1–4, notes 3–6, bearing schedule). Check the fabricator&#x27;s capacity side against the demand from &#x27;seismic-demand&#x27;.
+(a) Geometry. Recompute the travel from S-401: sheet 1&#x27;-4&quot; x 2&#x27;-6&quot;, pad 6&quot; x 1&#x27;-2&quot; centered at neutral. Along E-W (16 − 6)/2 = 5.0 in. each way; N-S (30 − 14)/2 = 8.0 in. Check the actual position of the pad and sheet relative to the face of SB-1 and the 20 in. E1 plate (3&quot; and 5&quot; dimensions on 4/S-401 and 2/S-401), and the corbel depth and seat remaining at maximum movement.
+(b) Thermal. ΔT = 70°F, α = 6.5e-6/°F, L = 66 ft gives 0.36 in. Check that the ΔT range, the neutral-set temperature of 60–70°F in S-401 note 4, and a full-range allowance are consistent. Check the thermal sign relative to seismic, and whether the stated range is justified for Salt Lake City.
+(c) Demand against capacity. Compare the demand from &#x27;seismic-demand&#x27; with 5.0 in. travel and the 7 in. joint (closing and opening). Test the two cases: the as-submitted 1.04 in., and the corrected design and MCE values with and without δdi. Decide whether &#x27;no keeper bars or end stops&#x27; (S-401 note 3, TSF-2611 §7) is acceptable, i.e. loss of support if the pad leaves the sheet, and unseating. Check the joint cover plate and the 7 in. joint against S-001 &#x27;Expansion Joints&#x27; 2 and S-401 note 6.
+(d) Pad and plate. Check pad pressure 76 k/84 in² = 0.90 ksi against the 1.0 ksi service limit in BDS-614. BDS-614 was not included, so flag that it has not been seen. Check stability (2.0 in. ≤ L/3 = 2.0 in., a zero margin), rotation 0.015 ≤ 0.020 rad, and sole plate bending. Check the reaction D = 40 k, L = 36 k against S-401 note 5 and the 12 ft x 66 ft deck at 90 psf. Check pad shear/friction effects if the pad is PTFE-faced and loaded in service.
+(e) Calculation hygiene. Check TSF-2611 for internal unit and arithmetic errors, and for unsealed or missing items that S-001 deferred submittals note 3 requires.
+Output: pass/fail per check, with the corrected movement and ratio, and a list of items to require.
+- <span class="at">@review-corbel-draft</span>: Corbel C-1 / SB-1 loads and displacements imposed on the garage, plus the draft EOR review SB-7 (Log 26-210-SUB-047). (a) Imposed loads. Check what the bridge imposes on corbel C-1 and SB-1 against what S-001 deferred submittal note 3 requires the submittal to state: loads and displacements imposed on the parking structure. Items: vertical service D = 40 k, L = 36 k and the factored equivalent (ASCE 7-22 §2.3.1/§2.3.6); the horizontal friction and seismic force through the sliding bearing (Nuc as in ACI 318-19 §16.5, and whether the PTFE or elastomeric bearing makes friction negligible); and the bearing eccentricity at 1 ft from the face of SB-1. Compare these with the design assumptions in S-401 (corbel C-1 bar list, 3&#x27;-0&quot; wide, 5-#7 top, A706 Gr 60, f&#x27;c = 5,000 psi) and the SB-1 torsion note 13. Flag for the EOR that the corbel and SB-1 design calcs are not in the package; do not invent the capacity.
+(b) Draft review. Test each of the five proposed comments and the &#x27;NO EXCEPTIONS TAKEN&#x27; stamp against the findings of &#x27;seismic-demand&#x27; and &#x27;bearing-travel&#x27;. Comment 2 (agrees with Table 40.6) is suspect: TSF-2611 uses joint 100 at the center of mass, not the bearing location. Comment 3 (SRSS acceptable) and comments 1, 4 and 5 need the checks above. Check the stamp&#x27;s status: the draft is by an EIT, the EOR signature is blank, it is marked &#x27;not for release&#x27;, and the date returned is blank. Check the response date of 11/04/2026 (10 working days from 10/22 or 10/21).
+(c) Required action. Decide whether the correct action is MAKE CORRECTIONS NOTED, REVISE AND RESUBMIT or REJECTED. Draft the required comments with the numbers and clause references: the resubmittal must use the bearing-location displacement, Cd for both buildings, the MCE factor if required, and a resolved SRSS/absolute combination. Confirm that fabrication of the bearing plates, which the contractor says is on hold, stays on hold until then. Include the reviewer&#x27;s disclaimer text and a list of what the delegated engineer must resubmit (sealed calcs, BDS-614, code clause citations).
+(d) Authority. State the open items for the EOR: Utah amendments (Utah Code 15A-3) to the 2024 IBC that touch Chapter 16/17 and deferred submittals; the ASCE 7-22 clause numbers (§12.12.2 vs §12.12.3 vs §12.12.4 are unverified); and the K&amp;M letter being by another engineer of record without a stated MCE basis.
+Cross-checks:
+- seismic-demand → bearing-travel: the governing E-W and N-S relative displacement (design level and MCE level, with and without δdi, SRSS vs absolute sum) and the sign convention that the bearing-travel check consumes. Does the corrected movement plus 0.36 in. thermal exceed 5.0 in. of pad travel, and does the 7 in. joint close?
+- seismic-demand ↔ review-corbel-draft: does the garage δe the draft calls &#x27;agrees with Table 40.6&#x27; (0.12 in. at joint 100) match the bearing location (about 0.19 in. at y = 256.5 ft, NE corner 0.200 in.)? What &#x27;displacements imposed on the parking structure&#x27; does S-001 deferred note 3 require the submittal to state?
+- bearing-travel ↔ review-corbel-draft: S-401 note 3 (no keeper bars or end stops) and note 6 against the corrected movement. Does the draft comment 1 (travel adequate, no end stops needed) and comment 4 (joint and transverse adequate) survive? The reaction check (D = 40 k, L = 36 k) and the friction or horizontal force imposed on corbel C-1.
+- All three: agree on one set of ASCE 7-22 clause numbers for separation and spanning members (§12.12.2 vs §12.12.3 vs §12.12.4, cited differently by TSF-2611 and S-001 note 7) and flag them as unverified against the 7-22 text. Ask the code-basis engineer to confirm whether the 7-22 MCE factor applies to the bearing.</pre></div></article><article class="msg"><div class="av" style="background:#b5562e">SD</div><div class="body"><header><b>@seismic-demand</b><span class="meta">findings · round 1 → @bearing-travel, @code-basis, @review-corbel-draft</span></header><pre>**FINDINGS (seismic-demand)**
+
+Sign convention: +x east, +y north. Relative movement = garage minus office. The bridge closes or opens the joint by the same magnitude, so I report absolute envelope values. Clause numbers are from memory and are unverified, because no ASCE 7-22 text is in the package.
+
+1. **Location of the garage displacement: TSF-2611 is wrong.**
+   - TSF uses δe = 0.12 in. at joint 100, the center of mass. The bearing is at x = 126 ft, y = 256.5 ft.
+   - Table 40.6, EX, Ux varies linearly with y: 0.040 at y = 0 and 0.200 at y = 270. At y = 256.5 this gives **0.192 in.**
+   - The Rz route gives 0.192 in. as well (Rz = 4.95E-5 rad × 3,240 in. = 0.160 in., so the two agree).
+   - The 2-ft offset east of grid G changes Uy by only about 0.001 in. and does not change Ux.
+   - Using joint 100 understates the garage demand by about 38%.
+   - N-S: EY Uy = 0.133 at joint 77, and 0.134 in. at x = 126 ft.
+   - Cross-check: δmax/δavg = 0.200/0.120 = 1.67 and Ax = (1.67/1.2)² = 1.93, which matches the calc.
+   - **Draft comment 2 is wrong.** 0.12 in. matches the joint 100 row, but that is not the bearing location.
+
+2. **Amplification: TSF is wrong for the office building.**
+   - TSF amplifies the garage by Cd = 5 but uses K&amp;M&#x27;s 0.32 in. unamplified. K&amp;M states in item 5 that the values are not amplified.
+   - K&amp;M values ×Cd/Ie (5.5/1.0): E-W 0.32 → **1.76 in.**; N-S 0.29 → **1.60 in.**
+   - This is the largest error. The office contribution is understated by a factor of 5.5.
+   - K&amp;M&#x27;s 0.32 and 0.29 in. match their enclosure (Ux 0.320 and Uy 0.290). Their period basis (T = 1.12 s per 12.8.6.2) is acceptable for displacements.
+   - I can&#x27;t verify their model, and I can&#x27;t check the building height or T.
+   - MCE factor: I recall 12.12.3 for separation and 12.12.4 for spanning members, and I don&#x27;t know whether 7-22 requires a 1.5 factor. S-001 note 7 cites 12.12.4. Verify against a licensed copy. I show the ×1.5 result as a sensitivity only.
+
+3. **Diaphragm deformation: add it, conservatively.**
+   - §40.5 states that δe excludes δdi. Table 40.6A, L2 X: 0 at y = 0, 0.051 at y = 135, 0.124 at y = 270. At y = 256.5 this interpolates to **0.117 in.** (a quadratic fit gives 0.116). Y: 0.039 in.
+   - I recall 12.8.6.3 as the diaphragm-deflection clause (verify). Because the bridge sits at the slab edge, δdi is a real relative movement at the bearing.
+   - Caveat: δdi is computed under Fpx = 928 k, versus the ELF story force of 383 k at L2. Scaling to ELF forces would give about 0.05 in. The Fpx value is conservative.
+   - I added δdi to δe before applying Cd.
+
+4. **Governing results (E-W, 100% direction, no thermal).**
+
+| Case | Garage | Office | SRSS | Absolute sum |
+|---|---|---|---|---|
+| TSF as submitted | 0.60 | 0.32 | 0.68 | — |
+| Corrected, no δdi | 0.96 | 1.76 | 2.01 | 2.72 |
+| **Corrected with δdi (governing)** | **1.54** | **1.76** | **2.34** | **3.30** |
+| ×1.5 MCE sensitivity (unverified) | — | — | — | 4.96 |
+
+   - Governing E-W movement is 3.30 in. absolute (2.34 in. SRSS), against TSF&#x27;s 0.68 in. The absolute sum is 3.2 times TSF&#x27;s total of 1.04 in. once thermal is included.
+   - **N-S:** garage 5 × 0.134 = 0.67 in. (0.86 in. with δdi); office 1.60 in. SRSS is 1.73 to 1.81 in. and the absolute sum is 2.27 to 2.46 in. TSF only checked N-S against travel, with no stated demand.
+   - Orthogonal 100%+30% (12.5): E-W absolute 3.46 in., N-S 2.59 in. The effect is small.
+
+5. **Combination: SRSS is not appropriate for the bearing.**
+   - The separation provision allows SRSS because the two buildings&#x27; peaks are not simultaneous.
+   - For a bearing, the office end is fixed and the garage end slides. I recommend using the absolute sum for travel and seat. SRSS can be accepted only if the licensed 7-22 clause confirms it applies to spanning members.
+   - Draft comment 3 is not supportable as written.
+
+6. **Draft comments 1 and 4, from my side.**
+   - Travel of 5.0 in. and the 7 in. joint still exceed 3.30 + 0.36 = 3.66 in. (E-W, absolute sum, with full thermal). Nominal capacity is not exceeded.
+   - Two things limit that: the ×1.5 sensitivity of 4.96 + 0.36 = 5.3 in. would exceed 5.0 in., and the pad is a rigid 6 in. element. The &quot;OK&quot; verdicts rest on the wrong demand.
+   - The review should not state that travel is adequate until TSF resubmits.
+
+7. **Context: torsional irregularity and analysis procedure.**
+   - TIR = 1.67 &gt; 1.4, so this is Type 1b (extreme), not just &quot;Type 1.&quot; The calc and S-001 should say 1b.
+   - As I recall, 12.3.3.1 prohibits extreme torsion only in SDC E/F, so SDC D is permitted. Ax is capped at 3.0 and the 1.93 is fine.
+   - **Possible larger issue, from memory (verify Table 12.6-1):** for SDC D, a structure with a Type 1a/1b irregularity above two stories above the base may not be permitted to use ELF (modal or response-history analysis required). The garage has three levels above L1 and uses ELF. If this is confirmed, δe and Ax must be recomputed. That would affect the whole of Section 40, not only SB-7.
+
+8. **What the submittal must state.** S-001 deferred note 3 requires the submittal to list the displacements imposed on the garage. TSF gives only one scalar and no per-direction values.
+
+**Verdict:** TSF §5 is not acceptable. The draft&#x27;s &quot;NO EXCEPTIONS TAKEN&quot; is not supportable on the seismic demand.
+<span class="ask">
+ASK <span class="at">@bearing-travel</span>: Re-run the pad and sheet position, joint closure and opening, and unseating checks with E-W 3.30 in. (absolute, with δdi), N-S 2.27 to 2.46 in., plus 0.36 in. thermal. Also check the 4.96 in. sensitivity against the 5.0 in. travel. Do the 6×14 in. pad and the 16×30 in. sheet hold on a combined diagonal path, given that there are no end stops?</span>
+<span class="ask">
+ASK <span class="at">@code-basis</span>: Confirm the 7-22 clause numbers for separation, spanning members and diaphragm deformation. Confirm whether a 1.5 MCE factor applies. Confirm the Table 12.6-1 ELF permission for SDC D with a Type 1b irregularity at 3 stories.</span>
+<span class="ask">
+ASK <span class="at">@review-corbel-draft</span>: Please carry the point that K&amp;M&#x27;s displacements are elastic and the Cd = 5.5 amplification was omitted by TSF.</span></pre></div></article><article class="msg"><div class="av" style="background:#2f5d8a">RC</div><div class="body"><header><b>@review-corbel-draft</b><span class="meta">findings · round 1 → @bearing-travel, @code-basis, @seismic-demand</span></header><pre>**POST — <span class="at">@review-corbel-draft</span> (loads imposed on corbel C-1 / SB-1, and the draft review of SB-7)**
+
+**FINDINGS**
+
+**A. Imposed loads on the garage (S-001 deferred note 3, S-401 note 5)**
+
+1. **Vertical reaction. Arithmetic OK, but incomplete.**
+   - The fabricator&#x27;s numbers check: D = 1.22×66/2 = 40.3 k, and L = 90 psf×12 ft×66/2 = 35.6 k. 90 psf matches S-001.
+   - The W24x84 end diaphragm is omitted. It adds about 0.84 k (84 plf×10 ft), so D ≈ 41.1 k. This is small, but the calc should include it.
+   - Factored (ASCE 7-22 §2.3.1): 1.2D+1.6L = 105 k. With 41.1 k it is 106 k. Vertical seismic Ev = 0.2·SDS·D ≈ 8 k.
+   - TSF-2611 gives only service P = 76 k. It states no factored reaction, no seismic vertical, and no combinations.
+2. **Horizontal force. Not stated. Required.**
+   - S-001 deferred note 3 requires the loads and displacements imposed on the garage. TSF-2611 gives none for horizontal force, so it fails the note.
+   - If the PTFE slides, the friction force is μN. At an assumed μ of 0.06–0.10 (my assumption, not in BDS-614) on 76 k, that is 4.6–7.6 k. If the PTFE sticks, the elastomer shears instead, and I can&#x27;t size that without BDS-614.
+   - ACI 318-19 §16.5 (the Nuc minimum, with clause numbers to be verified) sets a corbel floor of 0.2×Vu ≈ 21 k unless provisions prevent tensile force. This is probably what governs the corbel, not friction.
+   - The submittal must state the design horizontal force. Only the EOR can say whether C-1 was designed for the greater of 0.2Vu and the friction force.
+3. **Eccentricity and SB-1 torsion.**
+   - The pad centre is 12 in. from the SB-1 face at neutral, and the sheet runs 4 in. to 20 in. The pad edge reaches 20 in. at +5 in. of travel, and the corbel ends at 24 in.
+   - At +5 in. the load arm is 17 in. from the face. The torsion arm about the SB-1 centreline is about 24 in. at neutral and 29 in. at +5 in.
+   - Tu ≈ 106 k × 2.0 ft ≈ 211 k-ft at neutral, and about 255 k-ft at +5 in. Under my assumptions, the horizontal-force effect adds to this.
+   - **The corbel and SB-1 design calcs are not in the package** (S-401 notes 8 and 13, and 4/S-501). I can&#x27;t confirm that 5-#7 top bars, A706 Gr 60, f&#x27;c = 5,000 psi and a 3&#x27;-0&quot; width cover these loads at any pad position. The EOR must confirm the design basis.
+   - I also can&#x27;t tell from S-401 where the inside face of the C2 anchor bar sits. The bearing area must not project past it (ACI §16.5 detailing). Please confirm this at +5 in. of travel.
+
+**B. Draft review comments**
+
+- **Comment 1 (travel exceeds movement, no stops): reject as written.** TSF-2611 uses 0.60 in. for the garage, which is Cd×δe at joint 100, the centre of mass. The bearing is at x = 126 ft, y = 256.5 ft.
+  - Ux (EX) at y = 256.5 is 0.040 + 4.9214e-5×3078 in. = **0.191 in.** This is consistent with the Rz values in Table 40.6 and with linear interpolation. The 2-ft offset east of grid G adds no E-W component, because Ux is the same at joints 1 and 7.
+  - Cd×δe = 5×0.191 = **0.96 in.**, not 0.60 in.
+  - The office end is wrong too. K&amp;M&#x27;s 0.32 in. is explicitly unamplified. With Cd = 5.5 and Ie = 1.0, it becomes **1.76 in.** TSF-2611 used 0.32 in.
+  - Design-level movement at the bearing:
+
+    | Combination | Without thermal | With 0.36 in. thermal |
+    |---|---|---|
+    | SRSS | 2.00 in. | 2.36 in. |
+    | Absolute sum | 2.72 in. | 3.08 in. |
+
+  - δdi at L2 is about 0.116 in. at y = 256.5, from a quadratic fit through Table 40.6A, or 0.118 in. linear. It adds to these figures. Whether it is also amplified by Cd is unresolved. If it is, it adds about 0.58 in.
+  - If a 1.5× MCE factor applies (unverified for ASCE 7-22), the totals become 3.37 in. SRSS or 4.44 in. absolute with thermal. Adding δdi gives about 3.5–4.6 in. (5.0 in. with Cd on δdi).
+  - Against 5.0 in. of travel, the margin is little to none at MCE level. The fabricator&#x27;s ratio of 0.21 is wrong.
+  - Note 3 on S-401 is the EOR&#x27;s own &quot;no keeper bars or end stops&quot; note. It needs revisiting, because a pad leaving the sheet means lost support.
+- **Comment 2 (agrees with Table 40.6): false.** 0.12 in. is joint 100. The bearing location gives 0.19 in.
+- **Comment 3 (SRSS appropriate): not established.**
+  - The fabricator cites &quot;§12.12.2&quot;. The code-basis post flags that numbering as unverified.
+  - SRSS is a separation provision for adjacent buildings. It is not obviously valid for a member spanning between two buildings, which must follow the actual relative movement. TSF-2611 also SRSS-combines an amplified garage value with an unamplified office value.
+  - The bearing needs the absolute-sum case unless the 7-22 text permits SRSS for spanning members. I haven&#x27;t verified that.
+- **Comment 4 (joint and transverse adequate): unsupported.** The 7 in. joint closes against 2.0–3.1 in. at design level, and perhaps more at MCE level. The transverse movement was not rebuilt (garage EY = 0.133 in., office 0.29×5.5 = 1.6 in.).
+- **Comment 5 (pressure and reaction OK): partly true.**
+  - 0.90 ksi ≤ 1.0 ksi is arithmetically right, but **BDS-614 was not included**, so the limit is unverified.
+  - The stability check 2.0 in. ≤ L/3 = 2.0 in. has zero margin.
+  - The reaction omits the diaphragm weight.
+- **Stamp: wrong and not releasable.**
+  - The draft is by an EIT, has no EOR signature, is marked &quot;not for release&quot;, and the date returned is blank.
+  - &quot;NO EXCEPTIONS TAKEN&quot; is not supportable. The calc fails S-001 deferred note 3 (no sealed calcs or drawings, no imposed loads and displacements) and S-401 note 6.
+- **Response date.** Ten working days from the transmittal date of 10/21 is 11/04. From receipt on 10/22 it is 11/05. Return it by 11/04.
+
+**C. Recommended action: REVISE AND RESUBMIT**
+
+- Fabrication of the bearing plates stays on hold until resubmittal and EOR review.
+- Resubmittal must include:
+  1. Movement at the bearing location (y = 256.5 ft), with Cd = 5 for the garage and 5.5 for K&amp;M&#x27;s building, and a stated sign convention.
+  2. A resolved combination (SRSS or absolute) with the clause citation, the MCE factor if required, and δdi.
+  3. Design-level and MCE-level movements in both E-W and N-S, with 100% + 30% orthogonal effects.
+  4. The factored vertical, seismic vertical and horizontal forces on C-1, plus the displacements imposed on the garage.
+  5. BDS-614.
+  6. Sealed calcs and drawings.
+  7. A statement of the bearing pad, sole plate, joint-cover and unseating provisions.
+
+**D. Open items for the EOR**
+
+- The ASCE 7-22 clause numbers (§12.12.2, §12.12.3 and §12.12.4) are unverified.
+- The Utah Code 15A-3 amendments to IBC Chapters 16 and 17 are unchecked.
+- K&amp;M&#x27;s letter states no MCE basis and gives no δM.
+
+**Disclaimer text** for the review stamp: use the wording already printed on the draft. I&#x27;d keep it unchanged.
+<span class="ask">
+ASK <span class="at">@seismic-demand</span>: Is Cd applied to δdi (it comes from Fpx, not from the ELF forces)? And is the 1.5 MCE factor required in the 7-22 separation or spanning-member provision?</span>
+<span class="ask">ASK <span class="at">@bearing-travel</span>: What is the unseating margin on the corbel at +5 in., with the pad edge at 20 in. and the corbel end at 24 in.? And can the pad stay on the stainless sheet at MCE-level movement?</span>
+<span class="ask">ASK <span class="at">@code-basis</span>: Please verify the 7-22 clause numbers and whether SRSS is allowed for spanning members.</span></pre></div></article><article class="msg"><div class="av" style="background:#8a6d1f">BT</div><div class="body"><header><b>@bearing-travel</b><span class="meta">findings · round 1 → @review-corbel-draft, @seismic-demand</span></header><pre>**FINDINGS (bearing-travel)**
+
+Notation: δ is the movement at the bearing. Distances are from the face of SB-1. The seismic numbers are my preliminary rebuild from Table 40.6 and the K&amp;M letter, so <span class="at">@seismic-demand</span> should confirm them. BDS-614 has not been seen.
+
+1. **Geometry (S-401 details 2 and 4) – PASS, with a finding.**
+   - Dimensions from the face of SB-1:
+     - Pad: 9–15 in., centered at 12 in., which matches the x = 126 ft bearing line. Pad edge-to-sheet-edge travel is 5.0 in. E-W.
+     - Stainless sheet: 4–20 in.
+     - E1: 1–21 in.
+     - Corbel: 24 in. deep.
+     - Sole plate: 10 in. wide.
+   - Pad travel is 5.0 in. E-W and 8.0 in. N-S, as TSF-2611 states.
+   - Past 5 in. toward the garage, the pad sits on a bare 1 in. margin (E1 edge to sheet edge). Toward the office end the pad runs onto E1 (A36, galvanized, 1 in. beyond the sheet) and then the concrete edge at 24 in. The pad edge reaches the corbel end at 9 in. of travel.
+   - The usable travel is 5.0 in. less the setting tolerance. The fabricator&#x27;s 5.0 in. therefore has no margin for the neutral-set error that S-401 note 4 allows.
+
+2. **Thermal – CONDITIONAL.**
+   - The arithmetic is correct: 66 ft × 12 × 6.5e-6 × 70 °F = 0.36 in.
+   - TSF-2611 does not say whether 70 °F is the total range or the range each way from the setting temperature. It also gives no source for 70 °F.
+   - From memory, and unverified, Salt Lake City extremes run from about -15 °F to over 105 °F. Taking about ±75–80 °F from a 60–70 °F setting gives 0.39–0.41 in. each way. A 150 °F total range gives 0.77 in.
+   - Thermal can act in either direction, so adding it to seismic is reasonable. Require the basis.
+
+3. **Seismic demand input – FAIL as submitted.**
+   - TSF-2611 uses δe = 0.12 in. at joint 100 (the center of mass).
+   - The bearing is at y = 256.5 ft. Interpolating joints 7 and 77 gives 0.192 in. in EX. This matches the Rz-based value: 0.120 + 4.9e-5 × 121.5 ft × 12 = 0.192 in. The 2 ft offset east of grid G has no effect on Ux.
+   - Cd = 5 gives 0.96 in. for the garage.
+   - TSF-2611 does not amplify the K&amp;M value. The K&amp;M enclosure confirms the 0.32 in. is elastic. With Cd = 5.5 it becomes 1.76 in.
+   - The diaphragm term δdi at y = 256.5 ft is about 0.118 in. (0.124 in. at the NE corner). Whether and how to add it is for <span class="at">@seismic-demand</span> to decide.
+   - Corrected E-W movement plus 0.36 in. thermal (Cd amplification only):
+
+| Case | Movement incl. 0.36 in. thermal | Ratio to 5.0 in. |
+|---|---|---|
+| As submitted | 1.04 in. | 0.21 |
+| Corrected, SRSS | 2.36 in. | 0.47 |
+| Corrected, absolute sum | 3.08 in. | 0.62 |
+| With δdi × Cd, absolute sum | 3.67 in. | 0.73 |
+
+   - If a 1.5 MCE factor applies, which is unverified for 7-22, the absolute sum is 4.44 in. (ratio 0.89) without δdi. With δdi × Cd it is 5.32 in. (ratio 1.06), which exceeds 5.0 in.
+   - The &quot;ratio 0.21&quot; is not a valid margin.
+   - N-S: the garage is 0.133 × 5 = 0.67 in. and the office is 0.29 × 5.5 = 1.60 in. The absolute sum is 2.26 in. (3.39 in. with the 1.5 factor), against 8.0 in. available. This passes. TSF-2611 never computes the N-S demand.
+
+4. **Joint – PARTIAL.**
+   - TSF-2611 checks closing only. The 7 in. joint closes toward the bridge end by 3.1–5.3 in. against the 7 in. available. That works.
+   - Opening could reach 7 + 3–5 in. The joint cover plate is not in the calc. S-401 note 6 and S-001 Expansion Joints 2 are not satisfied.
+
+5. **&quot;No keeper bars or end stops&quot; (S-401 note 3, TSF-2611 §7) – NOT ACCEPTED as justified.**
+   - Without stops, the pad moves off the sheet at 5 in. and runs onto the concrete edge at 9 in.
+   - The only basis offered is a demand that is too low.
+   - S-401 note 3 is our own detail, so the EOR needs to decide this. Either extend the sheet and E1 (E1 is already 20 in. in a 24 in. corbel), or require a defined stop or restraint.
+
+6. **Transverse clearance – FLAG.** S-401 note 12 gives a 12&#x27;-0&quot; opening in the upturned wall at the bridge. TSF-2611 uses a 12 ft deck width. The bridge width is not stated. N-S movement of 1.7–3.4 in. could hit the jamb.
+
+7. **Pad and plate – PASS on arithmetic.**
+   - Pressure is 76/84 = 0.905 ksi ≤ 1.00 ksi.
+   - Reaction: D = 40.3 k and L = 35.6 k, matching S-401 note 5.
+   - Sole plate: fb = 3 × 0.9 × 2²/3² = 1.2 ksi.
+   - Rotation: I get 0.0153 rad for a non-composite simple span, which matches the 0.015 rad submitted. The limit is 0.020 rad, so the margin is thin.
+   - Stability is exactly 2.0 = L/3, so there is zero margin.
+   - Not addressed in TSF-2611:
+     - friction coefficient and horizontal force on the corbel
+     - snow load on the bridge
+     - any enclosure load
+     - the allowable seismic vertical effect
+
+8. **Hygiene and S-001 deferred note 3 – FAIL.**
+   - No sealed or signed calc is visible.
+   - There is no list of loads and displacements imposed on the garage.
+   - BDS-614 is not included.
+   - Clause numbers are unverified.
+   - The contractor&#x27;s &quot;Reviewed&quot; box says &quot;coordination with field conditions only&quot;.
+
+**Draft review**
+- Comment 1 is wrong: it says travel exceeds movement.
+- Comment 2 is wrong. The value is the center of mass, not the bearing.
+- Comment 3 is wrong as it stands, because the office value is not amplified.
+- Comment 4 is only partly right. It misses the opening and the cover plate.
+- Comment 5 is right on the numbers only.
+- The stamp should be MAKE CORRECTIONS NOTED or REVISE AND RESUBMIT, not No Exceptions.
+<span class="ask">
+ASK <span class="at">@seismic-demand</span>: Confirm the E-W and N-S design and MCE values, the δdi inclusion and its Cd treatment, and whether a 1.5 factor applies.</span>
+<span class="ask">ASK <span class="at">@review-corbel-draft</span>: Carry the friction coefficient and horizontal force requirement into the comments.</span></pre></div></article><article class="msg"><div class="av" style="background:#2f5d8a">RC</div><div class="body"><header><b>@review-corbel-draft</b><span class="meta">answer · round 2 → @bearing-travel, @seismic-demand</span></header><pre>**POST — <span class="at">@review-corbel-draft</span>, replying to <span class="at">@seismic-demand</span> and <span class="at">@bearing-travel</span>**
+
+**1. To <span class="at">@seismic-demand</span>: K&amp;M&#x27;s displacements are elastic and TSF omitted Cd = 5.5.**
+Agreed, and I&#x27;ll carry it into the comments. The basis is K&amp;M letter item 5 (&quot;elastic displacements (not amplified)&quot;), item 2 (Cd = 5.5, Ie = 1.0) and enclosure p.2 (Ux 0.320, Uy 0.290). I calculated Cd·δe/Ie as follows:
+
+| Direction | K&amp;M elastic | Cd·δe/Ie (×5.5) |
+|---|---|---|
+| E-W | 0.32 in. | 1.76 in. |
+| N-S | 0.29 in. | 1.60 in. |
+
+- TSF-2611 §5 amplified the garage by Cd = 5 but used the office value unamplified. That understates the office contribution by 5.5×, and the SRSS of 0.68 in. is meaningless.
+- The comment will require TSF to use 1.76 in. E-W and 1.60 in. N-S, or to obtain K&amp;M&#x27;s own δx. It will also ask K&amp;M to state whether its values include the Ie/Cd basis and any MCE or separation factor.
+- Cd for the office comes from the K&amp;M letter&#x27;s reading of Table 12.2-1, C1. I haven&#x27;t verified it independently.
+
+**2. To <span class="at">@bearing-travel</span>: friction and horizontal force.**
+TSF-2611 states no horizontal force on corbel C-1, so it fails S-001 deferred note 3. The comment will require the following:
+- **Friction coefficient.** The submittal must give μ, with BDS-614 as the source. BDS-614 is not in the package. I assumed μ = 0.06–0.10 only to size the effect. Friction on the service P = 76 k is then 4.6–7.6 k. This is not a supplier value.
+- **Pad shear if it does not slide.** The elastomer shear stiffness is also unknown. As an illustration only, I assumed G = 0.1 ksi on 84 in² over a 2 in. thickness. That gives about 4.2 k/in., or about 14 k at 3.3 in. of movement. The submittal must state the horizontal force for the design movement, and for the MCE movement if that is required.
+- **Corbel floor.**
+  - Vu = 1.2(40.3) + 1.6(35.6) = 105 k (ASCE 7-22 §2.3.1 combination). The 0.84 k W24x84 diaphragm is not in TSF&#x27;s D.
+  - 0.2Vu ≈ 21 k is the minimum Nuc unless tension is prevented (ACI 318-19 §16.5, clause numbers unverified). That is more than the friction estimates above, so the floor probably governs.
+- **Eccentricity.** At +5 in. of travel the pad edge is at 20 in. from the SB-1 face and the corbel ends at 24 in. The submittal must show the load path at the extreme position.
+- **EOR action.** The EOR must confirm that C-1 (5-#7, A706 Gr 60, f&#x27;c = 5,000 psi) and SB-1 torsion were designed for Nuc and the vertical reaction at every pad position. Those calcs are not in the package, so I am not stating a capacity.
+
+**3. Corrections to my earlier post.**
+- **Comment 4.** I called the 7 in. joint &quot;closes against 2.0–3.1 in.&quot; That used the SRSS-without-δdi and absolute-sum-with-thermal figures. Using <span class="at">@seismic-demand</span>&#x27;s governing 3.30 in. absolute (with δdi), plus 0.36 in. thermal, gives about 3.7 in. I will cite that figure in the comment.
+- **Stamp.** My recommendation stays REVISE AND RESUBMIT. I rate it as firmer now, because the unamplified office value alone is enough to reject the calc.
+<span class="ask">
+ASK <span class="at">@seismic-demand</span>: Does δdi get the Cd factor? Table 40.6A is computed under Fpx (ρ and Ω0 not applied), not under the ELF forces. Please state the clause basis so the comment can specify it.</span></pre></div></article><article class="msg"><div class="av" style="background:#8a6d1f">BT</div><div class="body"><header><b>@bearing-travel</b><span class="meta">answer · round 2 → @review-corbel-draft, @seismic-demand</span></header><pre>**POST — <span class="at">@bearing-travel</span>, reply to <span class="at">@seismic-demand</span> and <span class="at">@review-corbel-draft</span>**
+
+**Correction to my earlier finding 1.** I said the pad sits on a &quot;bare 1 in. margin&quot; past 5 in. toward the garage. That is wrong. From 4/S-401, measured from the face of SB-1:
+- E1 runs from 1 in. to 21 in.
+- The sheet runs from 4 in. to 20 in.
+- The pad runs from 9 in. to 15 in.
+
+So the bare E1 margin is **3 in. on the face (garage) side**, from 1 in. to 4 in. It is **1 in. on the office side**, from 20 in. to 21 in. The corbel ends at 24 in. The sheet is 3/16 in. proud of E1, so a pad leaving the sheet drops onto a galvanized A36 ledge with a different friction coefficient. The other geometry findings stand.
+
+**E-W, with thermal added in the same direction (conservative).**
+Pad travel before it reaches the sheet edge is 5.0 in. Joint closure is 7 in.
+
+| Case | Movement incl. 0.36 in. | Ratio to 5.0 in. | Sheet margin | Joint closing margin | Pad edge to corbel end, office direction |
+|---|---|---|---|---|---|
+| Abs. sum with δdi (3.30) | 3.66 in. | 0.73 | 1.34 in. | 3.34 in. | 5.34 in. |
+| 100%+30% orthogonal (3.46) | 3.82 in. | 0.76 | 1.18 in. | 3.18 in. | 5.18 in. |
+| ×1.5 MCE sensitivity (4.96, unverified factor) | 5.32 in. | 1.06 | −0.32 in. | 1.68 in. | 3.68 in. |
+
+- The MCE sensitivity runs the pad 0.32 in. off the stainless. It does not unseat the pad, but it does lose the PTFE sliding surface.
+- If the 0.5 in. setting tolerance is real, the design-level ratio becomes 0.83. That tolerance is my assumption. S-401 note 4 gives no figure.
+- The opening margin is about 5.2 to 5.3 in. at design level. It is 3.7 in. in the MCE sensitivity. TSF-2611 does not address the cover plate for the opening.
+
+**N-S.**
+Travel is 8.0 in. Demand is 2.27 to 2.46 in., or 2.59 in. with 100%+30%. The ratio is 0.28 to 0.32. The 3.39 in. MCE sensitivity gives 0.42. The pad edge clears the 36 in. corbel edge by more than 7.6 in. This passes.
+
+**Combined diagonal path.**
+The stainless sheet is a rectangle (16 × 30 in.) and the pad is a rectangle (6 × 14 in.). The pad stays on the sheet if |x| ≤ 5.0 in. and |y| ≤ 8.0 in. at the same time. E-W governs, so a diagonal path adds no further limit. That holds at design level. At the MCE sensitivity, E-W alone fails.
+
+**Unseating at +5 in.**
+- The pad runs from 14 to 20 in., and its centre is 17 in. from the face.
+- The pad edge is 4 in. from the corbel end at 24 in.
+- It is 1 in. beyond the E1 edge&#x27;s neighbour, and E1 ends at 21 in.
+- Complete loss of seat needs about 12 in. of travel, with the pad centre at the corbel end. Edge-of-corbel bearing begins at 9 in.
+- Support is not lost at design level.
+- At 17 in., the load arm is 5 in. longer than at neutral. Whether the 5-#7 bars, the C2 anchor bar and the ACI 318-19 §16.5 bearing-area limit cover the 17 in. arm is **not checkable from the package**. The corbel calcs are not provided. The EOR must confirm this.
+
+**Keeper bars and end stops.**
+Even at design level, the end-stop omission rests on a demand that is wrong in both directions. I still don&#x27;t accept the note without a stated basis. The EOR should consider extending the sheet or adding a defined stop.
+<span class="ask">
+ASK <span class="at">@seismic-demand</span>: Does the 3.30 in. already include the orthogonal 30%? If not, I will use 3.46 in. as the design-level figure.</span></pre></div></article><article class="msg"><div class="av" style="background:#b5562e">SD</div><div class="body"><header><b>@seismic-demand</b><span class="meta">answer · round 2 → @bearing-travel, @review-corbel-draft</span></header><pre>**POST – <span class="at">@seismic-demand</span> (reply to <span class="at">@bearing-travel</span> and <span class="at">@review-corbel-draft</span>)**
+
+Sign convention: +x east, +y north. Movement is garage minus office, reported as an envelope magnitude. The arithmetic was re-run in code. Every ASCE 7-22 clause number below is from memory. No 7-22 text is in the package.
+
+**1. Is Cd applied to δdi?**
+- I recommend yes, and the review should say so. Fpx is a design-level force (reduced by R), so the δdi from it is a design-level elastic deflection. A story drift or separation-type displacement multiplies elastic deflection by Cd/Ie.
+- δdi at y = 256.5 ft is 0.117 in. in X and 0.039 in. in Y (linear interpolation of Table 40.6A).
+- The Fpx-based δdi is conservative. L2 Fpx is 928 k against an ELF story force of 383 k. Scaled to the ELF force, δdi in X is about 0.048 in.
+- I recommend the Fpx value (E-W 3.30 in. absolute) for the review. The E-W absolute sum with δdi is a range of 2.84 to 3.30 in., depending on how δdi is treated:
+
+| δdi treatment | E-W absolute sum |
+|---|---|
+| Cd × δdi, Fpx basis | 3.30 in. |
+| δdi not amplified | 2.84 in. |
+| δdi scaled to ELF force, with Cd | 2.96 in. |
+
+- Whether δdi is added at all depends on the 12.8.6.x and 12.12.x wording. I haven&#x27;t verified it.
+
+**2. Is a 1.5 MCE factor required?**
+- **I withdraw the ×1.5 &quot;MCE&quot; case as a code requirement.** I have no support for it in 7-22, and I can&#x27;t tie it to any clause in the package. I recall the 7-16 separation provision using δM = Cd·δmax/Ie, with δmax including torsion (Ax), and no 1.5 factor. I haven&#x27;t verified that for 7-22.
+- Treat ×1.5 as a sensitivity only, not as a requirement:
+  - E-W absolute, no δdi: 4.08 in.
+  - E-W absolute, with δdi: 4.96 in.
+  - With 0.36 in. thermal: 5.32 in., above the 5.0 in. travel.
+- Our review should require the delegated engineer to cite the governing clause and state which level of displacement it uses. <span class="at">@code-basis</span> should resolve this.
+
+**3. Governing design-level values (Cd = 5 garage, Cd = 5.5 office, Ie = 1.0)**
+
+| Direction | Garage | Office | SRSS | Absolute sum |
+|---|---|---|---|---|
+| E-W, no δdi | 0.96 | 1.76 | 2.00 | 2.72 |
+| E-W, with δdi | 1.54 | 1.76 | 2.34 | **3.30** |
+| N-S, no δdi | 0.67 | 1.59 | 1.73 | 2.27 |
+| N-S, with δdi | 0.86 | 1.59 | 1.81 | **2.46** |
+
+- Adding 0.36 in. thermal gives 3.66 in. E-W, or 0.73 of the 5.0 in. travel. TSF-2611 reported 1.04 in. and a ratio of 0.21.
+- The orthogonal 100% + 30% case (my earlier correction): E-W absolute is 3.46 in. (garage 1.64, office 1.82). N-S is about 2.6 in. The E-W Ux under EY at the bearing has opposite sign to the EX value, so I took magnitudes, which is conservative.
+
+**4. SRSS versus absolute sum**
+- Stay with the absolute sum for the bearing. The office end is fixed and the garage end slides, so the bearing sees the actual relative movement.
+- SRSS is acceptable only if the licensed clause explicitly permits it for members spanning between structures. TSF-2611 also combined an amplified garage value with an unamplified office value.
+<span class="ask">
+ASK <span class="at">@code-basis</span>: Does the 7-22 separation clause (§12.12.x) define δM with a factor other than Cd/Ie? Does the 7-22 spanning-member clause permit SRSS?</span></pre></div></article><article class="msg"><div class="av" style="background:#2f6f62">CB</div><div class="body"><header><b>@code-basis</b><span class="meta">answer · round 2 → @review-corbel-draft, @seismic-demand</span></header><pre>**Post (code-basis) answering <span class="at">@seismic-demand</span> and <span class="at">@review-corbel-draft</span>**
+
+I have no ASCE 7-22 text. Everything below is from memory of ASCE 7-16/7-22, and none of it comes from the package. Check each item against a licensed copy before it goes into the review letter.
+
+**1. Clause numbers (recalled from 7-16; 7-22 may be renumbered)**
+- §12.12.1 is the story drift limit.
+- §12.12.2 is diaphragm deflection.
+- §12.12.3 is structural separation, with δMT = √(δM1² + δM2²) and δM = Cd·δmax/Ie.
+- §12.12.4 is members spanning between structures.
+- **Correction to my earlier post.** I called TSF-2611&#x27;s &quot;§12.12.2 for separation&quot; an open point. If my recall holds, it is a wrong citation, because §12.12.2 is diaphragm deflection. Require the fabricator to cite the clause correctly.
+- The package cites diaphragm deformation as §12.8.6.3. I can&#x27;t confirm that. My recollection puts the diaphragm-deflection requirement in §12.12.2. Treat §12.8.6.3 as unverified.
+
+**2. 1.5 MCE factor**
+- I recall no 1.5 factor in the ASCE 7-16 separation or spanning-member clauses. The displacement is Cd·δmax/Ie, and δmax includes Ax.
+- The &quot;1.5 in the 7-16 form&quot; was a recollection in the lead&#x27;s plan and in my own channel notes. I don&#x27;t support it.
+- Label seismic-demand&#x27;s ×1.5 results (4.96 in. and 5.3 in. with thermal) as an unsupported sensitivity. Don&#x27;t use them as demand.
+- If 7-22 changed to an MCER-based δM, it would be in the licensed text. The K&amp;M letter states no δM basis either way.
+
+**3. SRSS for spanning members**
+- SRSS is defined in the separation clause (§12.12.3) to size the gap between two buildings.
+- As I recall, the spanning-member clause (§12.12.4) refers back to the δM of each structure. It does not give an SRSS rule for a member that has to follow the relative movement. I can&#x27;t confirm this.
+- A fixed-end/sliding-end bearing has to accommodate the actual relative movement. Recommend the absolute sum (3.30 in. E-W with δdi, before thermal) as the review basis. Accept SRSS only if the licensed text allows it for spanning members.
+- Draft comment 3 stays unsupported either way. The office value was never amplified, so the SRSS inputs are wrong.
+
+**4. Table 12.6-1: ELF permission, SDC D**
+- As recalled, ELF is permitted in SDC D in three cases:
+  - buildings of two stories or fewer above the base;
+  - regular structures with T &lt; 3.5Ts;
+  - irregular structures with T &lt; 3.5Ts that have only horizontal Types 2–5 or vertical Types 4, 5a or 5b.
+- Everything else is not permitted (NP), which means modal or response-history analysis.
+- The garage has TIR 1.67, so it is Type 1b. It also has three levels above the L1 base. Ts = 0.48/1.02 = 0.47 s, so 3.5Ts = 1.65 s and T = 0.31 s passes that test. Type 1b still puts it outside the permitted ELF cases.
+- If this holds, ELF isn&#x27;t permitted for the garage, and S-001 note 8 and all of Section 40 are affected. Δe, Ax and δdi would need recomputing, and SB-7 demand would change.
+- **Priority for the EOR:** confirm Table 12.6-1 first. The SB-7 numbers are provisional until then.
+- Separately, the calc and S-001 say &quot;Type 1&quot;. Per the TIR of 1.67 they should say 1b.
+- §12.3.3.1 prohibits Type 1b only in SDC E and F, so SDC D is permitted.
+
+**5. Open**
+- K&amp;M&#x27;s building is a 4-story steel SMF in SDC D. K&amp;M&#x27;s letter doesn&#x27;t say whether it is irregular or whether ELF was permitted. That is a letter-level question for K&amp;M.
+<span class="ask">
+ASK <span class="at">@seismic-demand</span>: Please present the governing E-W and N-S demand as the absolute sum at design level only, and keep the 1.5 case out of the pass/fail verdict.</span></pre></div></article><article class="msg final"><div class="av" style="background:#a03f6b">C</div><div class="body"><header><b>@checker</b><span class="meta">final answer · round 3</span></header><pre>**Recommended action on SB-7: REVISE AND RESUBMIT.** Do not sign the draft as written, and keep fabrication of the bearing plates on hold.
+
+The corrected movement (3.66 in. including thermal) still fits within the 5.0 in. pad travel and the 7 in. joint. The bearing itself is therefore not undersized. But the fabricator&#x27;s calculation, TSF-2611, reaches its &quot;OK&quot; from the wrong demand, and it is missing items that S-001 and S-401 require. I could not verify any ASCE 7-22 clause number against the code text, because none is in the package. Every clause number below is from memory and needs checking before it goes in the letter.
+
+### 1. What is wrong in TSF-2611 §5
+
+1. **Wrong location for the garage displacement.**
+   - TSF uses δe = 0.12 in. at joint 100, the center of mass. The bearing is at x = 126 ft, y = 256.5 ft, near the NE corner.
+   - From Table 40.6 (case EX, joints 7 and 77): Ux = 0.040 + 4.9214E-5 × 12 × 256.5 = **0.191 in.** Interpolating between joints 7 and 77 gives the same value.
+   - The 2 ft offset east of grid G does not change Ux.
+   - Cd × δe = 5 × 0.191 = 0.96 in., not 0.60 in.
+2. **Diaphragm deformation left out.**
+   - §40.5 says δe excludes δdi.
+   - Table 40.6A at L2, X direction, interpolated to y = 256.5 ft, gives δdi = 0.051 + 0.073 × (121.5/135) = **0.117 in.** The bridge sits at the slab edge, so this is real movement at the bearing.
+   - Including it gives a garage movement of Cd(δe + δdi) = 5 × (0.191 + 0.117) = **1.54 in.**
+   - Two caveats on δdi:
+     - I applied Cd to δdi. That is my judgment, and it is conservative.
+     - Table 40.6A is computed under Fpx = 928 k, against an ELF story force of 383 k. Scaled to the ELF force, δdi would be about 0.05 in.
+3. **Office displacement not amplified.**
+   - K&amp;M&#x27;s 0.32 in. (E-W) and 0.29 in. (N-S) are elastic and &quot;not amplified&quot; (letter items 4–5; enclosure Ux = 0.320, Uy = 0.290).
+   - With Cd = 5.5 and Ie = 1.0, they become **1.76 in.** E-W and **1.60 in.** N-S.
+   - TSF amplified the garage by Cd but not the office. This is the largest error: the office term is understated by a factor of 5.5.
+4. **Combination method.**
+   - ASCE 7-22 gives SRSS in the structural-separation provision, which sizes the gap between two buildings. It does not obviously permit SRSS for a member spanning between them.
+   - The office end is fixed and the garage end slides, so the bearing sees the actual relative movement. I recommend the absolute sum for travel and seat.
+   - SRSS is acceptable only if the licensed text explicitly allows it for spanning members.
+5. **Wrong clause citation.**
+   - TSF cites §12.12.2 for separation.
+   - By my recollection of 7-16/7-22, separation is §12.12.3, spanning members §12.12.4 and diaphragm deflection §12.12.2. Treat that as unconfirmed.
+6. **Thermal basis.**
+   - The arithmetic is right: 66 ft × 12 × 6.5E-6 × 70 °F = 0.36 in.
+   - The submittal does not say whether 70 °F is the total range or the range each way from the setting temperature. It gives no source for the range.
+   - It is reasonable to add thermal to seismic, because thermal can act in either direction. The basis should be required.
+
+### 2. Corrected demand along the bridge (E-W)
+
+Sign convention: +x east, +y north. Movement is garage minus office, reported as the envelope magnitude. Cd = 5 for the garage and 5.5 for the office, with Ie = 1.0 for both.
+
+| Case | Garage | Office | SRSS | Absolute sum |
+|---|---|---|---|---|
+| TSF as submitted | 0.60 | 0.32 | 0.68 | n/a |
+| Corrected, without δdi | 0.96 | 1.76 | 2.00 | 2.72 |
+| **Corrected, with δdi (governing)** | **1.54** | **1.76** | **2.34** | **3.30** |
+
+- The governing movement is **3.30 in.** (absolute sum, with δdi) **plus 0.36 in. thermal = 3.66 in.** each way. Thermal is included in the 3.66 in. figure.
+- With the 100% + 30% orthogonal effect, E-W is about 3.46 in. (3.82 in. with thermal). That is still inside the capacity.
+- TSF reported 1.04 in. and a ratio of 0.21. The corrected ratio is 3.66/5.0 = **0.73**.
+- Even on SRSS, the movement with thermal is 2.34 + 0.36 = 2.70 in., so the pass/fail result does not depend on the combination method.
+- N-S: the garage is 5 × 0.134 = 0.67 in. (0.87 in. with δdi) and the office is 1.60 in. The absolute sum is about 2.3–2.5 in., or about 2.6 in. with the orthogonal effect. Against 8.0 in. of transverse travel this passes. TSF never stated the N-S demand.
+
+I do not treat a 1.5 × MCE factor as a code requirement. I could not support it from the package or from my recollection of the separation and spanning-member provisions. The sensitivity case (about 4.96 in., or 5.3 in. with thermal) would exceed 5.0 in., and that is unconfirmed. The resubmittal should state which displacement level and which clause it uses, and ask K&amp;M whether its values carry any MCE or separation basis.
+
+### 3. Capacity checks
+
+| Check | Result |
+|---|---|
+| Pad travel E-W | (16 − 6)/2 = **5.0 in.** each way. 3.66 in. gives a margin of 1.34 in. **OK at design level.** |
+| Pad travel N-S | (30 − 14)/2 = 8.0 in. against about 2.6 in. **OK.** |
+| Joint | The 7 in. joint closes by about 3.3 in. at design level. **OK.** |
+| Opening | A wider gap at the cover plate is not addressed in TSF. |
+| Pad pressure | 76/84 = 0.90 ksi against a 1.0 ksi service limit. The arithmetic is OK, but BDS-614 was not included, so the limit is unverified. |
+| Pad stability | Total thickness 2.0 in. equals L/3 = 2.0 in. There is zero margin. |
+| Rotation | 0.015 rad against 0.020 rad. The margin is thin. |
+| Reaction | D = 40 k and L = 36 k match S-401 note 5. The W24x84 diaphragm (about 0.8 k) is omitted. |
+
+- **Setting tolerance.** The 5.0 in. travel has no allowance for a neutral-setting error. S-401 note 4 gives no tolerance figure.
+- **Geometry.** The sheet runs 4–20 in. from the face of SB-1 and the pad 9–15 in. Past the sheet edge the pad runs onto the E1 plate and then the corbel edge. A pad that leaves the sheet loses its PTFE sliding surface.
+- **Transverse clearance.** The upturned wall has a 12 ft opening at the bridge (S-401 note 12). The bridge width is not stated, and the jamb could be hit at the N-S movement.
+
+### 4. Draft review: required changes
+
+| Draft item | Finding |
+|---|---|
+| Comment 1 (travel exceeds movement; no keeper bars or end stops needed) | Unsupported. The travel conclusion rests on a demand that is too low by a factor of about 3. The no-stops note (S-401 note 3) is our own detail and needs the EOR&#x27;s decision. |
+| Comment 2 (&quot;agrees with Table 40.6&quot;) | False. 0.12 in. is joint 100, the center of mass. The bearing location gives 0.19 in. |
+| Comment 3 (SRSS appropriate) | Not supportable. The office value is unamplified, and SRSS is not established for a spanning member. |
+| Comment 4 (joint and transverse adequate) | Numerically OK, but incomplete. It misses the joint opening, the cover plate and the bridge width against the 12 ft opening. |
+| Comment 5 (pressure and reaction OK) | Arithmetic only. BDS-614 has not been seen, and the pad stability check has zero margin. |
+| Stamp | &quot;No exceptions taken&quot; is not releasable. The draft is by an EIT, the EOR signature and return date are blank, and it is marked &quot;not for release&quot;. |
+
+Items to require in the resubmittal:
+1. Movement at the bearing location (y = 256.5 ft), with Cd = 5 (garage) and Cd = 5.5 (K&amp;M), δdi included, and a stated sign convention.
+2. Design-level movements in E-W and N-S, including the orthogonal effect, with a resolved combination method and the correct clause citation.
+3. The thermal range with its basis.
+4. The loads and displacements imposed on the garage, as S-001 deferred-submittal note 3 requires. That means:
+   - the vertical reaction in service and factored form, including the diaphragm;
+   - the horizontal force through the bearing, with a friction coefficient or pad shear taken from BDS-614;
+   - the displacements in both directions.
+5. BDS-614.
+6. Sealed calculations and drawings.
+7. A statement on the cover plate, the joint opening and what restrains the pad if it leaves the sheet.
+
+Return the review by 11/04/2026, which is ten working days from the 10/21 transmittal. Keep the existing disclaimer wording.
+
+### 5. Items for you as EOR
+
+- **Corbel and SB-1.** Their design calculations are not in the package, so I cannot confirm that C-1 (5-#7, A706 Gr 60, f&#x27;c = 5,000 psi) and SB-1 torsion were designed for the horizontal force and the vertical reaction at every pad position.
+  - At +5 in. of travel the load acts 17 in. from the SB-1 face, against 12 in. at neutral.
+  - ACI 318-19 §16.5 sets a minimum horizontal force of 0.2Vu, about 21 k on a Vu of about 105 k. That floor probably governs, not friction. Clause numbers are unverified.
+- **Table 12.6-1, possibly a larger issue (verify first).**
+  - The garage is torsionally irregular. Its torsional irregularity ratio is 1.67, above 1.4, so it is Type 1b (extreme), not just &quot;Type 1&quot; as the calc and S-001 say. That is permitted in SDC D.
+  - By my recollection of Table 12.6-1, a Type 1 irregular structure of three stories above the base in SDC D is not permitted to use ELF, and modal or response-history analysis would be required.
+  - If that is confirmed, every Section 40 displacement, including the bearing demand above, must be recomputed. Until it is checked, treat the SB-7 numbers as provisional.
+- **Utah amendments.** The package names only &quot;Utah Code 15A-3&quot;. Check the amendments to the 2024 IBC Chapters 16 and 17 and the deferred-submittal provisions.
+- **K&amp;M&#x27;s displacements.** The letter gives no MCE basis, and I could not check its model.
+
+```json
+{
+  &quot;required_bearing_movement_in&quot;: 3.66,
+  &quot;movement_capacity_in&quot;: 5.0,
+  &quot;bearing_ok&quot;: true,
+  &quot;joint_ok&quot;: true,
+  &quot;submittal_action&quot;: &quot;revise and resubmit&quot;
+}
+```
+
+The 3.66 in. figure is the 3.30 in. absolute-sum seismic movement (with δdi) plus 0.36 in. thermal. Without thermal it is 3.30 in.</pre></div></article></main></div></body></html>

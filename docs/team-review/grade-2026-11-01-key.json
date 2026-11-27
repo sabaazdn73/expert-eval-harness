@@ -1,0 +1,140 @@
+{
+ "task": "m1-t2-skybridge-sliding-bearing",
+ "model": "claude-sonnet-5-5",
+ "trial": 0,
+ "passed": false,
+ "score": 5.0,
+ "max_score": 12,
+ "checks": [
+  {
+   "ok": false,
+   "detail": "required_bearing_movement_in: got 3.66, expected 5.925 \u00b1 0.425"
+  },
+  {
+   "ok": true,
+   "detail": "movement_capacity_in: got 5.0, expected 5.0 \u00b1 0.05"
+  },
+  {
+   "ok": false,
+   "detail": "bearing_ok: got True, expected False"
+  },
+  {
+   "ok": true,
+   "detail": "joint_ok: got True, expected True"
+  },
+  {
+   "ok": true,
+   "detail": "submittal_action: got 'revise and resubmit', expected 'revise and resubmit'"
+  }
+ ],
+ "rubric": [
+  {
+   "id": "1",
+   "points": 0.0,
+   "max": 2,
+   "required": true,
+   "verdict": "fail",
+   "reason": "The response amplifies both structures with Cd (delta_DE: garage 1.54 in., office 1.76 in.) and explicitly declines the 1.5R delta_MCE basis of 12.12.3/Eq. 12.8-17, so the key's required method is not used.",
+   "checked": ""
+  },
+  {
+   "id": "2",
+   "points": 0.0,
+   "max": 2,
+   "required": true,
+   "verdict": "fail",
+   "reason": "The governing absolute sum is 3.30 in. (3.66 in. with thermal), outside 5.50\u20136.35 in., and the response concludes the 5.0 in. travel is adequate.",
+   "checked": ""
+  },
+  {
+   "id": "3",
+   "points": 1.0,
+   "max": 1,
+   "required": true,
+   "verdict": "pass",
+   "reason": "It recommends Revise and Resubmit, keeps plate fabrication on hold, and states that the draft's No Exceptions Taken is not releasable.",
+   "checked": ""
+  },
+  {
+   "id": "4",
+   "points": 1.0,
+   "max": 1,
+   "required": false,
+   "verdict": "pass",
+   "reason": "The garage delta_e is taken at the bearing (0.191 in., near the NE corner) rather than the 0.12 in. center-of-mass value.",
+   "checked": ""
+  },
+  {
+   "id": "5",
+   "points": 1.0,
+   "max": 1,
+   "required": false,
+   "verdict": "pass",
+   "reason": "It identifies K&M's 0.32 in. as elastic and unamplified and notes TSF used it without amplification.",
+   "checked": ""
+  },
+  {
+   "id": "6",
+   "points": 1.0,
+   "max": 1,
+   "required": false,
+   "verdict": "pass",
+   "reason": "It interpolates delta_di = 0.117 in. at the bearing from Table 40.6A and includes it in the garage movement.",
+   "checked": ""
+  },
+  {
+   "id": "7",
+   "points": 0.0,
+   "max": 1,
+   "required": false,
+   "verdict": "fail",
+   "reason": "No required stainless sheet length or required travel figure is given as a fix, because the bearing is judged adequate.",
+   "checked": ""
+  },
+  {
+   "id": "8",
+   "points": 1.0,
+   "max": 1,
+   "required": false,
+   "verdict": "pass",
+   "reason": "It identifies the calc's SRSS as the structural-separation provision, not the rule for a spanning member, and corrects draft comments 2 and 3.",
+   "checked": ""
+  },
+  {
+   "id": "9",
+   "points": 0.0,
+   "max": 1,
+   "required": false,
+   "verdict": "fail",
+   "reason": "The joint is checked against about 3.3 in. on a delta_DE basis, not against the corrected movement of about 6.05 in.",
+   "checked": ""
+  },
+  {
+   "id": "10",
+   "points": 0.0,
+   "max": 1,
+   "required": false,
+   "verdict": "fail",
+   "reason": "The resubmittal requests rest on the wrong Cd basis and cite no verified code sections or correct governing numbers addressed to the delegated engineer.",
+   "checked": ""
+  }
+ ],
+ "answer": {
+  "required_bearing_movement_in": 3.66,
+  "movement_capacity_in": 5.0,
+  "bearing_ok": true,
+  "joint_ok": true,
+  "submittal_action": "revise and resubmit"
+ },
+ "team": {
+  "agents": [
+   "seismic-demand",
+   "bearing-travel",
+   "review-corbel-draft"
+  ],
+  "posts": 10,
+  "asks": 12,
+  "sent_back": [],
+  "channel": "channels/m1-t2-skybridge-sliding-bearing__claude-sonnet-5-5__trial1.html"
+ }
+}

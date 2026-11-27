@@ -1,0 +1,112 @@
+{
+ "id": "m1-t2-skybridge-sliding-bearing",
+ "domain": "structural",
+ "title": "Skybridge sliding bearing at the L2 corbel: deferred submittal review (ASCE 7-22 12.12.3, delta_MCE)",
+ "prompt": "prompt.md",
+ "files": [
+  "files/26-210 Adjacent Building Seismic Data Letter 10-06-2026.pdf",
+  "files/26-210 Calc Package Section 40 - Seismic Analysis.pdf",
+  "files/26-210 Deferred Submittal SB-7 - Skybridge Bearing Movement.pdf",
+  "files/26-210 S-001.pdf",
+  "files/26-210 S-401.pdf",
+  "files/26-210 Submittal Review SB-7 - Draft.pdf"
+ ],
+ "key_file": "key.md",
+ "items": [
+  {
+   "id": "1",
+   "points": 2,
+   "required": true
+  },
+  {
+   "id": "2",
+   "points": 2,
+   "required": true
+  },
+  {
+   "id": "3",
+   "points": 1,
+   "required": true
+  },
+  {
+   "id": "4",
+   "points": 1
+  },
+  {
+   "id": "5",
+   "points": 1
+  },
+  {
+   "id": "6",
+   "points": 1
+  },
+  {
+   "id": "7",
+   "points": 1
+  },
+  {
+   "id": "8",
+   "points": 1
+  },
+  {
+   "id": "9",
+   "points": 1
+  },
+  {
+   "id": "10",
+   "points": 1
+  }
+ ],
+ "max_score": 12,
+ "pass_score": 9,
+ "code_execution": true,
+ "answer_format": {
+  "required_bearing_movement_in": "number (horizontal movement along the bridge that the garage bearing must accommodate, each way; say in your working whether thermal is included)",
+  "movement_capacity_in": "number",
+  "bearing_ok": "true or false",
+  "joint_ok": "true or false",
+  "submittal_action": "\"no exceptions taken\", \"revise and resubmit\" or \"rejected\""
+ },
+ "checks": [
+  {
+   "field": "required_bearing_movement_in",
+   "type": "number",
+   "expected": 5.925,
+   "tol_abs": 0.425
+  },
+  {
+   "field": "movement_capacity_in",
+   "type": "number",
+   "expected": 5.0,
+   "tol_abs": 0.05
+  },
+  {
+   "field": "bearing_ok",
+   "type": "bool",
+   "expected": false
+  },
+  {
+   "field": "joint_ok",
+   "type": "bool",
+   "expected": true
+  },
+  {
+   "field": "submittal_action",
+   "type": "choice",
+   "expected": "revise and resubmit",
+   "also": [
+    {
+     "expected": "rejected"
+    }
+   ]
+  }
+ ],
+ "checks_gate": false,
+ "mock_answer": {
+  "required_bearing_movement_in": 5.69,
+  "movement_capacity_in": 5.0,
+  "bearing_ok": false,
+  "joint_ok": true,
+  "submittal_action": "revise and resubmit"
+ }
+}

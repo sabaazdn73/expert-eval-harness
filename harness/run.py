@@ -22,9 +22,10 @@ from harness.refs import RefLibrary
 from harness import grader_tools
 from harness import gemini
 from harness import sandbox
+from harness import team
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HARNESS_VERSION = "2026-11-21 (batch runs at half price; separate Claude/Google budgets, second grader, adjudication, preflight)"
+HARNESS_VERSION = "2026-11-27 (team review mode; batch runs at half price; separate Claude/Google budgets, second grader, adjudication, preflight)"
 SYSTEM = ("You are an expert answering a professional task. Work carefully, state assumptions, "
           "and do not invent facts, standards or citations. If the task's premise or figures are wrong "
           "or inconsistent, say so instead of forcing an answer.")
@@ -491,6 +492,10 @@ def estimate_cost(tasks, ks, judges, a):
                     cost = (first + (k - 1) * later + k * out * outp) / 1e6
                     if _batched_trial(a, task, m):
                         cost *= api.BATCH_DISCOUNT
+                if getattr(a, "team", False) is True:  # a real flag, not a stand-in object
+                    # every agent reads the same files (from the cache after the first) and writes its own post;
+                    # roughly one trial's cost per agent call, a little less for the short posts
+                    cost *= team.call_count(a.team_agents, a.team_rounds) * (0.6 if side == "low" else 1.0)
                 add(m, side, cost)
             # gradings: every trial of every model is graded by every judge
             answer_tok = min(out, 12000)  # the graded text is the answer, not the thinking
@@ -677,16 +682,22 @@ def cmd_run(a):
         sys.exit("no tasks found")
     run_id = a.name or dt.datetime.now().strftime("%Y%m%d-%H%M%S") + ("-refs" if a.with_refs else "")
     out = os.path.join(ROOT, "runs", run_id)
-    planned = len(task_dirs) * sum(ks.values())
+    if a.team and a.batch:
+        sys.exit("--team and --batch do not go together: the agents of a team answer one after another")
+    per_trial = team.call_count(a.team_agents, a.team_rounds) if a.team else 1
+    trials = len(task_dirs) * sum(ks.values())
+    planned = trials * per_trial
     print(f"{len(task_dirs)} tasks; trials per task: " + ", ".join(f"{m} x{ks[m]}" for m in a.models)
-          + f" = {planned} model calls; graders: {', '.join(judges)}" + (f" (equipped)" if a.judge_tools else "")
-          + f" = {planned * len(judges)} gradings")
+          + (f" = {trials} team trials of up to {per_trial} model calls each = {planned} model calls at most"
+             if a.team else f" = {planned} model calls")
+          + f"; graders: {', '.join(judges)}" + (f" (equipped)" if a.judge_tools else "")
+          + f" = {trials * len(judges)} gradings")
     budgets = {"anthropic": a.budget_claude, "google": a.budget_google}
     est = estimate_cost([load_task(d) for d in task_dirs], ks, judges, a)
     print_estimate(est, budgets)
     if a.dry_run:
         return
-    if planned > a.max_calls:
+    if planned > a.max_calls and not mock:  # mock calls cost nothing
         sys.exit(f"refusing: {planned} calls is above --max-calls {a.max_calls}")
     over = [p for p in budgets if budgets[p] is not None and est["high"][p] > budgets[p]]
     if over and not a.yes and not a.resume:
@@ -780,6 +791,71 @@ def cmd_run(a):
                   for j, g in fields["grades"].items() if j != judges[0]]
         return row, jusage, ("PASS" if fields["passed"] else "fail") + sc + (f"  [also {'; '.join(others)}]" if others else "")
 
+    def solve(task, cx, model, trial, sfx=""):
+        """One model answering one prompt: the dispatch every trial uses (and every agent of a --team trial).
+        Returns (text, usage, trace, note)."""
+        tag = f"{task['id']}__{model}__trial{trial + 1}" + (f"__{sfx}" if sfx else "")
+        if a.sandbox == "local" and task.get("code_execution") and not mock:
+            # the same sandbox for every model: run_python in a local folder with the task files under their names
+            files = [os.path.join(task["dir"], p) for p in task.get("files", [])]
+            log = gemini._tracer(tag)
+            # --model-library: the code library's text tools as well, the same for both families (no page
+            # images, which a Gemini function response cannot carry)
+            libtools = [t for t in grader_tools.CLIENT_TOOLS if t["name"] != "code_ref_page_image"] \
+                if (a.model_library and lib) else []
+            system = LOCAL_CODE_SYSTEM + (LIB_NOTE if libtools else "")
+            with sandbox.Workspace(files, log=log) as ws:
+                def tool(name, args):
+                    out = ws.tool(name, args)
+                    if out is None and libtools:
+                        out = grader_tools._client_tool(name, args, lib)
+                        if log:
+                            log({"kind": "tool", "tool": name, "call": 0, "seconds": 0, "code": json.dumps(args),
+                                 "result": str(out)[:4000]})
+                    return out
+                if gemini.is_gemini(model):
+                    text, usage, mtrace = gemini.run_tools(model, cx, tool, system=system,
+                                                           max_tokens=a.max_tokens, effort=a.effort,
+                                                           max_turns=a.max_turns, tag=tag, extra_tools=libtools)
+                else:
+                    if log:
+                        log({"kind": "request", "model": model, "system": system})
+                    text, usage, mtrace = grader_tools.run_equipped(
+                        model, cx, lib if libtools else None, max_tokens=a.max_tokens, max_turns=a.max_turns,
+                        tools=[sandbox.CLAUDE_TOOL] + libtools, system=system, effort=a.effort, executor=tool)
+                    if log:
+                        log({"kind": "done", "chars": len(text), "code_runs": ws.calls, "usage": usage})
+            looked = [t for t in mtrace if str(t.get("tool", "")).startswith("code_ref")]
+            runs = sum(1 for t in mtrace if t.get("tool") == sandbox.TOOL_NAME or (t.get("tool") not in ("harness",) and not str(t.get("tool", "")).startswith("code_ref")))
+            note = f"ran code {runs} times" + (f", {len(looked)} library look-ups" if libtools else "") + ", local sandbox"
+            if libtools:
+                usage["library_lookups"] = [t.get("input") for t in looked]
+        elif gemini.is_gemini(model):
+            # Gemini under test, via Vertex AI; same prompt and files, its own sandbox for code tasks
+            code = bool(task.get("code_execution"))
+            text, usage, mtrace = gemini.run(model, cx, system=CODE_SYSTEM if code else SYSTEM,
+                                             code_execution=code, max_tokens=a.max_tokens, effort=a.effort, tag=tag)
+            note = f"ran code {len(mtrace)} times" if code else ""
+        elif a.model_library and lib and not mock:
+            # case study: the model under test can look up the code library itself
+            mtools = ([grader_tools.CODE_EXEC] if task.get("code_execution") else []) + grader_tools.CLIENT_TOOLS
+            text, usage, mtrace = grader_tools.run_equipped(
+                model, cx, lib, max_tokens=a.max_tokens, tools=mtools, max_turns=a.max_turns,
+                system=(CODE_SYSTEM if task.get("code_execution") else SYSTEM) + LIB_NOTE, effort=a.effort)
+            looked = [t for t in mtrace if str(t.get("tool", "")).startswith("code_ref")]
+            note = f"{len(mtrace)} tool calls, {len(looked)} library look-ups"
+            usage["library_lookups"] = [t.get("input") for t in looked]
+        elif task.get("code_execution") and not mock:
+            # the task needs computation: the model under test gets a Python sandbox
+            text, usage, mtrace = grader_tools.run_equipped(
+                model, cx, None, max_tokens=a.max_tokens, max_turns=a.max_turns,
+                tools=[grader_tools.CODE_EXEC], system=CODE_SYSTEM, effort=a.effort)
+            note = f"ran code {sum(1 for t in mtrace if t.get('tool') != 'harness')} times"
+        else:
+            text, usage = api.call(model, cx, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
+            mtrace, note = [], ""
+        return text, usage, mtrace, note
+
     def one(task, content, lib_block, model, trial):
         head = f"{task['id']:<28} {model:<22} trial {trial + 1}: "
         try:
@@ -787,68 +863,27 @@ def cmd_run(a):
         except api.BudgetExceeded as e:
             print(head + f"skipped: {e} (not saved; raise --budget and use --resume)", flush=True)
             return
+        team_info = None
         try:
-            if a.sandbox == "local" and task.get("code_execution") and not mock:
-                # the same sandbox for every model: run_python in a local folder with the task files under their names
-                tag = f"{task['id']}__{model}__trial{trial + 1}"
-                files = [os.path.join(task["dir"], p) for p in task.get("files", [])]
-                log = gemini._tracer(tag)
-                # --model-library: the code library's text tools as well, the same for both families (no page
-                # images, which a Gemini function response cannot carry)
-                libtools = [t for t in grader_tools.CLIENT_TOOLS if t["name"] != "code_ref_page_image"] \
-                    if (a.model_library and lib) else []
-                system = LOCAL_CODE_SYSTEM + (LIB_NOTE if libtools else "")
-                with sandbox.Workspace(files, log=log) as ws:
-                    def tool(name, args):
-                        out = ws.tool(name, args)
-                        if out is None and libtools:
-                            out = grader_tools._client_tool(name, args, lib)
-                            if log:
-                                log({"kind": "tool", "tool": name, "call": 0, "seconds": 0, "code": json.dumps(args),
-                                     "result": str(out)[:4000]})
-                        return out
-                    if gemini.is_gemini(model):
-                        text, usage, mtrace = gemini.run_tools(model, content, tool, system=system,
-                                                               max_tokens=a.max_tokens, effort=a.effort,
-                                                               max_turns=a.max_turns, tag=tag, extra_tools=libtools)
-                    else:
-                        if log:
-                            log({"kind": "request", "model": model, "system": system})
-                        text, usage, mtrace = grader_tools.run_equipped(
-                            model, content, lib if libtools else None, max_tokens=a.max_tokens, max_turns=a.max_turns,
-                            tools=[sandbox.CLAUDE_TOOL] + libtools, system=system, effort=a.effort, executor=tool)
-                        if log:
-                            log({"kind": "done", "chars": len(text), "code_runs": ws.calls, "usage": usage})
-                looked = [t for t in mtrace if str(t.get("tool", "")).startswith("code_ref")]
-                runs = sum(1 for t in mtrace if t.get("tool") == sandbox.TOOL_NAME or (t.get("tool") not in ("harness",) and not str(t.get("tool", "")).startswith("code_ref")))
-                note = f"ran code {runs} times" + (f", {len(looked)} library look-ups" if libtools else "") + ", local sandbox"
-                if libtools:
-                    usage["library_lookups"] = [t.get("input") for t in looked]
-            elif gemini.is_gemini(model):
-                # Gemini under test, via Vertex AI; same prompt and files, its own sandbox for code tasks
-                code = bool(task.get("code_execution"))
-                text, usage, mtrace = gemini.run(model, content, system=CODE_SYSTEM if code else SYSTEM,
-                                                 code_execution=code, max_tokens=a.max_tokens, effort=a.effort,
-                                                 tag=f"{task['id']}__{model}__trial{trial + 1}")
-                note = f"ran code {len(mtrace)} times" if code else ""
-            elif a.model_library and lib and not mock:
-                # case study: the model under test can look up the code library itself
-                mtools = ([grader_tools.CODE_EXEC] if task.get("code_execution") else []) + grader_tools.CLIENT_TOOLS
-                text, usage, mtrace = grader_tools.run_equipped(
-                    model, content, lib, max_tokens=a.max_tokens, tools=mtools, max_turns=a.max_turns,
-                    system=(CODE_SYSTEM if task.get("code_execution") else SYSTEM) + LIB_NOTE, effort=a.effort)
-                looked = [t for t in mtrace if str(t.get("tool", "")).startswith("code_ref")]
-                note = f"{len(mtrace)} tool calls, {len(looked)} library look-ups"
-                usage["library_lookups"] = [t.get("input") for t in looked]
-            elif task.get("code_execution") and not mock:
-                # the task needs computation: the model under test gets a Python sandbox
-                text, usage, mtrace = grader_tools.run_equipped(
-                    model, content, None, max_tokens=a.max_tokens, max_turns=a.max_turns,
-                    tools=[grader_tools.CODE_EXEC], system=CODE_SYSTEM, effort=a.effort)
-                note = f"ran code {sum(1 for t in mtrace if t.get('tool') != 'harness')} times"
+            if a.team:
+                # the same model as a review team talking in one channel; the checker's answer is graded (harness/team.py)
+                def agent(cx, sfx):
+                    api.check_budget({api.provider(model)})
+                    return solve(task, cx, model, trial, sfx)
+                text, usage, mtrace, note, channel, agents = team.run_team(
+                    task, content, agent, max_agents=a.team_agents, rounds=a.team_rounds, parallel=a.team_parallel)
+                cname = f"{task['id']}__{model}__trial{trial + 1}"
+                cdir = os.path.join(out, "channels")
+                os.makedirs(cdir, exist_ok=True)
+                json.dump({"task": task["id"], "model": model, "trial": trial, "agents": agents, "channel": channel},
+                          open(os.path.join(cdir, cname + ".json"), "w"), indent=1)
+                open(os.path.join(cdir, cname + ".html"), "w").write(team.render_html(
+                    channel, f"{task['id']} · {model} · trial {trial + 1}", note))
+                team_info = {"agents": [x["id"] for x in agents], "posts": len(channel),
+                             "asks": sum(len(team.ASK_RE.findall(m["text"])) for m in channel),
+                             "channel": f"channels/{cname}.html"}
             else:
-                text, usage = api.call(model, content, system=SYSTEM, max_tokens=a.max_tokens, effort=a.effort)
-                note = ""
+                text, usage, mtrace, note = solve(task, content, model, trial)
         except Exception as e:  # one failed trial must not stop the run
             print(head + f"ERROR {str(e)[:300]} (not saved; rerun with --resume)", flush=True)
             return
@@ -856,6 +891,8 @@ def cmd_run(a):
                "with_refs": a.with_refs, "passed": False, "checks": [], "rubric": [], "answer": None, "score": None,
                "max_score": task.get("max_score"), "library_lookups": usage.get("library_lookups"),
                "stop_reason": usage.get("stop_reason"), "response": text}
+        if team_info:
+            row["team"] = team_info
         if not text.strip():
             stop = usage.get("stop_reason")
             why = ("cut off at max_tokens before any answer (thinking used the whole budget)" if stop == "max_tokens"
@@ -947,6 +984,7 @@ def cmd_run(a):
             "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs,
             "judge": judge_model, "judges": judges, "consensus": a.consensus, "ref_library": bool(lib),
             "sandbox": a.sandbox, "batch": bool(a.batch), "batch_ids": api.batch_ids(),
+            "team": {"agents": a.team_agents, "rounds": a.team_rounds} if a.team else None,
             "tasks": [os.path.basename(d) for d in task_dirs], "budgets": budgets,
             "task_sha256": {t: task_fingerprint(tk) for t, tk in tasks_by_id.items()},
             "harness_version": HARNESS_VERSION, "started": started,
@@ -1050,7 +1088,9 @@ def write_report(path):
                 else " · sandbox: each provider's own code tool")
              + f" · graders: {', '.join(judges)} (primary {judges[0]}" + (", equipped" if meta.get("judge_tools") else "")
              + (f", consensus {meta.get('consensus')}" if len(judges) > 1 else "") + ")" + cost
-             + (f" · regraded from {meta['regraded_from']}" if meta.get("regraded_from") else ""), ""]
+             + (f" · regraded from {meta['regraded_from']}" if meta.get("regraded_from") else "")
+             + (f" · team review: up to {meta['team']['agents']} member agents, {meta['team']['rounds']} round(s) of "
+                "questions, conversations in channels/" if meta.get("team") else ""), ""]
     adj = load_adjudications(path)
     final = apply_adjudications(rows, adj)
     filled = [x for x in adj if x.get("points") is not None or x.get("verdict") is not None]
@@ -1440,6 +1480,13 @@ def main():
                         "every model (local; check the machine first with python3 -m harness.sandbox)")
     s.add_argument("--overwrite", action="store_true", help="start the named run again, discarding its saved results")
     s.add_argument("--resume", action="store_true", help="keep the trials already saved in runs/<name> and run only the missing ones")
+    s.add_argument("--team", action="store_true",
+                   help="each trial is a review team of the same model talking in one channel: a code-basis agent, a "
+                        "lead who splits the review by member, one agent per member, questions and answers between "
+                        "them, and a checker who writes the graded answer (harness/team.py)")
+    s.add_argument("--team-agents", type=int, default=4, help="--team: at most this many member agents (default 4)")
+    s.add_argument("--team-rounds", type=int, default=1, help="--team: rounds of questions and answers (default 1)")
+    s.add_argument("--team-parallel", type=int, default=4, help="--team: agents of one trial working at the same time")
     s.add_argument("--name")
     s.set_defaults(fn=cmd_run)
     s = sub.add_parser("preflight", help="validate tasks and API keys before the paid run; --ping sends one tiny request per model")

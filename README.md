@@ -76,6 +76,39 @@ per call and the same turn limit (`--max-turns`) for every model. On macOS the c
 network, writes only inside its folder and no API keys in its environment (`python3 -m harness.sandbox` checks this).
 Every request, tool call and result is written to `runs/<name>/traces/`; `python3 -m harness.trace_view` prints them.
 
+### Team review (`--team`)
+
+A structural review in a design office is not one person reading everything: one engineer settles the code basis, each
+member or connection goes to someone who checks it, they ask each other when their parts meet, and a checker signs the
+result. `--team` runs each trial that way, with the same model in every role, talking in one shared channel:
+
+1. **Code basis.** One agent establishes what lies outside any single member: the jurisdiction and the building code
+   it has adopted, which editions of ACI 318 and ASCE 7 follow from it, the state or city amendments, and the design
+   criteria, each with document and page. It posts first, so no member is checked against the wrong edition.
+2. **Plan.** A lead splits the review into parts, one per member or connection (at most `--team-agents`, default 4),
+   and lists the questions that involve two parts.
+3. **Members.** One agent per part checks its member against the code basis, with numbers, in the same sandbox and
+   tools a solo trial gets. When its decision depends on another part it writes `ASK @agent: ...` in the channel.
+4. **Answers.** Each agent that was asked answers (`--team-rounds`, default 1) and may correct its earlier finding.
+5. **Check.** A checking engineer reads the whole channel, checks coverage and consistency between the parts,
+   recomputes what it doubts and writes the answer in the task's format.
+
+Only the checker's answer is graded, by the same graders and key as a solo answer, so `compare` between a solo run and
+a `--team` run of the same model shows whether the team helps. Every agent reads the same task files from the prompt
+cache. Each conversation is saved as `runs/<name>/channels/<task>__<model>__trial<n>.html`, a chat-style page with
+the @mentions and questions marked, and as `.json`; each result row says which agents took part and how many questions
+they asked.
+
+A team trial makes up to 3 + agents × (1 + rounds) model calls (11 with the defaults), so check the estimate first and
+raise `--max-calls` to match:
+
+```
+python3 -m harness.run run --models claude-sonnet-5-5:1 --team --sandbox local --tasks "/path/to/tasks/*" --dry-run
+```
+
+`--team` does not combine with `--batch`. It has not yet been run on the hackathon tasks; results will be added to
+`docs/results.md` when it is.
+
 ### Compare runs
 
 ```

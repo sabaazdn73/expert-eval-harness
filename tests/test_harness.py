@@ -762,3 +762,105 @@ class LibraryToolsTest(unittest.TestCase):
         self.assertNotIn("parameters", sent[0]["tools"][0]["functionDeclarations"][1])  # no-argument tool
         self.assertEqual(seen, [("code_ref_search", {"query": "18.10.2.4"})])
         self.assertEqual((text, trace[0]["tool"]), ("done", "code_ref_search"))
+
+
+class TeamReview(unittest.TestCase):
+    """--team: who is asked what, which agent's text is graded, and what the channel keeps."""
+
+    def task(self):
+        return {"id": "t", "prompt_text": "Review the skybridge bearing."}
+
+    def content(self, mock_block=True):
+        c = [{"type": "text", "text": "FILE drawings"},
+             {"type": "text", "text": "Review the skybridge bearing.\n\nAfter your working, end your reply with a fenced "
+                                      "```json block containing exactly these keys:\n{\n  \"verdict\": str\n}"}]
+        return c + ([{"type": "text", "text": "<mock_answer>{}</mock_answer>"}] if mock_block else [])
+
+    def scripted(self, plan):
+        seen = []
+
+        def solve(cx, sfx):
+            seen.append((sfx, cx))
+            role = cx[-1]["text"] if "your_role" in cx[-1]["text"] else cx[-2]["text"]
+            if "code-basis engineer on a structural review team" in role:
+                return "IBC 2021 as adopted by Utah; ACI 318-19; ASCE 7-16. (S-001 p.1)", {"input_tokens": 10}, [], ""
+            if "You lead" in role:
+                return plan, {"input_tokens": 10}, [], ""
+            if "These questions were addressed to you" in role:
+                return "Uplift 12 kips; my earlier finding stands.", {"input_tokens": 5}, [], ""
+            if "You are the bearing agent" in role:
+                return "FINDINGS: seat width short.\nASK @anchor: what uplift do you carry?", {"input_tokens": 10}, [], ""
+            if "You are the anchor agent" in role:
+                return "FINDINGS: anchors fine.\nASK @nobody: ignored", {"input_tokens": 10}, [], ""
+            if "checking engineer" in role:
+                return "Final.\n```json\n{\"verdict\": \"revise\"}\n```", {"input_tokens": 20, "stop_reason": "end_turn"}, [], ""
+            raise AssertionError(role)
+        return solve, seen
+
+    def test_full_review_routes_questions_and_grades_the_checker(self):
+        from harness import team
+        plan = ('```json\n{"agents": [{"id": "bearing", "member": "sliding bearing", "scope": "seat width"},'
+                ' {"id": "Anchor", "member": "anchor rods", "scope": "uplift"}], "cross_checks": ["uplift path"]}\n```')
+        solve, seen = self.scripted(plan)
+        final, usage, trace, note, channel, agents = team.run_team(self.task(), self.content(False), solve)
+        self.assertIn('"verdict": "revise"', final)
+        self.assertEqual([x["id"] for x in agents], ["bearing", "anchor"])  # ids made lower case
+        self.assertEqual([m["kind"] for m in channel], ["basis", "plan", "findings", "findings", "answer", "final"])
+        answer = channel[4]
+        self.assertEqual((answer["from"], answer["to"]), ("anchor", ["bearing"]))  # @nobody is not on the team
+        self.assertEqual(usage["input_tokens"], 10 + 10 + 10 + 10 + 5 + 20)
+        self.assertEqual(usage["stop_reason"], "end_turn")
+        # only the checker sees the answer format; the files carry the one cache point every agent shares
+        for sfx, cx in seen:
+            fmt = any("fenced ```json block containing exactly these keys" in b.get("text", "") for b in cx)
+            self.assertEqual(fmt, sfx == "team-checker", sfx)
+            self.assertEqual(cx[0].get("cache_control"), api.CACHE_1H)
+        self.assertIn("ASK @anchor", next(cx for s, cx in seen if s == "team-checker")[2]["text"])  # the whole channel
+        self.assertEqual((len(seen), team.call_count(2, 1)), (6, 7))  # only one agent was asked: 6 calls of at most 7
+
+    def test_unreadable_plan_falls_back_to_one_reviewer(self):
+        from harness import team
+        solve, seen = self.scripted("I will split it by member.")
+
+        def solve2(cx, sfx):
+            role = cx[-1]["text"]
+            if "You are the reviewer agent" in role:
+                return "FINDINGS: all members.", {}, [], ""
+            return solve(cx, sfx)
+        final, usage, trace, note, channel, agents = team.run_team(self.task(), self.content(False), solve2)
+        self.assertEqual([x["id"] for x in agents], ["reviewer"])
+        self.assertEqual(channel[-1]["kind"], "final")
+
+    def test_plan_is_capped_and_ids_are_unique(self):
+        from harness import team
+        plan = '{"agents": [' + ",".join('{"id": "wall", "member": "w%d"}' % i for i in range(6)) + "]}"
+        agents, _ = team._parse_plan(plan, 4)
+        self.assertEqual([x["id"] for x in agents], ["wall", "wall-2", "wall-2-2", "wall-2-2-2"])
+
+    def test_channel_page_escapes_posts(self):
+        from harness import team
+        page = team.render_html([{"n": 1, "round": 1, "from": "bearing", "to": [], "kind": "findings",
+                                  "text": "<script>x</script>\nASK @anchor: uplift?"}], "t")
+        self.assertNotIn("<script>x", page)
+        self.assertIn('class="ask"', page)
+        self.assertIn("prefers-color-scheme: dark", page)
+
+    def test_mock_team_run_end_to_end(self):
+        tmp = tempfile.mkdtemp()
+        tdir = os.path.join(tmp, "tasks", "t1")
+        os.makedirs(tdir)
+        open(os.path.join(tdir, "prompt.md"), "w").write("Review the beam.")
+        json.dump({"id": "t1", "checks": [{"field": "ok", "type": "bool", "expected": True}], "answer_format": {"ok": "true or false"},
+                   "mock_answer": {"ok": True}}, open(os.path.join(tdir, "task.json"), "w"))
+        argv = ["run", "run", "--models", "mock-good", "mock-bad", "--k", "1", "--team", "--name", "tm",
+                "--tasks", os.path.join(tmp, "tasks", "*")]
+        with mock.patch.object(run, "ROOT", tmp), mock.patch("sys.argv", argv), \
+                mock.patch("sys.stdout", new=io.StringIO()):
+            run.main()
+        rows = run.read_results(os.path.join(tmp, "runs", "tm", "results.jsonl"))
+        by = {r["model"]: r for r in rows}
+        self.assertTrue(by["mock-good"]["passed"])
+        self.assertFalse(by["mock-bad"]["passed"])
+        self.assertTrue(os.path.exists(os.path.join(tmp, "runs", "tm", by["mock-good"]["team"]["channel"])))
+        meta = json.load(open(os.path.join(tmp, "runs", "tm", "meta.json")))
+        self.assertEqual(meta["team"], {"agents": 4, "rounds": 1})

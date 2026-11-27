@@ -115,8 +115,9 @@ raise `--max-calls` to match:
 python3 -m harness.run run --models claude-sonnet-5-5:1 --team --sandbox local --tasks "/path/to/tasks/*" --dry-run
 ```
 
-`--team` does not combine with `--batch`. A worked example on a public task, with the narrated recording, the whole
-conversation and how it compares with a single model: [docs/team-review](docs/team-review/).
+`--team` does not combine with `--batch`. A worked example on a public task, with the narrated recording
+([YouTube](https://www.youtube.com/watch?v=srZwcUZGGEk)), the whole conversation and how it compares with a single
+model: [docs/team-review](docs/team-review/).
 
 ### Compare runs
 

@@ -816,7 +816,41 @@ class TeamReview(unittest.TestCase):
             self.assertEqual(fmt, sfx == "team-checker", sfx)
             self.assertEqual(cx[0].get("cache_control"), api.CACHE_1H)
         self.assertIn("ASK @anchor", next(cx for s, cx in seen if s == "team-checker")[2]["text"])  # the whole channel
-        self.assertEqual((len(seen), team.call_count(2, 1)), (6, 7))  # only one agent was asked: 6 calls of at most 7
+        # one agent asked, nothing sent back: 6 calls of at most 3 + 2 + (1 + 1) * 3 + 1 = 12
+        self.assertEqual((len(seen), team.call_count(2, 1, 1)), (6, 12))
+
+    def test_checker_sends_a_part_back_and_its_owner_revises_it(self):
+        from harness import team
+        plan = '```json\n{"agents": [{"id": "bearing", "member": "sliding bearing"}, {"id": "anchor", "member": "anchors"}]}\n```'
+        checks = []
+
+        def solve(cx, sfx):
+            role = cx[-1]["text"]
+            if "code-basis engineer on a structural review team" in role:
+                return "ACI 318-19.", {}, [], ""
+            if "You lead" in role:
+                return plan, {}, [], ""
+            if "sent your part back" in role:
+                self.assertIn("seat width uses the wrong displacement", role)
+                self.assertIn("Your part: sliding bearing.", role)
+                return "REVISED: seat width 412 mm required, 300 mm given: not OK.", {}, [], ""
+            if "checking engineer" in role:
+                checks.append(next(b["text"] for b in cx if b["text"].startswith("<channel>")))
+                if len(checks) == 1:
+                    return ("REVISE @bearing: seat width uses the wrong displacement, recheck with delta_M\n"
+                            "REVISE @ghost: not on the team"), {}, [], ""
+                return "Final.\n```json\n{\"verdict\": \"revise\"}\n```", {}, [], ""
+            if "You are the bearing agent" in role or "You are the anchor agent" in role:
+                return "FINDINGS: fine.", {}, [], ""
+            raise AssertionError(role)
+        final, usage, trace, note, channel, agents = team.run_team(
+            {"id": "t", "prompt_text": "Review it."}, [{"type": "text", "text": "Review it."}], solve, revisions=1)
+        kinds = [(m["from"], m["kind"]) for m in channel]
+        self.assertEqual(kinds[-3:], [("checker", "review"), ("bearing", "revision"), ("checker", "final")])
+        self.assertEqual(channel[-3]["to"], ["bearing"])  # @ghost is not on the team
+        self.assertIn("· revision · from @bearing", checks[1])  # the checker reads the revision before answering
+        self.assertIn('"verdict": "revise"', final)
+        self.assertIn("1 part(s) sent back", note)
 
     def test_unreadable_plan_falls_back_to_one_reviewer(self):
         from harness import team
@@ -863,7 +897,7 @@ class TeamReview(unittest.TestCase):
         self.assertFalse(by["mock-bad"]["passed"])
         self.assertTrue(os.path.exists(os.path.join(tmp, "runs", "tm", by["mock-good"]["team"]["channel"])))
         meta = json.load(open(os.path.join(tmp, "runs", "tm", "meta.json")))
-        self.assertEqual(meta["team"], {"agents": 4, "rounds": 1})
+        self.assertEqual(meta["team"], {"agents": 4, "rounds": 1, "revisions": 1})
 
 
 class LiveView(unittest.TestCase):

@@ -15,7 +15,9 @@ Instead of one model answering the task, the same model works as a team, the way
    in the channel with a line "ASK @agent: ...".
 4. Answers. Agents answer the questions addressed to them; an answer can correct an earlier finding.
 5. Check. A checking engineer reads the whole channel, makes sure every part and every item is covered and that the
-   parts agree with each other, recomputes what it doubts, and writes the team's answer in the task's format. That
+   parts agree with each other, and recomputes what it doubts. A part that is wrong goes back to the agent who owns
+   it ("REVISE @agent: ..."); that agent rechecks it and posts corrected findings, and the checker reads the channel
+   again (--team-revisions cycles, default 1). Then the checker writes the team's answer in the task's format. That
    answer is graded exactly like a single model's answer, so a team run compares one to one with a solo run.
 
 Every agent sees the same task files, so the files are written to the prompt cache once and read from it by every
@@ -68,20 +70,39 @@ Answer each one with numbers, in a short post. If a question shows that one of y
 it and say so. You may ask a further question with an ASK @agent-id: line. Your reply is your post, under 400 words."""
 
 CHECKER_ROLE = """You are the checking engineer on the review team, and you sign the team's answer.
-Read the whole channel below. Make sure that:
+Read the whole channel below; a revision replaces the same agent's earlier findings. Make sure that:
 - every member and every item the request needs is covered;
 - the parts agree with each other (shared forces, joints, dimensions) and with the code basis;
-- the code edition and the local amendments used are the ones that govern.
-Recompute any number you doubt. Where agents disagree, decide and say why. Then write the team's final answer to the
-original request, complete and in the format it asks for. Do not mention the team or the channel in that answer."""
+- the code edition and the local amendments used are the ones that govern;
+- the numbers are right: recompute any you doubt.
+{then}"""
+
+CHECKER_SEND_BACK = """If a part is wrong, incomplete or inconsistent with another part, send it back to the agent who owns it
+instead of writing the answer. Reply then only with one line per fix:
+REVISE @agent-id: what is wrong, with the clause and the numbers, and what to recheck
+The agents are {roster}. Send back only what would change the review's conclusions. If nothing needs fixing, write the
+team's final answer to the original request, complete and in the format it asks for, without mentioning the team or
+the channel."""
+
+CHECKER_FINAL = """Where agents still disagree, decide and say why. Then write the team's final answer to the original
+request, complete and in the format it asks for. Do not mention the team or the channel in that answer."""
+
+REVISION_ROLE = """You are the {id} agent on the review team. The checking engineer sent your part back:
+{fixes}
+Recheck your part with numbers, doing the arithmetic in code. Post your corrected findings in full: they replace your
+earlier ones. Say what changed and why. Where you still hold an earlier finding, keep it and show the numbers that
+support it. Do not ask other agents now; state any assumption you make about another part. Under 600 words."""
 
 ASK_RE = re.compile(r"^\s*\**ASK\**\s+@([A-Za-z0-9_\-]+)\s*:?\s*(.+)$", re.M)
+REVISE_RE = re.compile(r"^\s*\**REVISE\**\s+@([A-Za-z0-9_\-]+)\s*:?\s*(.+)$", re.M)
 MSG_CAP = 8000  # characters of one post shown to the other agents (the full post is saved)
 
 
-def call_count(max_agents, rounds):
-    """Model calls in one team trial at most: code basis, lead, the members, one answer round per member, checker."""
-    return 3 + max_agents * (1 + rounds)
+def call_count(max_agents, rounds, revisions=1):
+    """Model calls in one team trial at most: code basis, lead, the members, then per round of questions and per cycle
+    of revisions one call for each agent that can be asked (the members and the code basis), and the checker once per
+    cycle plus once for the answer. Most trials use fewer: only the agents that are asked or sent back are called."""
+    return 3 + max_agents + (rounds + revisions) * (max_agents + 1) + revisions
 
 
 def _parse_plan(text, max_agents):
@@ -122,12 +143,12 @@ def render_channel(channel, cap=MSG_CAP):
     out = []
     for m in channel:
         t = m["text"] if len(m["text"]) <= cap else m["text"][:cap] + f"\n[... {len(m['text']) - cap} characters cut]"
-        out.append(f"--- post {m['n']} · round {m['round']} · from @{m['from']}"
+        out.append(f"--- post {m['n']} · round {m['round']} · {m['kind']} · from @{m['from']}"
                    + (f" to @{', @'.join(m['to'])}" if m.get("to") else "") + f" ---\n{t}")
     return "<channel>\n" + "\n\n".join(out) + "\n</channel>"
 
 
-def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=None):
+def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=None, revisions=1):
     """solve(content, tag_suffix) -> (text, usage, trace, note) runs one agent: the same model, tools and sandbox as a
     solo trial. Returns (final_text, usage, trace, note, channel, agents).
 
@@ -230,10 +251,37 @@ def run_team(task, content, solve, max_agents=4, rounds=1, parallel=4, on_event=
         with ThreadPoolExecutor(max_workers=max(1, min(parallel, len(targets)))) as pool:
             new = list(pool.map(answer, targets))
 
-    # 5. the checker writes the answer that is graded
-    final = ask(CHECKER_ROLE, CHECKER_ID, "final", final=True)
-    say(max(m["round"] for m in channel) + 1, CHECKER_ID, final, "final")
-    note = f"team of {len(agents)} agents + code basis + checker, {len(channel)} posts, {calls[0]} model calls"
+    # 5. the checker sends wrong parts back to their owners, then writes the answer that is graded
+    def next_round():
+        return max(m["round"] for m in channel) + 1
+    final = None
+    for cycle in range(revisions):
+        text = ask(CHECKER_ROLE.format(then=CHECKER_SEND_BACK.format(roster=roster)), CHECKER_ID, "check", final=True)
+        fixes = {}
+        for target, fix in REVISE_RE.findall(text):
+            if target.lower() in ids:
+                fixes.setdefault(target.lower(), []).append(fix.strip())
+        if not fixes and not REVISE_RE.search(text):
+            final = text  # nothing to fix: this is the answer
+            break
+        if not fixes:
+            break  # it sent parts back to agents that are not on the team: ask once more for the answer itself
+        say(next_round(), CHECKER_ID, text, "review", to=sorted(fixes))
+        rnd = next_round()
+
+        def revise(t, rnd=rnd, fixes=fixes):
+            part = "the code basis" if t == CODE_BASIS_ID else role_of[t]["member"]
+            out = ask(REVISION_ROLE.format(id=t, fixes="\n".join("- " + x for x in fixes[t])) + f"\nYour part: {part}.",
+                      t, "revision")
+            return say(rnd, t, out, "revision", to=[CHECKER_ID])
+        with ThreadPoolExecutor(max_workers=max(1, min(parallel, len(fixes)))) as pool:
+            list(pool.map(revise, sorted(fixes)))
+    if final is None:
+        final = ask(CHECKER_ROLE.format(then=CHECKER_FINAL), CHECKER_ID, "final", final=True)
+    say(next_round(), CHECKER_ID, final, "final")
+    sent_back = sum(1 for m in channel if m["kind"] == "revision")
+    note = (f"team of {len(agents)} agents + code basis + checker, {len(channel)} posts, {calls[0]} model calls"
+            + (f", {sent_back} part(s) sent back and revised" if sent_back else ""))
     return final, usage, trace, note, channel, agents
 
 
@@ -249,7 +297,7 @@ def _initials(who):
 
 def _fmt(text):
     t = html.escape(text)
-    t = re.sub(r"^(\s*\**ASK\**\s+@[A-Za-z0-9_\-]+.*)$", r'<span class="ask">\1</span>', t, flags=re.M)
+    t = re.sub(r"^(\s*\**(?:ASK|REVISE)\**\s+@[A-Za-z0-9_\-]+.*)$", r'<span class="ask">\1</span>', t, flags=re.M)
     t = re.sub(r"(@[A-Za-z0-9_\-]+)", r'<span class="at">\1</span>', t)
     return t
 
@@ -261,7 +309,8 @@ def render_html(channel, title, subtitle=""):
         if m["from"] not in who:
             who.append(m["from"])
     color = {w: COLORS[i % len(COLORS)] for i, w in enumerate(who)}
-    kinds = {"basis": "code basis", "plan": "plan", "findings": "findings", "answer": "answer", "final": "final answer"}
+    kinds = {"basis": "code basis", "plan": "plan", "findings": "findings", "answer": "answer",
+             "review": "sent back", "revision": "revision", "final": "final answer"}
     rows = []
     for m in channel:
         c = color[m["from"]]

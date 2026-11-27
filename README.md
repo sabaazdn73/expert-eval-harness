@@ -90,8 +90,11 @@ result. `--team` runs each trial that way, with the same model in every role, ta
 3. **Members.** One agent per part checks its member against the code basis, with numbers, in the same sandbox and
    tools a solo trial gets. When its decision depends on another part it writes `ASK @agent: ...` in the channel.
 4. **Answers.** Each agent that was asked answers (`--team-rounds`, default 1) and may correct its earlier finding.
-5. **Check.** A checking engineer reads the whole channel, checks coverage and consistency between the parts,
-   recomputes what it doubts and writes the answer in the task's format.
+5. **Check.** A checking engineer reads the whole channel, checks coverage and consistency between the parts and
+   recomputes what it doubts. A part that is wrong goes back to the agent who owns it (`REVISE @agent: ...`); that
+   agent rechecks it and posts corrected findings, which replace its earlier ones, and the checker reads the channel
+   again (`--team-revisions`, default 1; 0 lets the checker fix parts itself). Then it writes the answer in the task's
+   format.
 
 Only the checker's answer is graded, by the same graders and key as a solo answer, so `compare` between a solo run and
 a `--team` run of the same model shows whether the team helps. Every agent reads the same task files from the prompt
@@ -104,7 +107,8 @@ sidebar, the posts appearing as they are written, and the agents at work shown a
 at it. The page is served from this computer only (127.0.0.1). `python3 -m harness.run watch runs/<name>` opens the same
 page for a run going on in another terminal, or one that has finished.
 
-A team trial makes up to 3 + agents × (1 + rounds) model calls (11 with the defaults), so check the estimate first and
+A team trial makes at most 3 + agents + (rounds + revisions) × (agents + 1) + revisions model calls (18 with the
+defaults; fewer when few agents are asked or sent back), so check the estimate first and
 raise `--max-calls` to match:
 
 ```

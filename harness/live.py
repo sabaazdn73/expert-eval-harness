@@ -174,13 +174,15 @@ pre { white-space:pre-wrap; word-wrap:break-word; margin:6px 0 0; font:13px/1.5 
 <script>
 const COLORS = ["#2f6f62", "#7a4fb0", "#b5562e", "#2f5d8a", "#8a6d1f", "#a03f6b", "#3f7f2f", "#5a5f6b"];
 const DOING = {basis: "is settling the code basis", plan: "is splitting the review", findings: "is checking its part",
-  answer: "is answering a question", final: "is checking the whole review and writing the answer"};
-const KIND = {basis: "code basis", plan: "plan", findings: "findings", answer: "answer", final: "final answer"};
+  answer: "is answering a question", check: "is checking the team's work", revision: "is fixing its part",
+  final: "is writing the team's answer"};
+const KIND = {basis: "code basis", plan: "plan", findings: "findings", answer: "answer", review: "sent back",
+  revision: "revision", final: "final answer"};
 let data = null, sel = null, shown = {key: null, n: 0}, seen = {}, lost = false, chosen = false;
 
 function esc(s) { return s.replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c])); }
 function fmt(t) {
-  t = esc(t).replace(/^(\s*\**ASK\**\s+@[A-Za-z0-9_\-]+.*)$/gm, '<span class="ask">$1</span>');
+  t = esc(t).replace(/^(\s*\**(?:ASK|REVISE)\**\s+@[A-Za-z0-9_\-]+.*)$/gm, '<span class="ask">$1</span>');
   return t.replace(/(@[A-Za-z0-9_\-]+)/g, '<span class="at">$1</span>');
 }
 function initials(w) { const p = w.split(/[-_]/).filter(Boolean); return (p.slice(0, 2).map(x => x[0]).join("") || w.slice(0, 2)).toUpperCase(); }

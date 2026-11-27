@@ -496,7 +496,7 @@ def estimate_cost(tasks, ks, judges, a):
                 if getattr(a, "team", False) is True:  # a real flag, not a stand-in object
                     # every agent reads the same files (from the cache after the first) and writes its own post;
                     # roughly one trial's cost per agent call, a little less for the short posts
-                    cost *= team.call_count(a.team_agents, a.team_rounds) * (0.6 if side == "low" else 1.0)
+                    cost *= team.call_count(a.team_agents, a.team_rounds, a.team_revisions) * (0.5 if side == "low" else 1.0)
                 add(m, side, cost)
             # gradings: every trial of every model is graded by every judge
             answer_tok = min(out, 12000)  # the graded text is the answer, not the thinking
@@ -687,7 +687,7 @@ def cmd_run(a):
         sys.exit("--team and --batch do not go together: the agents of a team answer one after another")
     if a.live and not a.team:
         sys.exit("--live shows the conversations of a team: add --team")
-    per_trial = team.call_count(a.team_agents, a.team_rounds) if a.team else 1
+    per_trial = team.call_count(a.team_agents, a.team_rounds, a.team_revisions) if a.team else 1
     trials = len(task_dirs) * sum(ks.values())
     planned = trials * per_trial
     print(f"{len(task_dirs)} tasks; trials per task: " + ", ".join(f"{m} x{ks[m]}" for m in a.models)
@@ -878,7 +878,7 @@ def cmd_run(a):
                 board.state(cname, "working")
                 text, usage, mtrace, note, channel, agents = team.run_team(
                     task, content, agent, max_agents=a.team_agents, rounds=a.team_rounds, parallel=a.team_parallel,
-                    on_event=lambda e: board.event(cname, e))
+                    on_event=lambda e: board.event(cname, e), revisions=a.team_revisions)
                 cdir = os.path.join(out, "channels")
                 os.makedirs(cdir, exist_ok=True)
                 json.dump({"task": task["id"], "model": model, "trial": trial, "agents": agents, "channel": channel},
@@ -887,6 +887,7 @@ def cmd_run(a):
                     channel, f"{task['id']} · {model} · trial {trial + 1}", note))
                 team_info = {"agents": [x["id"] for x in agents], "posts": len(channel),
                              "asks": sum(len(team.ASK_RE.findall(m["text"])) for m in channel),
+                             "sent_back": sorted({m["from"] for m in channel if m["kind"] == "revision"}),
                              "channel": f"channels/{cname}.html"}
             else:
                 text, usage, mtrace, note = solve(task, content, model, trial)
@@ -1005,7 +1006,7 @@ def cmd_run(a):
             "model_library": a.model_library, "effort": a.effort, "max_tokens": a.max_tokens, "with_refs": a.with_refs,
             "judge": judge_model, "judges": judges, "consensus": a.consensus, "ref_library": bool(lib),
             "sandbox": a.sandbox, "batch": bool(a.batch), "batch_ids": api.batch_ids(),
-            "team": {"agents": a.team_agents, "rounds": a.team_rounds} if a.team else None,
+            "team": {"agents": a.team_agents, "rounds": a.team_rounds, "revisions": a.team_revisions} if a.team else None,
             "tasks": [os.path.basename(d) for d in task_dirs], "budgets": budgets,
             "task_sha256": {t: task_fingerprint(tk) for t, tk in tasks_by_id.items()},
             "harness_version": HARNESS_VERSION, "started": started,
@@ -1117,7 +1118,8 @@ def write_report(path):
              + (f", consensus {meta.get('consensus')}" if len(judges) > 1 else "") + ")" + cost
              + (f" · regraded from {meta['regraded_from']}" if meta.get("regraded_from") else "")
              + (f" · team review: up to {meta['team']['agents']} member agents, {meta['team']['rounds']} round(s) of "
-                "questions, conversations in channels/" if meta.get("team") else ""), ""]
+                f"questions, {meta['team'].get('revisions', 0)} cycle(s) of revisions, conversations in channels/"
+                if meta.get("team") else ""), ""]
     adj = load_adjudications(path)
     final = apply_adjudications(rows, adj)
     filled = [x for x in adj if x.get("points") is not None or x.get("verdict") is not None]
@@ -1527,6 +1529,9 @@ def main():
                         "them, and a checker who writes the graded answer (harness/team.py)")
     s.add_argument("--team-agents", type=int, default=4, help="--team: at most this many member agents (default 4)")
     s.add_argument("--team-rounds", type=int, default=1, help="--team: rounds of questions and answers (default 1)")
+    s.add_argument("--team-revisions", type=int, default=1,
+                   help="--team: times the checker may send wrong parts back to their agents before it writes the "
+                        "answer (default 1; 0: the checker fixes them itself)")
     s.add_argument("--team-parallel", type=int, default=4, help="--team: agents of one trial working at the same time")
     s.add_argument("--live", action="store_true",
                    help="--team: open a page in the browser that shows the agents' conversations as they happen")
